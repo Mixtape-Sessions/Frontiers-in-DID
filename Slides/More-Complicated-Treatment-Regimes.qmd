@@ -1,0 +1,13 @@
+---
+title: Frontiers in Difference-in-Differences
+subtitle: More Complicated Treatment Regimes
+format: clean-revealjs
+author:
+  - name: Brantly Callaway
+    orcid: 0000-0000-0000-0000
+    email: brantly.callaway@uga.edu
+    affiliations: University of Georgia
+date: last-modified
+---
+
+## Slide 1

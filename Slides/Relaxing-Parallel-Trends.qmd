@@ -1,0 +1,81 @@
+---
+title: Frontiers in Difference-in-Differences
+subtitle: Relaxing Parallel Trends
+format: clean-revealjs
+author:
+  - name: Brantly Callaway
+    orcid: 0000-0000-0000-0000
+    email: brantly.callaway@uga.edu
+    affiliations: University of Georgia
+date: last-modified
+---
+
+## Example slide
+
+### This is a subtitle
+
+Here we have some text that may run over several lines of the slide frame,
+depending on how long it is.
+
+- first item 
+    - A sub item
+
+Next, we'll brief review some theme-specific components.
+
+- Note that _all_ of the standard Reveal.js
+[features](https://quarto.org/docs/presentations/revealjs/)
+can be used with this theme, even if we don't highlight them here.
+
+## Additional theme classes
+
+### Some extra things you can do with the clean theme
+
+Special classes for emphasis
+
+- `.alert` class for default emphasis, e.g. [important note]{.alert}.
+- `.fg` class for custom colour, e.g. [important note]{.fg style="--col: #e64173"}.
+- `.bg` class for custom background, e.g. [important note]{.bg style="--col: #e64173"}.
+
+Cross-references
+
+- `.button` class provides a Beamer-like button, e.g.
+[[Summary]{.button}](#sec-summary)
+
+## Want more?
+
+### See our longer demo slides
+
+We've deliberarely kept this template lean, to get you up and running as fast as
+possible.
+
+We provide a separate
+[demo template](https://github.com/grantmcdermott/quarto-revealjs-clean-demo),
+with more examples for integrating code, tables, figures, etc.
+
+  - See the live demo slides
+  [here](https://grantmcdermott.com/quarto-revealjs-clean-demo/template.html).
+
+## Summary {#sec-summary}
+
+### A minimal and elegant presentation theme
+
+The Quarto reveal.js clean theme aims to be a minimal and elegant presention
+theme.
+
+Install the theme.
+
+```{.bash}
+quarto install extension grantmcdermott/quarto-revealjs-clean
+```
+
+Use this lean template.
+
+```{.bash}
+quarto use template grantmcdermott/quarto-revealjs-clean
+```
+
+Use the longer demo template.
+
+```{.bash}
+quarto use template grantmcdermott/quarto-revealjs-clean-demo
+```
