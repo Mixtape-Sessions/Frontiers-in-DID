@@ -21,7 +21,7 @@ Covariates good and bad
 
 <b>Slides</b>
 
-[Slides]()
+[Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Relaxing-Parallel-Trends.html)
 
 <b>Coding Exercises</b>
 
@@ -38,7 +38,7 @@ Continuous treatment. General things to think about when estimating effects.
 
 <b>Slides</b>
 
-[Slides](Slides/02-staggered.pdf)
+[Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/More-Complicated-Treatment-Regimes.html)
 
 <b>Coding Exercises</b>
 
@@ -55,7 +55,7 @@ Changes-in-changes, Factor models, and lagged outcomes.
 
 <b>Slides</b>
 
-[Slides]()
+[Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Alternative-Identification-Strategies.html)
 
 <b>Coding Exercises</b>
 
