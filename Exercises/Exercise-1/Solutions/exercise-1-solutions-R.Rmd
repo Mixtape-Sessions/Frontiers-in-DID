@@ -1,0 +1,11 @@
+---
+title: "Exercise 1 Solutions in R"
+output:
+  github_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
