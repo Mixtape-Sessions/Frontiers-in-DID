@@ -348,48 +348,373 @@ Brantly Callaway <a href="https://orcid.org/0000-0000-0000-0000" class="quarto-t
 
   <p class="date">October 4, 2023</p>
 </section>
-<section class="slide level2">
-
-<p>name: covs</p>
+<section id="more-complicated-treatment-regimes" class="slide level2">
+<h2>More Complicated Treatment Regimes</h2>
+<div class="fragment">
+<p>The arguments above are fairly easy and well-known.</p>
+</div>
+<div class="fragment">
+<p>Most applications, however, involve more complicated settings (more periods, more complicated treatment regimes, etc.)</p>
+</div>
+<div class="fragment">
+<p>One of the most active areas in causal inference with panel data in the past few years has been to these more “realistic” settings</p>
+</div>
+<div class="fragment">
+<p>A lot of these advancements have been in a DID framework (so I will emphasize this below)</p>
+<ul>
+<li><p>However, I think that a lot of the same insights apply to other identification strategies as well</p></li>
+<li><p>I’ll make the case that you can just “substitute in”, say, LO unconfoundedness in the “first step” for parallel trends, and a lot of the same arguments go through</p></li>
+<li><p>If we have time, I’ll argue that you can use other identification strategies in the “first step” such as interactive fixed effects models and change-in-changes</p></li>
+</ul>
+</div>
+<div class="fragment">
+<p>The first more complicated treatment regime that we’ll discuss is <span class="alert">staggered treatment adoption</span></p>
+</div>
+<h3 id="setup-w-staggered-treatment-adoption">Setup w/ Staggered Treatment Adoption</h3>
+<ul>
+<li><span class="math inline">\(\mathcal{T}\)</span> time periods</li>
+</ul>
+<div class="fragment">
+<ul>
+<li><p>Units can become treated at different points in time</p>
+<ul>
+<li><p><span class="alert-blue">staggered treatment adoption: </span> Once a unit becomes treated they remain treated.</p></li>
+<li><p><span class="math inline">\(D_{it}\)</span> - treatment indicator. In math, staggered treatment adoption means: <span class="math inline">\(D_{it-1}=1 \implies D_{it}=1\)</span>.</p></li>
+<li><p><span class="math inline">\(G_i\)</span> - a unit’s <span class="alert-blue">group</span> - the time period that unit becomes treated. Also, define <span class="math inline">\(U_i=1\)</span> for never-treated units and <span class="math inline">\(U_i=0\)</span> otherwise.</p></li>
+</ul></li>
+</ul>
+</div>
+<div class="fragment">
+<p><span class="alert">Examples:</span></p>
+<ul>
+<li><p>Government policies that roll out in different locations at different times (minimum wage is close to this over short time horizons)</p></li>
+<li><p>“Scarring” treatments: e.g., job displacement does not typically happen year after year, but rather labor economists think of being displaced as changing a person’s “state” (the treatment is more like: has a person ever been displaced)</p></li>
+</ul>
+</div>
+<h3 id="setup-w-staggered-treatment-adoption-1">Setup w/ Staggered Treatment Adoption</h3>
+<ul>
+<li>Potential outcomes: <span class="math inline">\(Y_{it}(g)\)</span> - the outcome that unit <span class="math inline">\(i\)</span> would experience in time period <span class="math inline">\(t\)</span> if they became treated in period <span class="math inline">\(g\)</span>.</li>
+</ul>
+<div class="fragment">
+<ul>
+<li>Untreated potential outcome: <span class="math inline">\(Y_{it}(0)\)</span> - the outcome unit <span class="math inline">\(i\)</span> would experience in time period <span class="math inline">\(t\)</span> if they did not participate in the treatment in any period.</li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li>Observed outcome: <span class="math inline">\(Y_{it}=Y_{it}(G_i)\)</span></li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li>No anticipation condition: <span class="math inline">\(Y_{it} = Y_{it}(0)\)</span> for all <span class="math inline">\(t &lt; G_i\)</span> (pre-treatment periods for unit <span class="math inline">\(i\)</span>)</li>
+</ul>
+</div>
+<h3 id="unit-level-treatment-effects">Unit-Level Treatment Effects</h3>
+<p><span class="alert">Unit-level treatment effect</span> <span class="math display">\[\tau_{it}(g) = Y_{it}(g) - Y_{it}(0)\]</span></p>
+<div class="fragment">
+<p><span class="alert">Average treatment effect for unit <span class="math inline">\(i\)</span></span> (across time periods): <span class="math display">\[\bar{\tau}_i(g) = \frac{1}{\mathcal{T} - g + 1} \sum_{t=g}^{\mathcal{T}} \tau_{it}(g)\]</span></p>
+</div>
+</section>
+<section id="target-parameters" class="slide level2">
+<h2>Target Parameters</h2>
+<ul>
+<li><span class="alert">Group-time average treatment effects</span> <span class="math display">\[\begin{align*}
+ATT(g,t) = \E[ \tau_{it}(G) | G=g]
+\end{align*}\]</span> Explanation: <span class="math inline">\(ATT\)</span> for group <span class="math inline">\(g\)</span> in time period <span class="math inline">\(t\)</span></li>
+</ul>
+<div class="fragment">
+<ul>
+<li><p><span class="alert">Event Study</span> <span class="math display">\[\begin{align*}
+ATT^{ES}(e) = \E[\tau_{i,g+e}(G) | G \in \mathcal{G}_e]
+\end{align*}\]</span> where <span class="math inline">\(\mathcal{G}_e\)</span> is the set of groups observed to have experienced the treatment for <span class="math inline">\(e\)</span> periods at some point.</p>
+<p>Explanation: <span class="math inline">\(ATT\)</span> when units have been treated for <span class="math inline">\(e\)</span> periods</p></li>
+</ul>
+<!--In math: $\mathcal{G}_e = \{g : (g+e) \in [2,T] \textrm{ and } g > 0\}$-->
+</div>
+<div class="fragment">
+<ul>
+<li><span class="alert">Overall ATT</span> <span class="math display">\[\begin{align*}
+ATT^O = \E[\bar{\tau}_i(G) | U=0]
+\end{align*}\]</span> Explanation: <span class="math inline">\(ATT\)</span> across all units that every participate in the treatment</li>
+</ul>
+</div>
+</section>
+<section id="target-parameters-1" class="slide level2">
+<h2>Target Parameters</h2>
+<p>To understand the discussion later, it is also helpful to think of <span class="math inline">\(ATT(g,t)\)</span> as a <span class="alert">building block</span> for the other parameters discussed above.</p>
+<div class="fragment">
+<p>Notice that:</p>
+<p><span class="math display">\[\begin{align*}
+  ATT^{ES}(e) = \sum_{g \in \bar{\mathcal{G}}} w^{ES}(g,e) ATT(g,g+e) \qquad \textrm{ and } \qquad ATT^O = \sum_{g \in \bar{\mathcal{G}}} \sum_{t=g}^{\mathcal{T}} w^O(g,t) ATT(g,t)
+\end{align*}\]</span> where <span class="math display">\[\begin{align*}
+  w^{ES}(g,e) = \indicator{g \in \mathcal{G}_e} \P(G=g|G\in \mathcal{G}_e) \qquad \textrm{and} \qquad
+w^O(g,t) = \frac{\P(G=g|U=0)}{\mathcal{T}-g+1}
+\end{align*}\]</span></p>
+</div>
+<div class="fragment">
+<p><br></p>
+<p>In other words, if we can identify/recover <span class="math inline">\(ATT(g,t)\)</span>, then we can proceed to recover <span class="math inline">\(ATT^{ES}(e)\)</span> and <span class="math inline">\(ATT^O\)</span>.</p>
+</div>
+</section>
+<section id="did-identification-of-attgt" class="slide level2">
+<h2>DID Identification of <span class="math inline">\(ATT(g,t)\)</span></h2>
+<h4 id="multiple-period-version-of-parallel-trends-assumption">Multiple Period Version of Parallel Trends Assumption</h4>
+<p>For all groups <span class="math inline">\(g \in \bar{\mathcal{G}}\)</span> (all groups except the never-treated group) and for all time periods <span class="math inline">\(t=2,\ldots,\mathcal{T}\)</span>, <span class="math display">\[\begin{align*}
+  \E[\Delta Y_{t}(0) | G=g] = \E[\Delta Y_{t}(0) | U=1]
+\end{align*}\]</span></p>
+<p><br></p>
+<div class="fragment">
+<p>Using very similar arguments as before, can show that <span class="math display">\[\begin{align*}
+  ATT(g,t) = \E[Y_t - Y_{g-1} | G=g] - \E[Y_t - Y_{g-1} | U=1]
+\end{align*}\]</span></p>
+</div>
+<p>where the main difference is that we use <span class="math inline">\((g-1)\)</span> as the “base period” (this is the period right before group <span class="math inline">\(g\)</span> becomes treated).</p>
+<p>class: inverse, middle, center count: false</p>
 </section>
 <section>
+<section id="empirical-example-minimum-wages-and-employment" class="title-slide slide level1 center">
+<h1>Empirical Example: Minimum Wages and Employment</h1>
+
+</section>
+<section id="example-minimum-wage" class="slide level2">
+<h2>Example: Minimum Wage</h2>
+<ul>
+<li>Use county-level data from 2003-2007 during a period where the federal minimum wage was flat</li>
+</ul>
+<div class="fragment">
+<ul>
+<li><p>Exploit minimum wage changes across states</p>
+<ul>
+<li>Any state that increases their minimum wage above the federal minimum wage will be considered as treated</li>
+</ul></li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li>Interested in the effect of the minimum wage on teen employment</li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li><p>We’ll also make a number of simplifications:</p>
+<ul>
+<li><p>not worry much about issues like clustered standard errors</p></li>
+<li><p>not worry about variation in the amount of the minimum wage change (or whether it keeps changing) across states</p></li>
+</ul></li>
+</ul>
+</div>
+<div class="fragment">
+<p><span class="alert">Goal: </span> How much do the issues that we have been talking about matter in practice?</p>
+</div>
+</section>
+<section id="code" class="slide level2">
+<h2>Code</h2>
+<p>Full code is available on my website: <a href="https://bcallaway11.github.io/files/presentations/northwestern-causal-inference-workshop">https://bcallaway11.github.io/files/presentations/northwestern-causal-inference-workshop</a> or link is on my homepage <a href="https://www.brantlycallaway.com">brantlycallaway.com</a></p>
+<p><span class="alert">R packages used in empirical example</span></p>
+</section>
+<section id="setup-data" class="slide level2">
+<h2>Setup Data</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>      id year    G     lemp     lpop region
+554 8003 2001 2007 5.556828 9.614137      4
+555 8003 2002 2007 5.356586 9.623972      4
+556 8003 2003 2007 5.389072 9.620859      4
+557 8003 2004 2007 5.356586 9.626548      4
+558 8003 2005 2007 5.303305 9.637958      4
+559 8003 2006 2007 5.342334 9.633056      4</code></pre>
+</div>
+</div>
+<p>name: twfe-results</p>
+</section>
+<section id="twfe-regression" class="slide level2">
+<h2>TWFE Regression</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table" data-quarto-postprocess="true" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">&nbsp;(1)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">post</td>
+<td style="text-align: center;">−0.038</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: center;">(0.008)</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p><br></p>
+<p>[<a href="#/lo-results">LO Unconfoundedness Results</a>]</p>
+</section>
+<section id="attgt-callaway-and-santanna" class="slide level2">
+<h2><span class="math inline">\(ATT(g,t)\)</span> (Callaway and Sant’Anna)</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>             term group time    estimate   std.error
+1  ATT(2004,2003)  2004 2003  0.00000000          NA
+2  ATT(2004,2004)  2004 2004 -0.03266653 0.022062048
+3  ATT(2004,2005)  2004 2005 -0.06827991 0.020998788
+4  ATT(2004,2006)  2004 2006 -0.12335404 0.019466896
+5  ATT(2004,2007)  2004 2007 -0.13109136 0.022728991
+6  ATT(2006,2003)  2006 2003 -0.03408910 0.011953559
+7  ATT(2006,2004)  2006 2004 -0.01669977 0.008303260
+8  ATT(2006,2005)  2006 2005  0.00000000          NA
+9  ATT(2006,2006)  2006 2006 -0.01939335 0.009693571
+10 ATT(2006,2007)  2006 2007 -0.06607568 0.009971678</code></pre>
+</div>
+</div>
+</section>
+<section id="plot-attgts" class="slide level2">
+<h2>Plot <span class="math inline">\(ATT(g,t)\)</span>’s</h2>
+
+<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="compute-atto" class="slide level2">
+<h2>Compute <span class="math inline">\(ATT^O\)</span></h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+did::aggte(MP = attgt, type = "group")
+
+Reference: Callaway, Brantly and Pedro H.C. Sant'Anna.  "Difference-in-Differences with Multiple Time Periods." Journal of Econometrics, Vol. 225, No. 2, pp. 200-230, 2021. &lt;https://doi.org/10.1016/j.jeconom.2020.12.001&gt;, &lt;https://arxiv.org/abs/1803.09015&gt; 
+
+
+Overall summary of ATT's based on group/cohort aggregation:  
+     ATT    Std. Error     [ 95%  Conf. Int.]  
+ -0.0571        0.0083    -0.0734     -0.0407 *
+
+
+Group Effects:
+ Group Estimate Std. Error [95% Simult.  Conf. Band]  
+  2004  -0.0888     0.0198       -0.1314     -0.0463 *
+  2006  -0.0427     0.0079       -0.0597     -0.0258 *
+---
+Signif. codes: `*' confidence band does not cover 0
+
+Control Group:  Never Treated,  Anticipation Periods:  0
+Estimation Method:  Doubly Robust</code></pre>
+</div>
+</div>
+</section>
+<section id="comments" class="slide level2">
+<h2>Comments</h2>
+<p>The differences between the CS estimates and the TWFE estimates are fairly large here: the CS estimate is about 50% larger than the TWFE estimate, though results are qualitatively similar.</p>
+<div class="fragment">
+<p><span class="alert">Let’s see if we can figure out what’s going on…</span></p>
+</div>
+</section>
+<section id="de-chaisemartin-and-dhaultfoeuille-weights" class="slide level2">
+<h2>de Chaisemartin and d’Haultfoeuille weights</h2>
+
+<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="atto-weights" class="slide level2">
+<h2><span class="math inline">\(ATT^O\)</span> weights</h2>
+
+<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="weight-comparison" class="slide level2">
+<h2>Weight Comparison</h2>
+
+<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="discussion" class="slide level2">
+<h2>Discussion</h2>
+<p>To summarize: <span class="math inline">\(ATT^O = -0.057\)</span> while <span class="math inline">\(\alpha^{TWFE} = -0.038\)</span>. This difference can be fully accounted for</p>
+<ul>
+<li><p>Pre-treatment differences in paths of outcomes across groups: explains about 64% of the difference</p></li>
+<li><p>Differences in weights applied to the same post-treatment <span class="math inline">\(ATT(g,t)\)</span>: explains about 36% of the difference. [If you apply the post-treatment weights and “zero out” pre-treatment differences, the estimate would be <span class="math inline">\(-0.050\)</span>.]</p></li>
+</ul>
+<div class="fragment">
+<p>In my experience: this is fairly representative of how much new DID approaches matter relative to TWFE regressions. It does not seem like “catastrophic failure” of TWFE, but (in my view) these are meaningful differences (and, e.g., given slightly different <span class="math inline">\(ATT(g,t)\)</span>’s, the difference in the weighting schemes could change the qualitative results).</p>
+<ul>
+<li>Of course, this whole discussion hinges crucially on how much treatment effect heterogeneity there is. More TE Het <span class="math inline">\(\implies\)</span> more sensitivity to weighting schemes [just looking at TWFE regression does not give insight into how much TE Het there is.]</li>
+</ul>
+</div>
+</section>
+<section id="additional-comments" class="slide level2">
+<h2>Additional Comments</h2>
+<p>One more comment: there is a lot concern about negative weights (both in econometrics and empirical work).</p>
+<ul>
+<li><p>There were no negative weights in the example above, but the weights still weren’t great.</p>
+<ul>
+<li>No negative weights does rule out “sign reversal”</li>
+</ul></li>
+<li><p>But, in my view, the more important issue is the non-transparent weighting scheme.</p>
+<ul>
+<li><p>Example 1: If you try using <code>data3</code> (the data that includes <span class="math inline">\(G=2007\)</span>), you will get a negative weight on <span class="math inline">\(ATT(g=2004,t=2007)\)</span>. But it turns out not to matter much, and TWFE works better in this case than in the case that I showed you.</p></li>
+<li><p>Example 2: Alternative treatment effect parameter <span class="math inline">\(\rightarrow\)</span></p></li>
+</ul></li>
+</ul>
+</section>
+<section id="simple-aggregation" class="slide level2">
+<h2>“Simple” Aggregation</h2>
+<p>Consider the following alternative aggregated treatment effect parameter <span class="math display">\[\begin{align*}
+  ATT^{simple} := \sum_{t=g}^\mathcal{T} ATT(g,t) \frac{\P(G=g | G \in \bar{\mathcal{G}})}{\sum_{t=g}^{\mathcal{T}} \P(G=g| G \in \bar{\mathcal{G}})}
+\end{align*}\]</span> Consider imputation so that you have <span class="math inline">\(Y_{it}-\hat{Y}_{it}(0)\)</span> available in all periods. This is the <span class="math inline">\(ATT\)</span> parameter that you get by averaging all of those.</p>
+<div class="fragment">
+<p>Relative to <span class="math inline">\(ATT^O\)</span>, early treated units get more weight (because we have more <span class="math inline">\(Y_{it}-\hat{Y}_{it}(0)\)</span> for them).</p>
+</div>
+<div class="fragment">
+<p>By construction, weights are all positive. However, they are different from <span class="math inline">\(ATT^O\)</span> weights</p>
+</div>
+</section>
+<section id="simple-aggregation-1" class="slide level2">
+<h2>“Simple” Aggregation</h2>
+
+<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="simple-aggregation-2" class="slide level2">
+<h2>“Simple” Aggregation</h2>
+<p>Besides the violations of parallel trends in pre-treatment periods, these weights are further away from <span class="math inline">\(ATT^O\)</span> than the TWFE regression weights are!</p>
+<div class="fragment">
+<p>In fact, you calculate <span class="math inline">\(ATT^{simple} = -0.065\)</span> (13% larger in magnitude that <span class="math inline">\(ATT^O\)</span>)</p>
+</div>
+<div class="fragment">
+<p>Finally, if you are “content with” non-negative weights, then you can get any summary measure from <span class="math inline">\(-0.019\)</span> (the smallest <span class="math inline">\(ATT(g,t)\)</span>) to <span class="math inline">\(-0.13\)</span> (the largest). This is a wide range of estimates.</p>
+</div>
+<div class="fragment">
+<p>In my view, the discussion above suggests that clearly stating a target aggregate treatment effect parameter and choosing weights that target that parameter is probably more important than checking for negative weights</p>
+<p>name: covs</p>
 <section id="covariates-in-the-parallel-trends-assumption" class="title-slide slide level1 center">
 <h1>Covariates in the Parallel Trends Assumption</h1>
 
 </section>
-<section id="conditional-parallel-trends-assumption" class="slide level2">
-<h2>Conditional Parallel Trends Assumption</h2>
+<h4 id="conditional-parallel-trends-assumption">Conditional Parallel Trends Assumption</h4>
 <p>For all time periods,</p>
-</section>
-<section id="edelta-y_t0-x_t-x_t-1zd1-edelta-y_t0-x_t-x_t-1zd0" class="slide level2">
-<h2><span class="math display">\[\E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=1] = \E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=0]\]</span></h2>
+<p><span class="math display">\[\E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=1] = \E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=0]\]</span> ::: {.fragment}</p>
 <p>In words: Parallel trends holds conditional on having the same covariates <span class="math inline">\(X\)</span>.</p>
-<p>–</p>
+
+</div>
+<div class="fragment">
 <p>Minimum wage example: path of teen employment may depend on a state’s population / population growth / region of the country</p>
 <p>Job displacement example: path of earnings may depend on year’s of education / race / occupation</p>
+</div>
 </section>
-<section class="slide level2">
-
-</section></section>
-<section>
-<section id="limitations-of-twfe-regressions" class="title-slide slide level1 center">
-<h1>Limitations of TWFE Regressions</h1>
+<section id="limitations-of-twfe-regressions" class="slide level2">
+<h2>Limitations of TWFE Regressions</h2>
 <p>In this setting, it is common to run the following TWFE regression:</p>
 <p><span class="math display">\[Y_{it} = \theta_t + \eta_i + \alpha D_{it} + X_{it}'\beta + e_{it}\]</span></p>
-<p>–</p>
+<div class="fragment">
 <p>However, there are a number of issues: <!--(most of these apply even in the friendly setting with two periods)--></p>
 <p>Issue 1: Issues related to multiple periods and variation in treatment timing still arise</p>
-<p>–</p>
+</div>
+<div class="fragment">
 <p>Issue 2: Hard to allow parallel trends to depend on time-invariant covariates</p>
-<p>–</p>
+</div>
+<div class="fragment">
 <p>Issue 3: Hard to allow for covariates that could be affected by the treatment</p>
+</div>
 </section>
-<section class="slide level2">
-
-</section></section>
-<section>
-<section id="limitations-of-twfe-regressions-1" class="title-slide slide level1 center">
-<h1>Limitations of TWFE Regressions</h1>
+<section id="limitations-of-twfe-regressions-1" class="slide level2">
+<h2>Limitations of TWFE Regressions</h2>
 <p>In this setting, it is common to run the following TWFE regression:</p>
 <p><span class="math display">\[Y_{it} = \theta_t + \eta_i + \alpha D_{it} + X_{it}'\beta + e_{it}\]</span></p>
 <p>However, there are a number of issues: <!--(most of these apply even in the friendly setting with two periods)--></p>
@@ -401,12 +726,8 @@ Brantly Callaway <a href="https://orcid.org/0000-0000-0000-0000" class="quarto-t
 <li><p>However, if we think of linear model as an approximation, this may have meaningful implications.</p></li>
 </ul>
 </section>
-<section class="slide level2">
-
-</section></section>
-<section>
-<section id="limitations-of-twfe-regressions-2" class="title-slide slide level1 center">
-<h1>Limitations of TWFE Regressions</h1>
+<section id="limitations-of-twfe-regressions-2" class="slide level2">
+<h2>Limitations of TWFE Regressions</h2>
 <p>Even if none of the previous 4 issues apply, <span class="math inline">\(\alpha\)</span> will still be equal to a weighted average of underlying (conditional-on-covariates) treatment effect parameters.</p>
 <ul>
 <li><p>The weights can be negative, and suffer from “weight reversal” (as discussed in Sloczynski (2020))</p></li>
@@ -414,54 +735,46 @@ Brantly Callaway <a href="https://orcid.org/0000-0000-0000-0000" class="quarto-t
 </ul>
 <p>See Caetano and Callaway (2023) for more details</p>
 </section>
-<section class="slide level2">
-
-</section></section>
-<section>
-<section id="covariate-balancing" class="title-slide slide level1 center">
-<h1>Covariate Balancing</h1>
+<section id="covariate-balancing" class="slide level2">
+<h2>Covariate Balancing</h2>
 <p>Alternatively, if we could choose “balancing weights” <span class="math inline">\(\nu_0(X)\)</span> such that the distribution of <span class="math inline">\(X\)</span> was the same in the untreated group as it is in the treated group after applying the balancing weights, then we would have that (from the second term above) <span class="math display">\[\begin{align*}
   \E\Big[ \E[\Delta Y_{it}(0) | X_i, D_i=0 ] \Big| D_i=1\Big] &amp;= \E\Big[ \nu_0(X_i) \E[\Delta Y_{it}(0) | X_i, D_i=0 ] \Big| D_i=0\Big] \\
   &amp;= \E[\nu_0(X_i) \Delta Y_{it}(0) | D_i=0]
 \end{align*}\]</span> where the first equality is due to balancing weights and the second by the law of iterated expectations.</p>
-<p>–</p>
+<div class="fragment">
 <p>The most common way to re-weight is based on the propensity score, you can show: <span class="math display">\[\begin{align*}
   \nu_0(x) = \frac{p(x)(1-p)}{(1-p(x))p}
 \end{align*}\]</span> where <span class="math inline">\(p(x) = \P(D=1|X=x)\)</span> and <span class="math inline">\(p=\P(D=1)\)</span>.</p>
-<p>–</p>
+</div>
+<div class="fragment">
 <p>This is the approach suggested in Abadie (2005). In practice, you need to estimate the propensity score. The most common choices are probit or logit.</p>
+</div>
 </section>
-<section class="slide level2">
-
-</section></section>
-<section>
-<section id="doubly-robust" class="title-slide slide level1 center">
-<h1>Doubly Robust</h1>
+<section id="doubly-robust" class="slide level2">
+<h2>Doubly Robust</h2>
 <p>Alternatively, you can show</p>
-</section>
-<section id="atteleft-left-fracdp---fracpx1-d1-pxp-rightdelta-y_t---edelta-y_t-x-d0-right" class="slide level2">
-<h2><span class="math display">\[ATT=\E\left[ \left( \frac{D}{p} - \frac{p(X)(1-D)}{(1-p(X))p} \right)(\Delta Y_t - \E[\Delta Y_t | X, D=0]) \right]\]</span></h2>
+<p><span class="math display">\[ATT=\E\left[ \left( \frac{D}{p} - \frac{p(X)(1-D)}{(1-p(X))p} \right)(\Delta Y_t - \E[\Delta Y_t | X, D=0]) \right]\]</span> ::: {.fragment}</p>
 <p>This requires estimating both <span class="math inline">\(p(X)\)</span> and <span class="math inline">\(\E[\Delta Y_{t^*}|X,D=0]\)</span>.</p>
-<p>–</p>
+<p>:::</p>
+<div class="fragment">
 <p>Big advantage:</p>
 <ul>
 <li>This expression for <span class="math inline">\(ATT\)</span> is <em>doubly robust</em>. This means that, it will deliver consistent estimates of <span class="math inline">\(ATT\)</span> if <span class="alert">either</span> the model for <span class="math inline">\(p(X)\)</span> or for <span class="math inline">\(\E[\Delta Y_{t^*}|X,D=0]\)</span>.</li>
 </ul>
-<p>–</p>
+</div>
+<div class="fragment">
 <ul>
 <li>In my experience, doubly robust estimators perform much better than either the regression or propensity score weighting estimators</li>
 </ul>
-<p>–</p>
+</div>
+<div class="fragment">
 <ul>
 <li>This also provides a connection to estimating <span class="math inline">\(ATT\)</span> under conditional parallel trends using machine learning for <span class="math inline">\(p(X)\)</span> and <span class="math inline">\(\E[\Delta Y_{t^*}|X,D=0]\)</span> (see: Chang (2020) and Callaway, Drukker, Liu, and Sant’Anna (2023))</li>
 </ul>
+</div>
 </section>
-<section class="slide level2">
-
-</section></section>
-<section>
-<section id="additional-comments" class="title-slide slide level1 center">
-<h1>Additional Comments</h1>
+<section id="additional-comments-1" class="slide level2">
+<h2>Additional Comments</h2>
 <p>In panel data applications, an additional consideration that arises with time-varying covariates is that they could be affected by the treatment, often referred to as a <span class="highlight">“bad control”</span></p>
 <ul>
 <li>In fact, I sneaked an example of this earlier: a person’s occupation</li>
@@ -470,15 +783,12 @@ Brantly Callaway <a href="https://orcid.org/0000-0000-0000-0000" class="quarto-t
 <ul>
 <li>Note: this is different from the traditional approach of excluding it altogether in a TWFE regression</li>
 </ul>
-<p>–</p>
+<div class="fragment">
 <p>What about time-varying covariates not affected by the treatment? Most important: include it’s level in some period (or average across periods), can also include more periods and/or differences over time, etc.</p>
+</div>
 </section>
-<section class="slide level2">
-
-</section></section>
-<section>
-<section id="back-to-minimum-wage-example" class="title-slide slide level1 center">
-<h1>Back to Minimum Wage Example</h1>
+<section id="back-to-minimum-wage-example" class="slide level2">
+<h2>Back to Minimum Wage Example</h2>
 <p>We’ll allow for path of outcomes to depend on region of the country</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -506,20 +816,11 @@ Brantly Callaway <a href="https://orcid.org/0000-0000-0000-0000" class="quarto-t
 </div>
 <p>Relative to previous results, this is much smaller and statistically insignificant and is similar to the result in Dube et al.&nbsp;(2010).</p>
 </section>
-<section class="slide level2">
-
-</section></section>
-<section>
-<section id="use-doubly-robust-approach-from-cs" class="title-slide slide level1 center">
-<h1>Use Doubly Robust Approach from CS</h1>
-
+<section id="use-doubly-robust-approach-from-cs" class="slide level2">
+<h2>Use Doubly Robust Approach from CS</h2>
 </section>
-<section class="slide level2">
-
-</section></section>
-<section>
-<section id="use-doubly-robust-approach-from-cs-1" class="title-slide slide level1 center">
-<h1>Use Doubly Robust Approach from CS</h1>
+<section id="use-doubly-robust-approach-from-cs-1" class="slide level2">
+<h2>Use Doubly Robust Approach from CS</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -546,45 +847,33 @@ Estimation Method:  Doubly Robust</code></pre>
 </div>
 </div>
 </section>
-<section class="slide level2">
-
-</section></section>
-<section>
-<section id="comments" class="title-slide slide level1 center">
-<h1>Comments</h1>
+<section id="comments-1" class="slide level2">
+<h2>Comments</h2>
 <p>Even more than in the previous case, the results in this case are notably different depending on the estimation strategy.</p>
-</section>
-<section class="slide level2">
-
 <p>name: violations</p>
-</section></section>
-<section>
-<section id="what-about-violations-of-parallel-trends" class="title-slide slide level1 center">
-<h1>What about violations of parallel trends?</h1>
+</section>
+<section id="what-about-violations-of-parallel-trends" class="slide level2">
+<h2>What about violations of parallel trends?</h2>
 <p>Parallel trends assumptions don’t automatically hold in applications with repeated observations over time.</p>
-<p>–</p>
+<div class="fragment">
 <p>The most natural way to motivate parallel trends is with a linear model for untreated potential outcomes: <span class="math display">\[\begin{align*}
   Y_{it}(0) = \theta_t + \eta_i + e_{it}
 \end{align*}\]</span> where the key feature is the additive separability of <span class="math inline">\(\eta_i\)</span></p>
-<p>–</p>
+</div>
+<div class="fragment">
 <p>But it’s not always clear if additive separability (and hence parallel trends) is reasonable</p>
 <ul>
 <li>The most common “response” is pre-testing…checking if parallel trends holds in pre-treatment periods</li>
 </ul>
-<p>–</p>
+</div>
+<div class="fragment">
 <p>DID + pre-tests are a very powerful/useful approach to “validating” the parallel trends assumption</p>
+</div>
 </section>
-<section class="slide level2">
+<section id="what-about-our-case" class="slide level2">
+<h2>What about our case?</h2>
 
-</section></section>
-<section>
-<section id="what-about-our-case" class="title-slide slide level1 center">
-<h1>What about our case?</h1>
-
-<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section class="slide level2">
-
-<div class="footer footer-default">
+<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch quarto-figure-center"><div class="footer footer-default">
 
 </div>
 </section></section>
