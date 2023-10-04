@@ -10,72 +10,289 @@ author:
 date: last-modified
 ---
 
-## Example slide
+name: covs
 
-### This is a subtitle
 
-Here we have some text that may run over several lines of the slide frame,
-depending on how long it is.
+# Covariates in the Parallel Trends Assumption
 
-- first item 
-    - A sub item
 
-Next, we'll brief review some theme-specific components.
 
-- Note that _all_ of the standard Reveal.js
-[features](https://quarto.org/docs/presentations/revealjs/)
-can be used with this theme, even if we don't highlight them here.
+## Conditional Parallel Trends Assumption
 
-## Additional theme classes
+For all time periods,
 
-### Some extra things you can do with the clean theme
+$$\E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=1] = \E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=0]$$
+--
 
-Special classes for emphasis
+In words: Parallel trends holds conditional on having the same covariates $X$.
 
-- `.alert` class for default emphasis, e.g. [important note]{.alert}.
-- `.fg` class for custom colour, e.g. [important note]{.fg style="--col: #e64173"}.
-- `.bg` class for custom background, e.g. [important note]{.bg style="--col: #e64173"}.
+--
 
-Cross-references
+Minimum wage example: path of teen employment may depend on a state's population / population growth / region of the country
 
-- `.button` class provides a Beamer-like button, e.g.
-[[Summary]{.button}](#sec-summary)
+Job displacement example: path of earnings may depend on year's of education / race / occupation
 
-## Want more?
+---
 
-### See our longer demo slides
 
-We've deliberarely kept this template lean, to get you up and running as fast as
-possible.
 
-We provide a separate
-[demo template](https://github.com/grantmcdermott/quarto-revealjs-clean-demo),
-with more examples for integrating code, tables, figures, etc.
+# Limitations of TWFE Regressions
 
-  - See the live demo slides
-  [here](https://grantmcdermott.com/quarto-revealjs-clean-demo/template.html).
+In this setting, it is common to run the following TWFE regression:
 
-## Summary {#sec-summary}
+$$Y_{it} = \theta_t + \eta_i + \alpha D_{it} + X_{it}'\beta + e_{it}$$
 
-### A minimal and elegant presentation theme
+--
 
-The Quarto reveal.js clean theme aims to be a minimal and elegant presention
-theme.
+However, there are a number of issues: <!--(most of these apply even in the friendly setting with two periods)-->
 
-Install the theme.
+Issue 1: Issues related to multiple periods and variation in treatment timing still arise
 
-```{.bash}
-quarto install extension grantmcdermott/quarto-revealjs-clean
+--
+
+Issue 2: Hard to allow parallel trends to depend on time-invariant covariates
+
+--
+
+Issue 3: Hard to allow for covariates that could be affected by the treatment
+
+---
+
+# Limitations of TWFE Regressions
+
+In this setting, it is common to run the following TWFE regression:
+
+$$Y_{it} = \theta_t + \eta_i + \alpha D_{it} + X_{it}'\beta + e_{it}$$
+
+
+However, there are a number of issues: <!--(most of these apply even in the friendly setting with two periods)-->
+
+Issue 4: Linearity results in mixing identification and estimation...e.g., with 2 periods
+\begin{align*}
+\Delta Y_{it} = \Delta \theta_t + \alpha D_{it} + \Delta X_{it}'\beta + \Delta e_{it}
+\end{align*}
+$\implies$ differencing out unit fixed effects can have implications about what researcher controls for
+
+* This doesn't matter if model for untreated potential outcomes is truly linear
+
+* However, if we think of linear model as an approximation, this may have meaningful implications.
+
+---
+
+# Limitations of TWFE Regressions
+
+Even if none of the previous 4 issues apply, $\alpha$ will still be equal to a weighted average of underlying (conditional-on-covariates) treatment effect parameters.
+
+  * The weights can be negative, and suffer from "weight reversal" (as discussed in Sloczynski (2020))
+  
+  * In other words, weights $\alpha$ is a weighted average of $ATT(X)$ where (relative to a baseline of weighting based on the distribution of $X$ for the treated group), the weights put larger weight on $ATT(X)$ for values of the covariates that are *uncommon* for the treated group relative to the untreated group and smaller weight on $ATT(X)$ for values of the covariates that are *common* for the treated group relative to the untreated group
+    
+See Caetano and Callaway (2023) for more details
+
+---
+
+
+
+```{r echo=FALSE, results="asis"}
+
+title <- "Identification under Conditional Parallel Trends"
+
+before <- "Under conditional parallel trends, we have that"
+
+eqlist <- list("ATT &= \\E[\\Delta Y_t | D=1] - \\E[\\Delta Y_t(0) | D=1] \\hspace{150pt}",
+               "&=\\E[\\Delta Y_t | D=1] - \\E\\Big[ \\E[\\Delta Y_t(0) | X, D=1] \\Big| D=1\\Big]",
+               "&= \\E[\\Delta Y_t | D=1] - \\E\\Big[ \\underbrace{\\E[\\Delta Y_t(0) | X, D=0]}_{=:m_0(X)} \\Big| D=1\\Big]")
+
+
+after <- "
+
+--
+
+Intuition: (i) Compare path of outcomes for treated group to (conditional on covariates) path of outcomes for untreated group, (ii) adjust for differences in the distribution of covariates between groups.
+
+--
+
+This expression suggests a \"regression adjustment\" estimator.  For example, if we assume that $m_0(X) = X'\\beta_0$, then we have that
+
+$$ATT = \\E[\\Delta Y_t | D=1] - \\E[X'|D=1]\\beta_0$$
+
+--
+
+It is easy to extend these arguments to multiple periods and variation in treatment timing (just change the base period)
+
+"
+
+
 ```
 
-Use this lean template.
+# Covariate Balancing
 
-```{.bash}
-quarto use template grantmcdermott/quarto-revealjs-clean
+Alternatively, if we could choose "balancing weights" $\nu_0(X)$ such that the distribution of $X$ was the same in the untreated group as it is in the treated group after applying the balancing weights, then we would have that (from the second term above)
+\begin{align*}
+  \E\Big[ \E[\Delta Y_{it}(0) | X_i, D_i=0 ] \Big| D_i=1\Big] &= \E\Big[ \nu_0(X_i) \E[\Delta Y_{it}(0) | X_i, D_i=0 ] \Big| D_i=0\Big] \\
+  &= \E[\nu_0(X_i) \Delta Y_{it}(0) | D_i=0]
+\end{align*}
+where the first equality is due to balancing weights and the second by the law of iterated expectations.
+
+--
+
+The most common way to re-weight is based on the propensity score, you can show:
+\begin{align*}
+  \nu_0(x) = \frac{p(x)(1-p)}{(1-p(x))p}
+\end{align*}
+where $p(x) = \P(D=1|X=x)$ and $p=\P(D=1)$.  
+
+--
+
+This is the approach suggested in Abadie (2005).  In practice, you need to estimate the propensity score.  The most common choices are probit or logit.
+
+---
+
+# Doubly Robust
+
+Alternatively, you can show
+
+$$ATT=\E\left[ \left( \frac{D}{p} - \frac{p(X)(1-D)}{(1-p(X))p} \right)(\Delta Y_t - \E[\Delta Y_t | X, D=0]) \right]$$
+--
+
+This requires estimating both $p(X)$ and $\E[\Delta Y_{t^*}|X,D=0]$.
+
+--
+
+Big advantage:
+
+- This expression for $ATT$ is *doubly robust*.  This means that, it will deliver consistent estimates of $ATT$ if <span class="alert">either</span> the model for $p(X)$ or for $\E[\Delta Y_{t^*}|X,D=0]$.
+
+--
+
+- In my experience, doubly robust estimators perform much better than either the regression or propensity score weighting estimators
+
+--
+
+- This also provides a connection to estimating $ATT$ under conditional parallel trends using machine learning for $p(X)$ and $\E[\Delta Y_{t^*}|X,D=0]$ (see: Chang (2020) and Callaway, Drukker, Liu, and Sant'Anna (2023))
+
+---
+
+# Additional Comments
+
+In panel data applications, an additional consideration that arises with time-varying covariates is that they could be affected by the treatment, often referred to as a <span class="highlight">"bad control"</span>
+
+* In fact, I sneaked an example of this earlier: a person's occupation
+
+In my view, a good default option for dealing with a covariate that could be affected by the treatment is to include its pre-treatment value
+
+* Note: this is different from the traditional approach of excluding it altogether in a TWFE regression
+
+--
+
+What about time-varying covariates not affected by the treatment?  Most important: include it's level in some period (or average across periods), can also include more periods and/or differences over time, etc.
+
+---
+
+# Back to Minimum Wage Example
+
+We'll allow for path of outcomes to depend on region of the country
+
+```{r echo=FALSE}
+library(did)
+library(BMisc)
+library(twfeweights)
+library(fixest)
+library(modelsummary)
+library(ggplot2)
+load("apm.RData")
 ```
 
-Use the longer demo template.
-
-```{.bash}
-quarto use template grantmcdermott/quarto-revealjs-clean-demo
+```{r}
+# run TWFE regression
+twfe_x <- fixest::feols(lemp ~ post | id + region^year,
+                        data=data2)
+modelsummary(twfe_x, gof_omit=".*")
 ```
+
+Relative to previous results, this is much smaller and statistically insignificant and is similar to the result in Dube et al. (2010).
+
+---
+
+
+
+# Use Doubly Robust Approach from CS
+
+
+```{r eval=FALSE}
+# callaway and sant'anna including covariates
+cs_x <- att_gt(yname="lemp",
+               tname="year",
+               idname="id",
+               gname="G",
+               xformla=~region,
+               control_group="nevertreated",
+               base_period="universal",
+               data=data2)
+cs_x_res <- aggte(cs_x, type="group")
+summary(cs_x_res)
+```
+
+---
+
+# Use Doubly Robust Approach from CS
+
+```{r echo=FALSE}
+cs_x <- att_gt(yname="lemp",
+               tname="year",
+               idname="id",
+               gname="G",
+               xformla=~region,
+               control_group="nevertreated",
+               base_period="universal",
+               data=data2)
+cs_x_res <- aggte(cs_x, type="group")
+summary(cs_x_res)
+```
+
+---
+
+
+
+# Comments
+
+Even more than in the previous case, the results in this case are notably different depending on the estimation strategy.
+
+---
+
+name: violations
+
+
+# What about violations of parallel trends?
+
+Parallel trends assumptions don't automatically hold in applications with repeated observations over time.
+
+--
+
+The most natural way to motivate parallel trends is with a linear model for untreated potential outcomes:
+\begin{align*}
+  Y_{it}(0) = \theta_t + \eta_i + e_{it}
+\end{align*}
+where the key feature is the additive separability of $\eta_i$
+
+--
+
+But it's not always clear if additive separability (and hence parallel trends) is reasonable
+
+* The most common "response" is pre-testing...checking if parallel trends holds in pre-treatment periods
+
+--
+
+DID + pre-tests are a very powerful/useful approach to "validating" the parallel trends assumption
+
+---
+
+
+
+# What about our case?
+
+```{r, fig.align="center", fig.width=10, fig.height=8, echo=FALSE}
+ggdid(aggte(attgt,type="dynamic",cband=FALSE))
+```
+
+---
