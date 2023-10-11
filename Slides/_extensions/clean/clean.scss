@@ -13,7 +13,7 @@ $accent2: #9a2515;
 // fonts
 @import url(https://fonts.googleapis.com/css?family=Roboto:200,200i,300,300i,350,350i,400,400i);
 $font-family-sans-serif: "Roboto", sans-serif !default;
-$presentation-font-size-root: 36px;
+$presentation-font-size-root: 24px; //brant updated, original: 36px
 
 $presentation-heading-font: "Roboto", sans-serif !default;
 $presentation-heading-color: $jet !default;
@@ -237,4 +237,24 @@ $selection-bg: #26351c !default;
   width: auto;
   height: auto;
   object-fit: contain;
+}
+
+
+// brant edits
+
+.math.inline {
+  font-size: 80%;
+  font-weight: 100;
+}
+.math.display {
+  font-size: 80%;
+  font-weight: 100;
+}
+
+.callout-title p {
+  font-size: 150%; 
+}
+
+.callout-content p {
+  font-size: 125%;
 }

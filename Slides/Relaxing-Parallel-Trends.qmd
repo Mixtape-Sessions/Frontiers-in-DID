@@ -39,7 +39,7 @@ A lot of these advancements have been in a DID framework (so I will emphasize th
 The first more complicated treatment regime that we'll discuss is <span class="alert">staggered treatment adoption</span>
 :::
 
-### Setup w/ Staggered Treatment Adoption
+## Setup w/ Staggered Treatment Adoption
 
 - $\mathcal{T}$ time periods
 
@@ -47,7 +47,7 @@ The first more complicated treatment regime that we'll discuss is <span class="a
 - Units can become treated at different points in time
 
 
-    - <span class="alert-blue">staggered treatment adoption: </span> Once a unit becomes treated they remain treated.
+    - [staggered treatment adoption:]{.alert-blue} Once a unit becomes treated they remain treated.
     
     - $D_{it}$ - treatment indicator.  In math, staggered treatment adoption means: $D_{it-1}=1 \implies D_{it}=1$.
 
@@ -62,7 +62,7 @@ The first more complicated treatment regime that we'll discuss is <span class="a
 * "Scarring" treatments: e.g., job displacement does not typically happen year after year, but rather labor economists think of being displaced as changing a person's "state" (the treatment is more like: has a person ever been displaced) 
 :::
 
-### Setup w/ Staggered Treatment Adoption
+## Setup w/ Staggered Treatment Adoption
 
 - Potential outcomes: $Y_{it}(g)$ - the outcome that unit $i$ would experience in time period $t$ if they became treated in period $g$.
 
@@ -81,7 +81,7 @@ The first more complicated treatment regime that we'll discuss is <span class="a
 :::
 
 
-### Unit-Level Treatment Effects
+## Unit-Level Treatment Effects
 
 <span class="alert">Unit-level treatment effect</span>
 $$\tau_{it}(g) = Y_{it}(g) - Y_{it}(0)$$
@@ -208,9 +208,9 @@ count: false
 
 - We'll also make a number of simplifications:
 
-    * not worry much about issues like clustered standard errors
+    - Not worry much about issues like clustered standard errors
     
-    * not worry about variation in the amount of the minimum wage change (or whether it keeps changing) across states
+    - Not worry about variation in the amount of the minimum wage change (or whether it keeps changing) across states
 
 :::
 
@@ -492,17 +492,21 @@ Finally, if you are "content with" non-negative weights, then you can get any su
 
 In my view, the discussion above suggests that clearly stating a target aggregate treatment effect parameter and choosing weights that target that parameter is probably more important than checking for negative weights
 
-name: covs
+:::
+
 
 # Covariates in the Parallel Trends Assumption
 
+[]{#covs}
 
+## Covariates in the Parallel Trends Assumption
 
 #### Conditional Parallel Trends Assumption
 
 For all time periods,
 
 $$\E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=1] = \E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=0]$$
+
 ::: {.fragment}
 
 In words: Parallel trends holds conditional on having the same covariates $X$.
@@ -646,6 +650,7 @@ This is the approach suggested in Abadie (2005).  In practice, you need to estim
 Alternatively, you can show
 
 $$ATT=\E\left[ \left( \frac{D}{p} - \frac{p(X)(1-D)}{(1-p(X))p} \right)(\Delta Y_t - \E[\Delta Y_t | X, D=0]) \right]$$
+
 ::: {.fragment}
 
 This requires estimating both $p(X)$ and $\E[\Delta Y_{t^*}|X,D=0]$.

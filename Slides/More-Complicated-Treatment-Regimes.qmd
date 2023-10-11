@@ -10,4 +10,644 @@ author:
 date: last-modified
 ---
 
-## Slide 1
+## Introduction
+
+```{r echo=FALSE}
+step_by_step_eq <- function(eqlist, before="", after="", title=" ") {
+  
+  # drop slide pauses in before content
+  before_inner <- gsub(". . .", "", before, fixed=TRUE)
+  
+  for (i in 2:length(eqlist)) {
+    eqlist[i] <- paste0(eqlist[i-1],"\\\\\n",eqlist[i])
+  }
+
+  out <- ""
+  for (i in 1:length(eqlist)) {
+    out <- paste0(out, "## ", title) # print title
+    if (i > 1) out <- paste0(out, " {visibility=\"uncounted\"} \n") else out <- paste0(out, " \n")
+    # print before content
+    if (i == 1) out <- paste0(out, before, "\n") else out <- paste0(out, before_inner, "\n") 
+    out <- paste0(out, "$$\n\\begin{aligned}\n",eqlist[[i]],"\n\\end{aligned}\n$$\n\n") # print equation
+    #if (i < length(eqlist)) out <- paste0(out, "---\n\n")
+  }
+  out <- paste0(out, after, "\n") # print after content
+  #out <- paste0(out, "---\n")
+  cat(out)
+}
+```
+
+$\newcommand{\E}{\mathbb{E}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\Var}{\mathrm{var}}
+\newcommand{\Cov}{\mathrm{cov}}
+\newcommand{\Corr}{\mathrm{corr}}
+\newcommand{\corr}{\mathrm{corr}}
+\newcommand{\L}{\mathrm{L}}
+\renewcommand{\P}{\mathrm{P}}
+\newcommand{\independent}{{\perp\!\!\!\perp}}
+\newcommand{\indicator}[1]{ \mathbf{1}\{#1\} }$
+The discussion (and much of the recent DID literature) has focused on the setting with staggered treatment adoption.
+
+::: {.fragment}
+
+However, this certainly does not cover the full range of possible treatments.  In Part 4, we'll primarily consider two leading extensions:
+
+1. A treatment that is multi-valued or continuous (e.g., minimum wage has this flavor)
+
+2. A treatment that can turn on and off (e.g., union status)
+
+<!-- we'll discuss in the context of parallel trends, but tentatively, I think the most interesting issues here are due to complexity of the treatment (not the first step identification strategy) -->
+
+:::
+
+::: {.fragment}
+
+A couple of things to notice as we go along:
+
+* I'm not going to cover much on TWFE regressions here.  They have even more sources of things that can go wrong.  
+
+* Try to pay attention to the pattern.  Even though the arguments are getting more complicated, we are still following the idea of (i) target disaggregated parameters, (ii) combine them into lower dimensional objects, (3) here there will be some additional interpretation issues that also emphasize
+
+:::
+
+
+## Continuous Treatment Notation
+
+Potential outcomes notation
+
+- Two time periods: $t^*$ and $t^*-1$
+  - No one treated until period $t^*$
+  - Some units remain untreated in period $t^*$
+  
+- Potential outcomes: $Y_{it^*}(d)$
+
+- Observed outcomes: $Y_{it^*}$ and $Y_{it^*-1}$
+
+  $$Y_{it^*}=Y_{it^*}(D_i) \quad \textrm{and} \quad Y_{it^*-1}=Y_{it^*-1}(0)$$
+
+
+
+## Parameters of Interest (ATT-type)
+
+- <span class="alert">Level Effects</span> (Average Treatment Effect on the Treated)
+  
+  $$ATT(d|d) := \E[Y_{t^*}(d) - Y_{t^*}(0) | D=d]$$
+  - Interpretation: The average effect of dose $d$ relative to not being treated *local to the group that actually experienced dose $d$*
+  - This is the natural analogue of $ATT$ in the binary treatment case
+
+
+
+## Parameters of Interest (ATT-type)
+
+* <span class="alert">Slope Effect<span> (Average Causal Response on the Treated)
+
+  $$ACRT(d|d) := \frac{\partial ATT(l|d)}{\partial l} \Big|_{l=d}$$
+  
+  * Interpretation: $ACRT(d|d)$ is the causal effect of a marginal increase in dose *local to units that actually experienced dose $d$*
+
+::: {.fragment}
+
+We can view $ACRT(d|d)$ as the "building block" here.  An aggregated version of it (into a single number) is
+\begin{align*}
+  ACRT^O := \E[ACRT(D|D)|D>0]
+\end{align*}
+
+* $ACRT^O$ averages $ACRT(d|d)$ over the population distribution of the dose
+
+* Like $ATT^O$ for staggered treatment adoption, $ACRT^O$ is the natural target parameter for the TWFE regression in this case
+
+:::
+
+
+## Identification
+
+::: {.callout-note}
+## "Standard" Parallel Trends Assumption
+
+For all $d$,
+
+$$\E[\Delta Y_{t^*}(0) | D=d] = \E[\Delta Y_{t^*}(0) | D=0]$$
+:::
+
+```{r echo=FALSE, results="asis"}
+
+title <- "Identification"
+
+before <- "::: {.callout-note}
+
+## \"Standard\" Parallel Trends Assumption
+
+For all $d$,
+
+$$\\E[\\Delta Y_{t^*}(0) | D=d] = \\E[\\Delta Y_{t^*}(0) | D=0]$$
+
+:::
+
+
+Then,
+
+. . .
+"
+
+eqlist <- list("ATT(d|d) &= \\E[Y_{t^*}(d) - Y_{t^*}(0) | D=d] \\hspace{150pt}",
+               "&= \\E[Y_{t^*}(d) - Y_{t^*-1}(0) | D=d] - \\E[Y_{t^*}(0) - Y_{t^*-1}(0) | D=d]",
+               "&= \\E[Y_{t^*}(d) - Y_{t^*-1}(0) | D=d] - \\E[\\Delta Y_{t^*}(0) | D=0]",
+               "&= \\E[\\Delta Y_{t^*} | D=d] - \\E[\\Delta Y_{t^*} | D=0]")
+
+after <- "<mark>This is exactly what you would expect</mark>"
+step_by_step_eq(eqlist=eqlist,
+                before=before,
+                after=after,
+                title=title)
+```
+
+## Are we done?
+
+<mark>Unfortunately, no</mark>
+
+::: {.fragment}
+
+Most applied work with a multi-valued or continuous treatment wants to think about how causal responses vary across dose
+
+* For example, plot treatment effects as a function of dose
+
+  * Does more dose tends to increase/decrease/not effect outcomes?
+  
+* Average causal response parameters *inherently* involve comparisons across slightly different doses
+
+:::
+
+```{r echo=FALSE, results="asis"}
+title <- "Interpretation Issues"
+
+before <- "Consider comparing $ATT(d|d)$ for two different doses
+
+. . .
+
+"
+
+eqlist <- list("& ATT(d_h|d_h) - ATT(d_l|d_l) \\hspace{350pt}",
+               "& \\hspace{25pt} = \\underbrace{\\E[Y_{t^*}(d_h) - Y_{t^*}(d_l) | D=d_h]}_{\\textrm{Causal Response}} + \\underbrace{ATT(d_l|d_h) - ATT(d_l|d_l)}_{\\textrm{Selection Bias}}")
+
+after <- "\n
+
+. . .
+
+\"Standard\" Parallel Trends is not strong enough to rule out the selection bias terms here
+
+* Implication: If you want to interpret differences in treatment effects across different doses, then you will need stronger assumptions than standard parallel trends
+
+* This problem spills over into identifying $ACRT(d|d)$ 
+
+. . .
+
+<span class=\"alert\">Positive side-comment:</span> $ATT(d_h|d_h) - ATT(d_l|d_l) = \\E[\\Delta Y_{t^*} | D=d_h] - \\E[\\Delta Y_{t^*} | D=d_l]$ (which doesn't involve the untreated group)
+
+"
+
+step_by_step_eq(eqlist=eqlist,
+                before=before,
+                after=after,
+                title=title)
+
+```
+
+## Interpretation Issues
+
+<span class="alert">Intuition: </span>
+
+* Difference-in-differences identification strategies result in $ATT(d|d)$ parameters.  These are <span class="highlight">local parameters</span> and difficult to compare to each
+
+* This explanation is similar to thinking about LATEs with two different instruments
+
+* Thus, comparing $ATT(d|d)$ across different values is tricky and not for free
+
+::: {.fragment}
+
+<span class="alert">What can you do?</span>
+
+* One idea, just recover $ATT(d|d)$ and interpret it cautiously (interpret it by itself not relative to different values of $d$)
+
+* If you want to compare them to each other, it will come with the cost of additional (structural) assumptions
+
+:::
+
+
+
+## Introduce Stronger Assumptions
+
+::: {.callout-note}
+
+## "Strong" Parallel Trends Assumption
+
+For all doses `d` and `l`,
+
+$$\mathbb{E}[Y_{t^*}(d) - Y_{t^*-1}(0) | D=l] = \mathbb{E}[Y_{t^*}(d) - Y_{t^*-1}(0) | D=d]$$
+
+:::
+
+::: {.fragment}
+
+* This is notably different from "Standard" Parallel Trends
+
+* It involves potential outcomes for all values of the dose (not just untreated potential outcomes)
+  
+* All dose groups would have experienced the same path of outcomes had they been assigned the same dose
+
+:::
+
+
+```{r echo=FALSE, results="asis"}
+
+title <- "Introduce Stronger Assumptions"
+
+before <- "
+
+Strong parallel trends implies a version of treatment effect homogeneity.  Notice: 
+
+"
+
+eqlist <- list("ATT(d|d) &= \\E[Y_{t^*}(d) - Y_{t^*}(0) | D=d] \\hspace{200pt} \\",
+               "&= \\E[Y_{t^*}(d) - Y_{t^*-1}(0) | D=d] - \\E[Y_{t^*}(0) - Y_{t^*-1}(0) | D=d] \\",
+               "&= \\E[Y_{t^*}(d) - Y_{t^*-1}(0) | D=l] - \\E[Y_{t^*}(0) - Y_{t^*-1}(0) | D=l] \\",
+               "&= \\E[Y_{t^*}(d) - Y_{t^*}(0) | D=l] = ATT(d|l)")
+    
+after <- "
+
+. . .
+
+Since this holds for all $d$ and $l$, it also implies that $ATT(d|d) = ATE(d) = \\E[Y_{t^*}(d) - Y_{t^*}(0)]$.  Thus, under strong parallel trends, we have that
+
+$$ATE(d) = \\E[\\Delta Y_{t^*}|D=d] - \\E[\\Delta Y_{t^*}|D=0]$$
+
+RHS is exactly the same expression as for $ATT(d|d)$ under \"standard\" parallel trends, but here
+
+* assumptions are different
+
+* parameter interpretation is different
+
+
+"
+
+step_by_step_eq(title=title,
+                before=before,
+                eqlist=eqlist,
+                after=after)
+
+```
+
+
+
+```{r echo=FALSE, results="asis"}
+
+title <- "Comparisons across dose"
+
+before <- "ATE-type parameters do not suffer from the same issues as ATT-type parameters when making comparisons across dose
+
+. . .
+
+"
+
+eqlist <- list("ATE(d_h) - ATE(d_l) &= \\E[Y_{t^*}(d_h) - Y_{t^*}(0)] - \\E[Y_{t^*}(d_l) - Y_{t^*}(0)]",
+              "&= \\underbrace{\\E[Y_{t^*}(d_h) - Y_{t^*}(d_l)]}_{\\textrm{Causal Response}}")
+
+after <- " 
+
+. . .
+
+<mark>Thus, recovering $ATE(d)$ side-steps the issues about comparing treatment effects across doses, but it comes at the cost of needing a (potentially very strong) extra assumption</mark>
+
+. . .
+
+Given that we can compare $ATE(d)$'s across dose, we can recover slope effects in this setting
+
+$$
+\\begin{aligned}
+  ACR(d) := \\frac{\\partial ATE(d)}{\\partial d} \\qquad &\\textrm{or} \\qquad ACR^O := \\E[ACR(D) | D>0]
+\\end{aligned}
+$$
+
+"
+
+step_by_step_eq(eqlist=eqlist,
+                before=before,
+                after=after,
+                title=title)
+```
+
+## TWFE Regressions in this Context
+
+Consider the same TWFE regression (but now $D_{it}$ is continuous):
+\begin{align*}
+  Y_{it} = \theta_t + \eta_i + \alpha D_{it} + e_{it}
+\end{align*}
+You can show that
+\begin{align*}
+  \alpha = \int_{\mathcal{D}_+} w(l) m'_\Delta(l) \, dl
+\end{align*}
+where $m_\Delta(l) := \E[\Delta Y_{t^*}|D=l] - \E[\Delta Y_{t^*}|D=0]$ and $w(l)$ are weights
+
+::: {.fragment}
+
+* Under standard parallel trends, $m'_{\Delta}(l) = ACRT(l|l) + \textrm{local selection bias}$
+
+* Under strong parallel trends, $m'_{\Delta}(l) = ACR(l)$.
+
+Thus, issues related to selection bias continue to show up here
+
+:::
+
+::: {.fragment}
+
+About the weights: they are all positive, but have some strange properties (e.g., always maximized at $l = \E[D]$ (even if this is not a common value for the dose))
+
+* $\implies$ even under strong parallel trends, $\alpha \neq ACR^O$.
+
+:::
+
+
+## TWFE Regressions in this Context
+
+Other issues can arise in more complicated cases
+
+* For example, suppose you have a staggered continuous treatment, then you will *additionally* get issues that are analogous to the ones we discussed earlier for a binary staggered treatment
+
+* In general, things get worse for TWFE regressions with more complications
+
+
+
+## Summarizing
+
+* It is straightforward/familiar to identify ATT-type parameters with a multi-valued or continuous dose
+
+::: {.fragment}
+- However, comparison of ATT-type parameters across different doses are hard to interpret
+  - They include selection bias terms
+  - This issues extends to identifying ACRT parameters
+  - These issues extend to TWFE regressions
+:::
+
+::: {.fragment}
+- This suggests targeting ATE-type parameters
+  - Comparisons across doses do not contain selection bias terms
+  - But identifying ATE-type parameters requires stronger assumptions
+  - [[Ideas for weakening strong parallel trends](#weaken-spt)]
+:::
+
+## Example 2: Units can move in and out of the treatment
+
+"Scarring" vs. Moving in and out of treatment
+
+<span class="alert">Example treatments: </span>
+
+* Union status (Vella and Verbeek, 1998)
+
+* Whether or not location hit by hurricane (Deryugina, 2017)
+
+* Whether or not a district shares the same ethnicity as the president of the country (Burgess, et al., 2015)
+
+::: {.fragment}
+
+<span class="alert">Additional Notation: </span>
+
+We can make a lot of progress by redefining our notion of a "group"
+
+* Keep track of entire treatment regime $\mathbf{D}_i := (D_{i1}, \ldots, D_{i\mathcal{T}})'$ and/or treatment history up to period $t$: $\mathbf{D}_{it} := (D_{i1}, \ldots, D_{it})'$. 
+
+* Potential outcomes $Y_{it}(\mathbf{d}_t)$ where $\mathbf{d}_t$ is some treatment history up to period $t$ (this notation imposes "no anticipation" &mdash; potential outcomes do not depend on future treatments).  Observed outcomes: $Y_{it}(\mathbf{D}_{it})$
+
+:::
+
+## Example 2: Units can move in and out of the treatment 
+
+<span class="alert">A little more notation...</span>
+
+* $\mathcal{D}_t \subseteq \{0,1\}^t$ is the set of all possible treatment histories in period $t$.  As earlier, we will exclude units that are treated in the first period, (I'll briefly come back to this later)
+
+* $\mathbf{0}_t$ denotes not participating in the treatment in any period up to period $t$
+
+::: {.fragment}
+
+In this case, we'll define groups by their treatment histories $\mathbf{d}_t$.  Thus, we can consider group-time average treatment effects defined by
+\begin{align*}
+  ATT(\mathbf{d}_t, t) := \E[Y_{it}(\mathbf{d}_t) - Y_{it}(\mathbf{0}_t) | \mathbf{D}_{it} = \mathbf{d}_t]
+\end{align*}
+
+:::
+
+## Example 2: Units can move in and out of the treatment 
+
+<span class="alert">Parallel Trends Assumption:</span> For all $t=2,\ldots,\mathcal{T}$, and for all $\mathbf{d}_t \in \mathcal{D}_t$,
+\begin{align*}
+  \E[\Delta Y_{it}(\mathbf{0}_t) | \mathbf{D}_{it} = \mathbf{d}_t] = \E[\Delta Y_{it}(\mathbf{0}_t) | \mathbf{D}_{it} = \mathbf{0}_t]
+\end{align*}
+
+::: {.fragment}
+
+<span class="alert">Identification: </span> In this setting, under the parallel trends assumption, we have that
+\begin{align*}
+  ATT(\mathbf{d}_t, t) = \E[Y_{it} - Y_{i1} | \mathbf{D}_{it} = \mathbf{d}_t] - \E[Y_{it} - Y_{i1} | \mathbf{D}_{it} = \mathbf{0}_t]
+\end{align*}
+
+:::
+
+::: {.fragment}
+
+This argument is straightforward and analogous to what we have done before.  <span class="highlight">However...</span>
+
+:::
+
+## Example 2: Units can move in and out of the treatment 
+
+There are a number of additional complications that arise here.
+
+1. There are way more possible groups here than in the staggered treatment case (you can think of this as leading to a kind of curse of dimensionality)
+
+    * $\implies$ small groups $\implies$ imprecise estimates and (possibly) invalid inferences
+    
+    * also makes it harder to report the results
+    
+::: {.fragment}
+
+2. The previous point provides an additional reason to try to aggregate the group-time average treatment effects.  However, this is also not so straightforward.  
+
+   * This is an area of active research (e.g., de Chaisemartin and d'Haultfoeuille (2023) and Yanagi (2023))
+   
+   * Some ideas below...but the literature has not converged here yet
+   
+:::
+
+## Example 2: Units can move in and out of the treatment 
+
+Probably the simplest approach is to just make groups on the basis of the first period when a unit experiences the treatment
+
+* We have (kind of) been doing this in our minimum wage application
+
+* Lots of papers (e.g., job displacement, hospitalization) have used this idea
+
+* Formally, it amounts to averaging over all subsequent treatments decisions (de Chaisemartin and d'Haultfoeuille (2023))
+
+
+::: {.fragment}
+
+But there are other ideas too.  Suppose that you were interested in the average treatment effect of experiencing some cumulative number of treatment effects over time (e.g., how many years someone was in a union).
+
+:::
+
+## Example 2: Units can move in and out of the treatment 
+
+Define $\sigma_t(\mathbf{d}_t) := \displaystyle \sum_{s=1}^t d_s$ &mdash; $\sigma_t(\cdot)$ is a function that adds up the cumulative number of treatments up to period $t$ for treatment history $\mathbf{d}_t$.  
+
+::: {.fragment}
+
+We will target the average treatment effect of having experienced exactly $\sigma$ treatments by period $t$.
+
+:::
+
+::: {.fragment}
+
+Towards this end, also define $\mathcal{D}_t^\sigma = \{\mathbf{d}_t \in \mathcal{D}_t : \sigma_t(\mathbf{d}_t) = \sigma\}$ &mdash; this is the set of treatment histories that result in $\sigma$ cumulative treatments in period $t$.  Then, consider
+
+:::
+
+::: {.fragment}
+
+\begin{align*}
+  ATT^{sum}(\sigma, t) = \sum_{\mathbf{d}_t \in \mathcal{D}_t^\sigma} ATT(\mathbf{d}_t, t) \P(D_{it}=\mathbf{d}_t | \mathbf{D}_{it} \in \mathcal{D}_t^\sigma)
+\end{align*}
+
+:::
+
+::: {.fragment}
+
+This is the average $ATT(\mathbf{d}_t,t)$ across treatment regimes that lead to exactly $\sigma$ treatments by period $t$
+
+Similar to previous cases, $ATT^{sum}(\sigma,t)$ is a weighted average of underlying 2x2 DID parameters
+
+Averaging like this reduces the number of groups, and makes the estimation problem discussed above easier (the "effective" number of units is larger)
+
+:::
+
+## Example 2: Units can move in and out of the treatment
+
+Even though $ATT^{sum}(\sigma,t)$ (possibly substantially) reduces the dimensionality of the underlying group-time average treatment effect parameters, we might want to reduce more.
+
+::: {.fragment}
+
+This is tricky though because the composition of the effective groups changes over time (just because you have two groups have the same number of cumulative treatments in one period doesn't mean that they have the same number in subsequent periods)
+
+:::
+
+## Example 2: Units can move in and out of the treatment
+
+An alternative idea is to just report treatment effect parameters in the last period: $ATT^{sum}(\sigma,\mathcal{T})$ as a function of $\sigma$.  
+
+* This would be something that you could report in a two-dimensional plot
+
+::: {.fragment}
+
+Unlike the staggered treatment adoption case, where $ATT^{ES}(e)$ and $ATT^O$ seem like good default parameters to report, it is not clear to me what (or if there is) a good default choice here.
+
+* However, if I were writing a paper, I would (i) show disaggregated results, (ii) argue for some particular aggregated parameter and choose weights on the disaggregated parameters that target this parameter
+
+:::
+
+::: {.fragment}
+
+Another caution is that (I presume) the issues about interpreting $ATT$-type parameters across different amounts of the treatment (here across $\sigma$) will introduce selection bias terms except under additional assumptions
+
+* e.g., saying that, on average participating in a union for 10 years increased earnings by some amount and participating in a union for for 5 years increased by another amount is one thing; causally attributing the difference to "longer union participation" (probably) takes more assumptions
+
+:::
+
+
+## Extensions
+
+Notice that above, we only invoked parallel trends with respect to untreated potential outcomes. 
+
+::: {.fragment}
+
+But it seems within the spirit of DID to assume parallel trends for *staying* at the same treatment over time
+
+* Then we can recover group-time average treatment effects for switchers relative to stayers
+
+* See de Chaisemartin et al. (2022) and de Chaisemartin and d'Haultfoeuille (2023) for approaches along these lines
+
+:::
+
+::: {.fragment}
+
+This results in *many* more disaggregated treatment effect parameters
+
+[[Details](#stayers)]
+
+:::
+
+## Summary
+
+We've covered a number of different settings, but we certainly haven't covered all of them
+
+* Ex. Suppose you have a multi-valued treatment that can change values over time
+
+* I'm not sure what exactly to do off the top of my head (and the exact thing to do likely depends on the particular goals of the application), but I think that you can get some ideas from extrapolating our discussion:
+  * Step 1: Target disaggregated parameters
+  * Step 2: If desired, choose aggregated target parameter suitable to the application, combine underlying disaggregateed parameters directly to recover this parameter
+
+
+
+
+## Ideas for Weakening Strong Parallel Trends
+
+<span class="alert">Idea 1: Partial Identification</span> In some application, it may seem reasonable to think that you know the sign of the selection bias.  If this "works against" the sign of differences in $m_\Delta(d)$ as $d$ increases, this implies that you could still sign differences in $ATT(d|d)$ as $d$ increases
+
+::: {.fragment}
+
+<span class="alert">Idea 2: Strong PT Conditional on Covariate</span> It might be reasonable to assume strong parallel trends conditional on some other variable.
+
+* Example: For the minimum wage, it might be reasonable to assume that strong parallel trends holds across states within the same region of the country (say, West or South)
+    * Evidence in favor of this is much different distributions of MW policy across regions
+    * Wouldn't be able to make "full" comparison across all doses here, but could learn about employment effects of a $15.75 MW (Washington) relative to $13.20 (Oregon).
+    
+[[Back](#summarize)]
+
+:::
+
+
+## DID using Stayers and Switchers
+
+::: {.callout-note}
+
+## Parallel Trends Assumption for Stayers
+
+For any treatment history $\mathbf{d}_{t-1}$,
+
+\begin{align*}
+    \E[Y_t(d_{t-1},\mathbf{d}_{t-1}) - Y_{t-1}(\mathbf{d}_{t-1}) | \mathbf{D}_{it-1} = \mathbf{d}_{t-1})] = \E[Y_t(d_{t-1},\mathbf{d}_{t-1}) - Y_{t-1}(\mathbf{d}_{t-1}) | \mathbf{D}_{it} = (d_{t-1},\mathbf{d}_{t-1})]
+\end{align*}
+
+:::
+
+
+::: {.fragment}
+In this case, you can recover the $ATT$ for <span class="alert">switchers</span>: (here we are supposing that $d_{t-1}=0$, but can make an analogous argument in the opposite case)
+\begin{align*}
+  ATT^{switchers}(\mathbf{d}_{t-1},t) &= \E[Y_{it}(1,\mathbf{d}_{t-1}) - Y_{it}(0,\mathbf{d}_{t-1}) | \mathbf{D}_{it} = (1,\mathbf{d}_{t-1})] \\
+  &\overset{\textrm{PTA}}{=} \E[\Delta Y_{it} | \mathbf{D}_{it}=(1,\mathbf{d}_{t-1})] - \E[\Delta Y_{it} | \mathbf{D}_{it}=(0,\mathbf{d}_{t-1})]
+\end{align*}
+That is, you can recover $ATT^{switchers}$ by comparing the paths of outcomes for switchers to the path of outcomes for stayers (exactly what you'd expect!)
+:::
+
+::: {.fragment}
+
+Given this sort of assumption, there may be a huge number of $ATT^{switchers}(\mathbf{d}_{t-1},t)$ in realistic applications.  
+
+* You could use these to further understand treatment effect heterogeneity
+
+* You could also propose some way to aggregate them into a lower dimensional argument 
+
+[[Back](#extensions)]
+
+:::

@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.3.353">
 
   <meta name="author" content="Brantly Callaway">
-  <meta name="dcterms.date" content="2023-10-04">
+  <meta name="dcterms.date" content="2023-10-05">
   <title>Frontiers in Difference-in-Differences</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -346,7 +346,7 @@ Brantly Callaway <a href="https://orcid.org/0000-0000-0000-0000" class="quarto-t
     </div>
 </div>
 
-  <p class="date">October 4, 2023</p>
+  <p class="date">October 5, 2023</p>
 </section>
 <section id="more-complicated-treatment-regimes" class="slide level2">
 <h2>More Complicated Treatment Regimes</h2>
@@ -370,7 +370,9 @@ Brantly Callaway <a href="https://orcid.org/0000-0000-0000-0000" class="quarto-t
 <div class="fragment">
 <p>The first more complicated treatment regime that we’ll discuss is <span class="alert">staggered treatment adoption</span></p>
 </div>
-<h3 id="setup-w-staggered-treatment-adoption">Setup w/ Staggered Treatment Adoption</h3>
+</section>
+<section id="setup-w-staggered-treatment-adoption" class="slide level2">
+<h2>Setup w/ Staggered Treatment Adoption</h2>
 <ul>
 <li><span class="math inline">\(\mathcal{T}\)</span> time periods</li>
 </ul>
@@ -378,7 +380,7 @@ Brantly Callaway <a href="https://orcid.org/0000-0000-0000-0000" class="quarto-t
 <ul>
 <li><p>Units can become treated at different points in time</p>
 <ul>
-<li><p><span class="alert-blue">staggered treatment adoption: </span> Once a unit becomes treated they remain treated.</p></li>
+<li><p><span class="alert-blue">staggered treatment adoption:</span> Once a unit becomes treated they remain treated.</p></li>
 <li><p><span class="math inline">\(D_{it}\)</span> - treatment indicator. In math, staggered treatment adoption means: <span class="math inline">\(D_{it-1}=1 \implies D_{it}=1\)</span>.</p></li>
 <li><p><span class="math inline">\(G_i\)</span> - a unit’s <span class="alert-blue">group</span> - the time period that unit becomes treated. Also, define <span class="math inline">\(U_i=1\)</span> for never-treated units and <span class="math inline">\(U_i=0\)</span> otherwise.</p></li>
 </ul></li>
@@ -391,7 +393,9 @@ Brantly Callaway <a href="https://orcid.org/0000-0000-0000-0000" class="quarto-t
 <li><p>“Scarring” treatments: e.g., job displacement does not typically happen year after year, but rather labor economists think of being displaced as changing a person’s “state” (the treatment is more like: has a person ever been displaced)</p></li>
 </ul>
 </div>
-<h3 id="setup-w-staggered-treatment-adoption-1">Setup w/ Staggered Treatment Adoption</h3>
+</section>
+<section id="setup-w-staggered-treatment-adoption-1" class="slide level2">
+<h2>Setup w/ Staggered Treatment Adoption</h2>
 <ul>
 <li>Potential outcomes: <span class="math inline">\(Y_{it}(g)\)</span> - the outcome that unit <span class="math inline">\(i\)</span> would experience in time period <span class="math inline">\(t\)</span> if they became treated in period <span class="math inline">\(g\)</span>.</li>
 </ul>
@@ -410,7 +414,9 @@ Brantly Callaway <a href="https://orcid.org/0000-0000-0000-0000" class="quarto-t
 <li>No anticipation condition: <span class="math inline">\(Y_{it} = Y_{it}(0)\)</span> for all <span class="math inline">\(t &lt; G_i\)</span> (pre-treatment periods for unit <span class="math inline">\(i\)</span>)</li>
 </ul>
 </div>
-<h3 id="unit-level-treatment-effects">Unit-Level Treatment Effects</h3>
+</section>
+<section id="unit-level-treatment-effects" class="slide level2">
+<h2>Unit-Level Treatment Effects</h2>
 <p><span class="alert">Unit-level treatment effect</span> <span class="math display">\[\tau_{it}(g) = Y_{it}(g) - Y_{it}(0)\]</span></p>
 <div class="fragment">
 <p><span class="alert">Average treatment effect for unit <span class="math inline">\(i\)</span></span> (across time periods): <span class="math display">\[\bar{\tau}_i(g) = \frac{1}{\mathcal{T} - g + 1} \sum_{t=g}^{\mathcal{T}} \tau_{it}(g)\]</span></p>
@@ -499,8 +505,8 @@ w^O(g,t) = \frac{\P(G=g|U=0)}{\mathcal{T}-g+1}
 <ul>
 <li><p>We’ll also make a number of simplifications:</p>
 <ul>
-<li><p>not worry much about issues like clustered standard errors</p></li>
-<li><p>not worry about variation in the amount of the minimum wage change (or whether it keeps changing) across states</p></li>
+<li><p>Not worry much about issues like clustered standard errors</p></li>
+<li><p>Not worry about variation in the amount of the minimum wage change (or whether it keeps changing) across states</p></li>
 </ul></li>
 </ul>
 </div>
@@ -563,15 +569,15 @@ w^O(g,t) = \frac{\P(G=g|U=0)}{\mathcal{T}-g+1}
 <div class="cell-output cell-output-stdout">
 <pre><code>             term group time    estimate   std.error
 1  ATT(2004,2003)  2004 2003  0.00000000          NA
-2  ATT(2004,2004)  2004 2004 -0.03266653 0.022062048
-3  ATT(2004,2005)  2004 2005 -0.06827991 0.020998788
-4  ATT(2004,2006)  2004 2006 -0.12335404 0.019466896
-5  ATT(2004,2007)  2004 2007 -0.13109136 0.022728991
-6  ATT(2006,2003)  2006 2003 -0.03408910 0.011953559
-7  ATT(2006,2004)  2006 2004 -0.01669977 0.008303260
+2  ATT(2004,2004)  2004 2004 -0.03266653 0.020683512
+3  ATT(2004,2005)  2004 2005 -0.06827991 0.020984873
+4  ATT(2004,2006)  2004 2006 -0.12335404 0.021207710
+5  ATT(2004,2007)  2004 2007 -0.13109136 0.023426419
+6  ATT(2006,2003)  2006 2003 -0.03408910 0.011720023
+7  ATT(2006,2004)  2006 2004 -0.01669977 0.008425207
 8  ATT(2006,2005)  2006 2005  0.00000000          NA
-9  ATT(2006,2006)  2006 2006 -0.01939335 0.009693571
-10 ATT(2006,2007)  2006 2007 -0.06607568 0.009971678</code></pre>
+9  ATT(2006,2006)  2006 2006 -0.01939335 0.009205517
+10 ATT(2006,2007)  2006 2007 -0.06607568 0.009571189</code></pre>
 </div>
 </div>
 </section>
@@ -592,13 +598,13 @@ Reference: Callaway, Brantly and Pedro H.C. Sant'Anna.  "Difference-in-Differenc
 
 Overall summary of ATT's based on group/cohort aggregation:  
      ATT    Std. Error     [ 95%  Conf. Int.]  
- -0.0571        0.0083    -0.0734     -0.0407 *
+ -0.0571        0.0086    -0.0739     -0.0403 *
 
 
 Group Effects:
  Group Estimate Std. Error [95% Simult.  Conf. Band]  
-  2004  -0.0888     0.0198       -0.1314     -0.0463 *
-  2006  -0.0427     0.0079       -0.0597     -0.0258 *
+  2004  -0.0888     0.0193       -0.1318     -0.0459 *
+  2006  -0.0427     0.0078       -0.0602     -0.0253 *
 ---
 Signif. codes: `*' confidence band does not cover 0
 
@@ -682,16 +688,20 @@ Estimation Method:  Doubly Robust</code></pre>
 </div>
 <div class="fragment">
 <p>In my view, the discussion above suggests that clearly stating a target aggregate treatment effect parameter and choosing weights that target that parameter is probably more important than checking for negative weights</p>
-<p>name: covs</p>
+</div>
+</section></section>
+<section>
 <section id="covariates-in-the-parallel-trends-assumption" class="title-slide slide level1 center">
 <h1>Covariates in the Parallel Trends Assumption</h1>
-
+<p><span id="covs"></span></p>
 </section>
+<section id="covariates-in-the-parallel-trends-assumption-1" class="slide level2">
+<h2>Covariates in the Parallel Trends Assumption</h2>
 <h4 id="conditional-parallel-trends-assumption">Conditional Parallel Trends Assumption</h4>
 <p>For all time periods,</p>
-<p><span class="math display">\[\E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=1] = \E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=0]\]</span> ::: {.fragment}</p>
+<p><span class="math display">\[\E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=1] = \E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=0]\]</span></p>
+<div class="fragment">
 <p>In words: Parallel trends holds conditional on having the same covariates <span class="math inline">\(X\)</span>.</p>
-
 </div>
 <div class="fragment">
 <p>Minimum wage example: path of teen employment may depend on a state’s population / population growth / region of the country</p>
@@ -753,9 +763,10 @@ Estimation Method:  Doubly Robust</code></pre>
 <section id="doubly-robust" class="slide level2">
 <h2>Doubly Robust</h2>
 <p>Alternatively, you can show</p>
-<p><span class="math display">\[ATT=\E\left[ \left( \frac{D}{p} - \frac{p(X)(1-D)}{(1-p(X))p} \right)(\Delta Y_t - \E[\Delta Y_t | X, D=0]) \right]\]</span> ::: {.fragment}</p>
+<p><span class="math display">\[ATT=\E\left[ \left( \frac{D}{p} - \frac{p(X)(1-D)}{(1-p(X))p} \right)(\Delta Y_t - \E[\Delta Y_t | X, D=0]) \right]\]</span></p>
+<div class="fragment">
 <p>This requires estimating both <span class="math inline">\(p(X)\)</span> and <span class="math inline">\(\E[\Delta Y_{t^*}|X,D=0]\)</span>.</p>
-<p>:::</p>
+</div>
 <div class="fragment">
 <p>Big advantage:</p>
 <ul>
