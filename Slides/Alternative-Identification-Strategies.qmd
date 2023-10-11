@@ -10,4 +10,446 @@ author:
 date: last-modified
 ---
 
-## Slide 2
+## Introduction
+
+```{r echo=FALSE}
+step_by_step_eq <- function(eqlist, before="", after="", title=" ") {
+  
+  # drop slide pauses in before content
+  before_inner <- gsub(". . .", "", before, fixed=TRUE)
+  
+  for (i in 2:length(eqlist)) {
+    eqlist[i] <- paste0(eqlist[i-1],"\\\\\n",eqlist[i])
+  }
+
+  out <- ""
+  for (i in 1:length(eqlist)) {
+    out <- paste0(out, "## ", title) # print title
+    if (i > 1) out <- paste0(out, " {visibility=\"uncounted\"} \n") else out <- paste0(out, " \n")
+    # print before content
+    if (i == 1) out <- paste0(out, before, "\n") else out <- paste0(out, before_inner, "\n") 
+    out <- paste0(out, "$$\n\\begin{aligned}\n",eqlist[[i]],"\n\\end{aligned}\n$$\n\n") # print equation
+  }
+  out <- paste0(out, after, "\n") # print after content
+  cat(out)
+}
+```
+
+$\newcommand{\E}{\mathbb{E}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\Var}{\mathrm{var}}
+\newcommand{\Cov}{\mathrm{cov}}
+\newcommand{\Corr}{\mathrm{corr}}
+\newcommand{\corr}{\mathrm{corr}}
+\newcommand{\L}{\mathrm{L}}
+\renewcommand{\P}{\mathrm{P}}
+\newcommand{\independent}{{\perp\!\!\!\perp}}
+\newcommand{\indicator}[1]{ \mathbf{1}\{#1\} }$
+<span class="alert">Recap:</span>
+
+* We have been following the high-level strategy of (1) targeting disaggregated parameters and then (2) combining them.  
+
+* Part 4: allow for more complicated treatment regimes, but use difference-in-differences
+
+* Part 5: go back to staggered treatment setting, but use different identification assumptions
+
+<span class="alert">Examples in this part</span>
+
+1. Change-in-Changes
+
+2. Interactive Fixed Effects
+
+
+
+## Introduction to Change-in-Changes
+
+The idea of change-in-changes comes from Athey and Imbens (2006) and builds on work on estimating non-separable production function models.  They consider the case where
+\begin{align*}
+  Y_{it}(0) = h_t(U_{it})
+\end{align*}
+where $h_t$ is a nonparametric, time-varying function.  To me, it is helpful to think of $U_{it} = \eta_i + e_{it}$.  This model (for the moment) generalizes the model that we used to rationalize parallel trends: $Y_{it}(0) = \theta_t + \eta_i + e_{it}$.
+
+. . .
+
+<span class="alert">Additional Conditions:</span>
+
+1. $U_{it} \overset{d}{=} U_{it'} | G$.  In words: the distribution of $U_{it}$ does not change over time given a particular group.  However, the distribution of $U_{it}$ can vary across groups.
+
+2. $U_{it}$ is scalar
+
+3. $h_t$ is stictly monotonically increasing $\implies$ we can invert it.
+
+4. Support condition: $\mathcal{U}_g \subseteq \mathcal{U}_0$ (support of $U_{it}$ for the treated group is a subset of the support of $U_{it}$ for the untreated group) <!--$\implies \textrm{support}(Y_{it}(0))$ for the treated group is a subset of the-->
+
+<!-- 1. is more restrictive, 2. is arguably similar, 3. is similar, 4. is not require for DID can extrapolate -->
+
+
+
+## Change-in-Changes Identification
+
+Under the conditions described above, you can show that
+
+\begin{align*}
+  ATT(g,t) = \E[Y_t | G=g] - \E\Big[Q_{Y_t(0)|U=1}\big(F_{Y_{g-1}(0)|U=1}(Y_{g-1}(0))\big) | G=g \Big]
+\end{align*}
+where $Q_{Y_t(0)|U=1}(\tau)$ is the $\tau$-th quantile of $Y_t(0)$ for the never-treated group (e.g., if $\tau=0.5$, it is the median of $Y_t(0)$ for the never-treated group).
+
+. . .
+
+* [As an interesting side-comment, this is derived in Athey and Imbens (2006), way before recent work on group-time average treatment effects, and it is pretty much exactly analogous to the "first step" that we have been emphasizing]
+
+
+
+## Intuition for Change-in-Changes
+
+<span class="alert">Intuition: </span> Notice that, under parallel trends, we can re-write
+\begin{align*}
+  ATT(g,t) = \E[Y_t|G=g] - \E\left[ \Big(\E[Y_t | U=1] - \E[Y_{g-1} | U=1]\Big) + Y_{g-1} | G=g \right]
+\end{align*}
+which we can think of as: compare observed outcomes to, (an average of) taking observed outcomes in the pre-treatment period and accounting for how outcomes change over time in the untreated group across the same periods
+
+. . .
+
+For CIC, the intuition is the same, except the way that we "account for" how outcomes change over time during the same periods for the untreated group is a different.
+
+. . .
+
+Because these are different transformations, DID and CIC are non-nested approaches.
+
+
+
+## Comments
+
+CIC is a nice approach in many applications 
+
+* In addition, to recovering $ATT(g,t)$, it is also possible to recover <span class="highlight">quantile treatment effect parameters</span> in this setting (these can allow you to more effectively study treatment effect heterogeneity and are closely related to social welfare calculatations/comparisons)
+
+. . .
+
+Though it is less commonly used in empirical work than DID.
+
+* Need to estimate quantiles
+
+* Harder to include covariates (due to needing to estimate quantiles).  I think (not 100% sure though) that it is not possible (at least not obvious) if one can do a doubly robust version of CIC.
+
+* Support conditions can have real bite in some applications
+
+* Not as much software support
+
+
+
+## Minimum Wage Application
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(did)
+library(BMisc)
+library(twfeweights)
+library(fixest)
+library(modelsummary)
+library(ggplot2)
+library(pte)
+library(qte)
+library(ife)
+library(dplyr)
+library(tidyr)
+load("apm.RData")
+```
+
+```{r eval=FALSE, message=FALSE}
+## change-in-changes
+data2$G2 <- data2$G
+cic_res <- qte::cic2(yname="lemp", 
+                     gname="G2",
+                     tname="year",
+                     idname="id",
+                     data=data2,
+                     boot_type="empirical",
+                     cl=4)
+ggpte(cic_res)
+```
+
+$\widehat{ATT}^O = -0.059$, $\textrm{s.e}(\widehat{ATT}^O) = 0.009$.  (This is very close to our estimate using DID before: $-0.057$)
+
+
+
+## Minimum Wage Application
+
+```{r, echo=FALSE, cache=TRUE, fig.align="center", fig.width=14, fig.height=8, message=FALSE, warning=FALSE}
+# change-in-changes
+data2$G2 <- data2$G
+cic_res <- qte::cic2(yname="lemp", 
+                     gname="G2",
+                     tname="year",
+                     idname="id",
+                     data=data2,
+                     boot_type="empirical",
+                     cl=4)
+ggpte(cic_res) + geom_hline(yintercept=0, size=1.2)
+```
+
+
+
+## Interactive Fixed Effects
+
+Earlier we discussed this model for untreated potential outcomes $Y_{it}(0) = h_t(\eta_i, e_{it})$ and argued that it was too general to make much progress on.  
+
+. . .
+
+An intermediate case is an interactive fixed effects model for untreated potential outcomes:
+\begin{align*}
+  Y_{it}(0) = \theta_t + \eta_i + \lambda_i F_t + e_{it}
+\end{align*}
+
+* $\lambda_i$ is often referred to as "factor loading" (notation above implies that this is a scalar, but you can allow for higher dimension)
+
+* $F_t$ is often referred to as a "factor"
+
+* $e_{it}$ is idioyncratic in the sense that $\E[e_{it} | G_i=g] = 0$ for all groups
+
+. . .
+
+In our context, though, it makes sense to interpret these as
+
+* $\lambda_i$ unobserved heterogeneity (e.g., individual's unobserved skill)
+
+* $F_t$ the time-varying "return" unobserved heterogeneity (e.g., return to skill) 
+
+
+
+## Interactive Fixed Effects
+
+Interactive fixed effects models for untreated potential outcomes generalize some other important cases:
+
+. . .
+
+<span class="alert">Example 1: </span> Suppose we observe $\lambda_i$, then this amounts to the regression adjustment version of DID with a time-invariant covariate considered earlier
+
+. . .
+
+<span class="alert">Example 2: </span> Suppose you know that $F_t = t$, then this leads to a *unit-specific linear trend model*:
+\begin{align*}
+  Y_{it}(0) = \theta_t + \eta_i + \lambda_i t + e_{it}
+\end{align*}
+
+. . .
+
+To allow for $F_t$ to change arbitrarily over time is harder...
+
+. . .
+
+
+<span class="alert">Example 3: </span> Interactive fixed effects models also provide a connection to "large-T" approaches such as synthetic control and synthetic DID (Abadie, Diamond, and Hainmueller (2010), Arkhangelsky et al. (2021))
+
+* e.g., one of the motivations of the SCM in ADH-2010 is that (given large-T) constructing a synthetic control can balance the factor loadings in an interactive fixed effects model for untreated potential outcomes
+
+
+
+## Interactive Fixed Effects
+
+Interactive fixed effects models allow for violations of parallel trends:
+
+\begin{align*}
+  \E[\Delta Y_{it}(0) | G=g] = \Delta \theta_t + \E[\lambda_i|G=g]\Delta F_t
+\end{align*}
+which can vary across groups.
+
+Example: If $\lambda_i$ is "ability" and $F_t$ is increasing over time, then (even in the absence of the treatment) groups with higher mean "ability" will tend to increase outcomes more over time than less skilled groups
+
+
+
+## How can you recover $ATT(g,t)$ here?
+
+There are a lot of ideas.  Probably the most prominent idea is to directly estimate the model for untreated potential outcomes and impute
+
+* See Xu (2017) and Gobillon and Magnac (2018) for substantial detail on this front
+
+* For example, Xu (2017) uses Bai (2009) principal components approach to estimate the model.  This is a bit different in spirit from what we have been doing before as this argument requires the number of time periods to be "large"
+
+
+
+## Alternative Approaches with Fixed-T
+
+<span class="alert">Very Simple Case:</span>
+
+* $\mathcal{T}=4$
+
+* 3 groups: 3, 4, $\infty$
+
+* We will target $ATT(3,3) = \E[\Delta Y_{i3} | G_i=3] - \underbrace{\E[\Delta Y_{i3}(0) | G_i=3]}_{\textrm{have to figure out}}$
+
+. . .
+
+In this case, given the IFE model for untreated potential outcomes, we have:
+\begin{align*}
+  \Delta Y_{i3}(0) &= \Delta \theta_3 + \lambda_i \Delta F_3 + \Delta e_{i3} \\
+  \Delta Y_{i2}(0) &= \Delta \theta_2 + \lambda_i \Delta F_3 + \Delta e_{i2} \\
+\end{align*}
+
+. . .
+
+The last equation implies that
+\begin{align*}
+  \lambda_i = \Delta F_2^{-1}\Big( \Delta Y_{i2}(0) - \Delta \theta_2 - \Delta e_{i2} \Big)
+\end{align*}
+Plugging this back into the first equation (and combining terms), we have $\rightarrow$
+
+
+
+## Alternative Approaches with Fixed-T
+
+From last slide, combining terms we have that
+
+\begin{align*}
+  \Delta Y_{i3}(0) = \underbrace{\Big(\Delta \theta_3 - \frac{\Delta F_3}{\Delta F_2} \Delta \theta_2 \Big)}_{=: \theta_3^*} + \underbrace{\frac{\Delta F_3}{\Delta F_2}}_{=: F_3^*} \Delta Y_{i2}(0) + \underbrace{\Delta e_{i3} - \frac{\Delta F_3}{\Delta F_2} \Delta e_{i2}}_{=: v_{i3}}
+\end{align*}
+
+. . .
+
+Now (momentarily) suppose that we (somehow) know $\theta_3^*$ and $F_3^*$.  Then,
+
+\begin{align*}
+  \E[\Delta Y_{i3}(0) | G_i=3] = \theta_3^* + F_3^* \underbrace{\E[\Delta Y_{i2}(0) | G_i = 3]}_{\textrm{identified}} + \underbrace{\E[v_{i3}|G_i=3]}_{=0}
+\end{align*}
+
+$\implies$ this term is identified; hence, we can recover $ATT(3,3)$.
+
+
+
+## Alternative Approaches with Fixed-T
+
+From last slide, combining terms we have that
+
+\begin{align*}
+  \Delta Y_{i3}(0) = \underbrace{\Big(\Delta \theta_3 - \frac{\Delta F_3}{\Delta F_2} \Delta \theta_2 \Big)}_{=: \theta_3^*} + \underbrace{\frac{\Delta F_3}{\Delta F_2}}_{=: F_3^*} \Delta Y_{i2}(0) + \underbrace{\Delta e_{i3} - \frac{\Delta F_3}{\Delta F_2} \Delta e_{i2}}_{=: v_{i3}}
+\end{align*}
+
+<span class="alert">How can we recover $\theta_3^*$ and $F_3^*$?</span>
+
+. . .
+
+Notice: this involves untreated potential outcomes through period 3, and we have groups 4 and $\infty$ for which we observe these untreated potential outcomes.  This suggests using those groups.
+
+* However, this is not so simple because, by construction, $\Delta Y_{i2}(0)$ is correlated with $v_{i3}$ (note: $v_{i3}$ contains $\Delta e_{i2} \implies$ they will be correlated by construction)
+
+* We need some exogenous variation (IV) to recover the parameters $\rightarrow$
+
+
+
+## Alternative Approaches with Fixed-T
+
+There are a number of different ideas here:
+
+. . .
+
+* Make additional assumptions ruling out serial correlation in $e_{it}$ $\implies$ can use lags of outcomes as instruments:
+
+    * But this is seen as a strong assumption in many applications (Bertrand, Duflo, Mullainathan (2004))
+    
+. . .
+    
+* Alternatively can introduce covariates and make auxiliary assumptions about them (Callaway and Karami (2023) and Brown, Butts, and Westerlund (2023))
+
+. . .
+    
+* However, it turns out that, with staggered treatment adoption, you can recover $ATT(3,3)$ essentially for free (Callaway and Tsyawo (2023)).
+
+
+
+## Alternative Approaches with Fixed-T
+
+In particular, notice that, given that we have two distinct untreated groups in period 3: group 4 and group $\infty$, then we have two moment conditions:
+
+\begin{align*}
+  \E[\Delta Y_{i3}(0) | G=4] &= \theta_3^* + F_3^* \E[\Delta Y_{i2}(0) | G=4] \\
+  \E[\Delta Y_{i3}(0) | G=\infty] &= \theta_3^* + F_3^* \E[\Delta Y_{i2}(0) | G=\infty] \\
+\end{align*}
+We can solve these for $\theta_3^*$ and $F_3^*$, then use these to recover $ATT(3,3)$.
+
+. . .
+
+* The main requirement is that $\E[\lambda_i | G=4] \neq \E[\lambda_i|G=\infty]$ (relevance condition)
+
+* Can scale this argument up for more periods, groups, and IFEs
+
+* Relative to other approaches, the main drawback is that can't recover as many $ATT(g,t)$'s; e.g., in this example, we can't recover $ATT(3,4)$ or $ATT(4,4)$ which might be recoverable in other settings
+
+
+
+## Minimum Wage Application
+
+```{r eval=FALSE, message=FALSE}
+# staggered ife
+data4 <- subset(data3, G %in% c(2007,2006,0))
+sife_res <- ife::staggered_ife2(yname="lemp",
+                                gname="G",
+                                tname="year",
+                                idname="id",
+                                data=data4,
+                                nife=1)
+
+did::ggdid(sife_res$att_gt)
+```
+
+
+
+## Minimum Wage Application
+
+```{r, echo=FALSE, cache=TRUE, fig.align="center", fig.width=14, fig.height=8, message=FALSE, warning=FALSE}
+
+# staggered ife
+data4 <- subset(data3, G %in% c(2007,2006,0))
+sife_res <- ife::staggered_ife2(yname="lemp",
+                                gname="G",
+                                tname="year",
+                                idname="id",
+                                data=data4,
+                                nife=1)
+
+did::ggdid(sife_res$att_gt)
+```
+
+
+
+## Summary
+
+This section has emphasized alternative approaches to DID and LO to recover disaggregated treatment effect parameters:
+
+* Change-in-Changes
+
+* Interactive fixed effects models  
+
+We have targeted $ATT(g,t)$.  Moving to more aggregated treatment effect parameters such as $ATT^{ES}(e)$ or $ATT^O$ is the same as before.
+
+
+
+## Summary
+
+I want to emphasize the high-level thought process one last time for using/inventing heterogeneity robust causal inference procedures with panel data: <!--some off-script application:-->
+
+* Step 1: target disaggregated parameters directly using whatever approach you think would work well for recovering the $ATT$ for a fixed "group" and "time"
+
+* Step 2: if desired, combine those disaggregated parameters into lower dimensional parameter that you may be able to estimate better and report more easily; hopefully, you can provide some motivation for this aggregated parameter
+
+
+
+
+## Conclusion
+
+<span class="highlight">Thank you</span> very much for having me!  
+
+<br>
+
+<span class="alert">Contact Information: </span>brantly.callaway@uga.edu
+
+<span class="alert">Code and Slides: </span> [Available here](files/presentations/northwestern-causal-inference-workshop)
+
+
+<span class="alert">Papers:</span>
+
+* Callaway (2023, *Handbook of Labor, Human Resources and Population Economics*), [[[published version](https://link.springer.com/referenceworkentry/10.1007/978-3-319-57365-6_352-1)]] &nbsp; [[[draft version](https://bcallaway11.github.io/files/Callaway-Chapter-2022/main.pdf)]]; the draft version is ungated and very similar to the published version.
+
+* Today is also based on the not-yet-made-publicly available manuscript Baker, Callaway, Cunningham, Goodman-Bacon, and Sant'Anna (be on the lookout for it over the next few days)
+
+

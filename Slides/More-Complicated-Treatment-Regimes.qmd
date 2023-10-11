@@ -29,10 +29,8 @@ step_by_step_eq <- function(eqlist, before="", after="", title=" ") {
     # print before content
     if (i == 1) out <- paste0(out, before, "\n") else out <- paste0(out, before_inner, "\n") 
     out <- paste0(out, "$$\n\\begin{aligned}\n",eqlist[[i]],"\n\\end{aligned}\n$$\n\n") # print equation
-    #if (i < length(eqlist)) out <- paste0(out, "---\n\n")
   }
   out <- paste0(out, after, "\n") # print after content
-  #out <- paste0(out, "---\n")
   cat(out)
 }
 ```
