@@ -1,0 +1,108 @@
+---
+title: "Exercise 2"
+output: html_document
+date: "2023-10-19"
+---
+
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+# draw dose
+n <- 1000
+set.seed(1234)
+p <- 0.9
+treated <- sample(c(0,1), size=n, replace=TRUE, prob=c(1-p,p))
+
+dose_type <- "tnorm"
+if (dose_type == "exponential") {
+  lambda <- 1/15
+  dose <- rexp(n, rate=lambda)
+} else if (dose_type == "uniform") {
+  dose <- runif(n, min=0, max=100)  
+} else if (dose_type == "tnorm") {
+  dose <- rnorm(n, mean=0.5, sd=0.16)
+}
+dose[treated==0] <- 0
+
+ATT <- -4*(dose-.5)^2 + 1
+ATT_deriv <- -8*(dose-.5)
+#ATT <- exp(dose/15) - 1
+#ATT_deriv <- exp(dose/15)/15
+
+  
+p <- ggplot(data.frame(ATT=ATT, dose=dose), aes(x=dose, y=ATT)) + 
+    geom_line()
+p
+
+ggplot(data.frame(ATT_deriv=ATT_deriv, dose=dose), aes(x=dose, y=ATT_deriv)) +
+  geom_line()
+
+p <- ggplot(data.frame(dose=dose), aes(x=dose)) + 
+     geom_histogram()
+p
+
+twfe <- lm(ATT ~ dose)
+summary(twfe)$coefficients
+
+
+D <- dose
+max_weight <- ( ( mean(D[D>=mean(D)]) - mean(D) ) * mean(1*(D>=mean(D))) ) / var(D)
+# add some buffer so we also have enough room for density
+wmax <-  max_weight*2
+
+
+dL <- min(D[D>0])
+dU <- max(D)
+w <- function(l) {
+  w1 <- ( ( mean(D[D>=l]) - mean(D) ) * mean(1*(D>=l)) ) / var(D)
+  
+  # get rid of weird case at the exact max...nothing to see here
+  ifelse(is.na(w1), 0, w1)
+}
+# carry out the integration from dL to dU using R's functions
+w_fun <- Vectorize(w)
+int_w1 <- integrate(w_fun, lower=dL, upper=dU, subdivisions=2000)
+# this is the value of the integral
+int_w1 <- int_w1$value
+# add up w0 and w1 and check that it is equal to 1.
+# w0 + int_w1
+# plot the weights
+dose_grid <- seq(dL, dU, length.out=100)
+twfe_weights <- w_fun(dose_grid)
+plot_df <- cbind.data.frame(twfe_weights, dose_grid)
+  
+twfe_weights_plot <- ggplot(data=plot_df,
+                            mapping=aes(x = dose_grid,
+                                        y = twfe_weights)) +
+  geom_line(colour = "darkblue", linewidth = 1.2) +
+  xlim(c(min(dose_grid),
+         max(dose_grid)))+
+  ylab("TWFE weights") +
+  xlab("Dose") +
+  geom_vline(xintercept = mean(D),
+             colour="black",
+             linewidth = 0.5,
+             linetype = "dotted") +
+  ylim(c(0,wmax)) +
+  labs(title="TWFE weights")
+
+twfe_weights_plot
+
+
+
+#-----------------------------------------------------------------------------
+# density of the dose
+dose_grid <- seq(dL, dU, length.out=100)
+frq_weights_plot <- ggplot(data.frame(dose=D[D>0]), aes(x=dose)) +
+  geom_density(colour = "darkblue", linewidth = 1.2) +
+  xlim(c(min(dose_grid), max(dose_grid)))+
+  ylab("Density weights") +
+  xlab("Dose") +
+  ylim(c(0,wmax)) + 
+  labs(title="Density of dose")
+frq_weights_plot
+
+```
