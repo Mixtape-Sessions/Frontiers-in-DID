@@ -29,7 +29,7 @@ Covariates good and bad
 
 [Data](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/job_displacement_data.RData)
 
-[Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/exercise1.html_sol.html)
+[Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/exercise1_sol.html)
 
 </details><br />
 
