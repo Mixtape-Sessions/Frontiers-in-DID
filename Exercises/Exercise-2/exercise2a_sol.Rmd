@@ -1,77 +1,224 @@
 ---
-title: "Exercise 2"
 output: html_document
-date: "2023-10-19"
 ---
 
+```{r echo=FALSE, results="asis"}
+sol <- TRUE
 
-```{r}
-library(ggplot2)
+if(sol) cat("# Exercise 2a Solutions") else cat("# Exercise 2a")
 ```
 
+For this problem, we are going to use a difference-in-differences identification strategy to estimate the causal effect of a continuous treatment.  The data that I am providing below is simulated data, but it has broadly similar features to the data used in the application in Callaway, Goodman-Bacon, and Sant'Anna (2023) which comes from Acemoglu and Finkelstein (2008) which considers the effect of a Medicare policy in the 1980s that reduced reimbursement rates to hospitals specifically for labor expenditures.  The outcome variable is the capital-labor ratio, and (roughly) the theoretical argument in their paper is that the policy could alter the capital/labor mix in hospitals, and that these effects could vary across hospitals that had differential exposure to the policy (where exposure is based on the fraction of Medicare patients in the period before the policy was implemented).
+
+Here is information about installing and loading packages that could be useful in this problem.
+
+```{r warning=FALSE, message=FALSE}
+devtools::install_github("shommazumder/binscatteR")
+```
+
+```{r warning=FALSE, message=FALSE}
+library(ggplot2)
+library(binscatteR)
+library(np)
+```
+
+
+
+### Additional Code
+
+I should mention that code for DID with a continuous treatment is not nearly as well developed as some of the other cases that we have considered previously.  Therefore, I'm directly providing some functions that you may find useful below.  The first function computes weights from a TWFE regression with a continuous treatment (these are the same weights that we talked about in our session today).
+
 ```{r}
-# draw dose
-n <- 1000
-set.seed(1234)
-p <- 0.9
-treated <- sample(c(0,1), size=n, replace=TRUE, prob=c(1-p,p))
-
-dose_type <- "tnorm"
-if (dose_type == "exponential") {
-  lambda <- 1/15
-  dose <- rexp(n, rate=lambda)
-} else if (dose_type == "uniform") {
-  dose <- runif(n, min=0, max=100)  
-} else if (dose_type == "tnorm") {
-  dose <- rnorm(n, mean=0.5, sd=0.16)
+#' @param l a particular value of the treatment for which to compute weights
+#' @param D an nx1 vector containing doses for all units
+cont_twfe_weights <- function(l, D) {
+  wt <- ( ( mean(D[D>=l]) - mean(D) ) * mean(1*(D>=l)) ) / var(D)
+  wt
 }
-dose[treated==0] <- 0
+```
 
-ATT <- -4*(dose-.5)^2 + 1
-ATT_deriv <- -8*(dose-.5)
-#ATT <- exp(dose/15) - 1
-#ATT_deriv <- exp(dose/15)/15
+The second function provides a way to nonparametrically estimate causal effect parameters with a continuous treatment.
 
+```{r}
+#' nonparametric estimates of att(d|d) and acrt(d|d)
+#' @param dy the change in the outcome over time
+#' @param dose the amount of the treatment
+#' @return list( 
+#'            local_effects - data frame containing the dose and estimates of 
+#'              att(dose) and acrt(dose)
+#'            att.overall - an estimate of the overall att
+#'            acrt.overall - an estimate of the overall acrt
+#'          )
+cont_did <- function(dy, dose) {
+  # choose bandwidth
+  bw <- np::npregbw(formula=dy ~ dose,
+                regtype="ll",
+                bws=1.06,
+                bwscaling=TRUE,
+                bandwidth.compute=FALSE)
+  # estimate att and acrt nonparametrically
+  out <- np::npreg(bws=bw, gradients=TRUE, exdat=dose)
+
+  # order from smallest to largest dose and drop untreated
+  this_order <- order(dose)
+  dose <- dose[this_order]
+  dy <- dy[this_order]
+  att.d <- out$mean[this_order]
+  acrt.d <- out$grad[,1][this_order]
+  att.d <- att.d[dose>0]
+  acrt.d <- acrt.d[dose>0]
+  att.overall <- mean(att.d)
+  acrt.overall <- mean(acrt.d)
   
-p <- ggplot(data.frame(ATT=ATT, dose=dose), aes(x=dose, y=ATT)) + 
-    geom_line()
-p
+  return(list(local_effects=data.frame(dose=dose[dose>0],
+                                       att.d=att.d,
+                                       acrt.d=acrt.d),
+              att.overall=att.overall,
+              acrt.overall=acrt.overall))
+}
+```
 
-ggplot(data.frame(ATT_deriv=ATT_deriv, dose=dose), aes(x=dose, y=ATT_deriv)) +
-  geom_line()
+### Data and Data Generating Process
+
+You can load the data by running
+```{r}
+load("medicare1.RData")
+```
+
+It contains the following columns:
+
+* `hospital_id` - the hospital identifier
+* `d_capital_labor_ratio` - the change in the capital labor ratio for a hospital from 1983 to 1985, this is the (change in the) outcome variable 
+* `medicare_share_1983` - the fraction of medicare patients in the hospital in 1983, this is the continuous treatment variable.
+
+Here are the first few rows of the data
+```{r}
+head(medicare1)
+```
+
+Remember this is simulated data, so we can also go ahead and get a sense of what the answers to the questions below "ought" to be (we will see how well various approaches can deliver them below.)
+
+To start with, I generated the data where $ATT(d|d)$ is given as in the following plot:
+```{r}
+dose <- seq(.01,.99,by=.01)
+ATT <- -4*(dose-.5)^2 + 1
+p <- ggplot(data.frame(ATT=ATT, dose=dose), aes(x=dose, y=ATT)) + 
+    geom_line() + ylim(c(0,2))
+p
+```
+
+And this implies that $ACRT(d|d)$ is as is given in the following plot:
+```{r}
+ACRT <- -8*(dose-.5)
+ggplot(data.frame(ACRT=ACRT, dose=dose), aes(x=dose, y=ACRT)) +
+  geom_line() + ylim(c(-6,6))
+```
+
+I drew the data so that there is a 10% chance of a hospital being untreated and then, among treated hospitals, I drew the dose from a normal distribution with mean 0.5 and standard deviation of 0.16.  Since this is symmetric about 0.5, it implies that $ACRT^O=0$ by construction.  We will see how well we can replicate this using different approaches below.  
+
+
+### Question 1
+
+Plot a histogram of the the dose.  What do you make of this?
+
+```{r echo=sol, eval=sol}
+dose <- medicare1$medicare_share_1983
+dy <- medicare1$d_capital_labor_ratio
+
 
 p <- ggplot(data.frame(dose=dose), aes(x=dose)) + 
      geom_histogram()
 p
+```
 
-twfe <- lm(ATT ~ dose)
+```{r echo=FALSE, eval=sol, results="asis"}
+cat("The histogram show that a non-trivial fraction of units are untreated while common values of the treatment are around 0.5 and this decreases as we move towards the 0 and 1.  This is in line with the data generating process described above.")
+```
+
+### Question 2
+
+Make a binscatter plot of the change in the outcome over time with respect to the dose.  What do you make of this?
+
+```{r warning=FALSE, message=FALSE, echo=sol, eval=sol}
+binnedout <- binscatter(data=medicare1, x="medicare_share_1983", y="d_capital_labor_ratio")
+binnedout
+```
+
+```{r echo=FALSE, eval=sol, results="asis"}
+cat("This picture is closely related to the plot of $ATT(d|d)$ provided earlier.  The size of the dots also reflects the distribution of the dose that was discussed in Question 1.")
+```
+
+### Question 3
+
+Run a regression of the change in the outcome over time on the dose.  What do you make of the results?
+
+```{r echo=sol, eval=sol}
+twfe <- lm(dy ~ dose)
 summary(twfe)$coefficients
+```
 
+```{r echo=FALSE, eval=sol, results="asis"}
+cat("If we were hoping to estimate $ACRT^O$, then we did not do it well here: recall that $ACRT^O=0$, but here the coefficient on the dose is 1.08 and strongly statistically different from 0.")
+```
 
-D <- dose
-max_weight <- ( ( mean(D[D>=mean(D)]) - mean(D) ) * mean(1*(D>=mean(D))) ) / var(D)
-# add some buffer so we also have enough room for density
-wmax <-  max_weight*2
+### Question 4
 
+Use the `cont_did` function provided above to estimate the $ATT(d|d)$, $ACRT(d|d)$, $ATT$, and $ACRT^O$.  Plot $ATT(d|d)$ and $ACRT(d|d)$ as functions of the dose and provide estimates of $ATT$ and $ACRT^O$.
 
-dL <- min(D[D>0])
-dU <- max(D)
-w <- function(l) {
-  w1 <- ( ( mean(D[D>=l]) - mean(D) ) * mean(1*(D>=l)) ) / var(D)
-  
-  # get rid of weird case at the exact max...nothing to see here
-  ifelse(is.na(w1), 0, w1)
-}
-# carry out the integration from dL to dU using R's functions
-w_fun <- Vectorize(w)
-int_w1 <- integrate(w_fun, lower=dL, upper=dU, subdivisions=2000)
-# this is the value of the integral
-int_w1 <- int_w1$value
-# add up w0 and w1 and check that it is equal to 1.
-# w0 + int_w1
-# plot the weights
+```{r echo=sol, eval=sol}
+cont_res <- cont_did(dy, dose)
+cont_res$att.overall
+cont_res$acrt.overall
+plot_df <- cont_res$local_effects
+
+colnames(plot_df) <- c("dose", "att", "acrt")
+ggplot(plot_df, aes(x=dose, att)) +
+  geom_hline(yintercept=0, color="red", linetype="dashed") +
+  geom_line() +
+  theme_bw()
+
+ggplot(plot_df, aes(x=dose, acrt)) +
+  geom_hline(yintercept=0, color="red", linetype="dashed") +
+  geom_line() +
+  theme_bw()
+```
+
+```{r echo=FALSE, eval=sol, results="asis"}
+cat("These estimates are in line with the data generating process that we described above.  Note also that `acrt.overall` is much closer to 0 than what we got with the TWFE regression.")
+```
+
+### Question 5
+
+The following plot provide an estimate of the density of the dose.  How is this plot related to the estimate of $ACRT^O$ from Question 4?
+
+```{r echo=sol, eval=sol}
+#-----------------------------------------------------------------------------
+dL <- min(dose[dose>0])
+dU <- max(dose)
+# density of the dose
 dose_grid <- seq(dL, dU, length.out=100)
-twfe_weights <- w_fun(dose_grid)
+frq_weights_plot <- ggplot(data.frame(dose=dose[dose>0]), aes(x=dose)) +
+  geom_density(colour = "darkblue", linewidth = 1.2) +
+  xlim(c(min(dose_grid), max(dose_grid)))+
+  ylab("Density weights") +
+  xlab("Dose") +
+  ylim(c(0,3)) + 
+  labs(title="Density of dose")
+frq_weights_plot
+```
+
+```{r echo=FALSE, eval=sol, results="asis"}
+cat("The density of the dose effectively serves as the weights on $ACRT(d|d)$ to deliver an estimate of $ACRT^O$.  Here you can see that values of the dose near 0.5 get the most weights &mdash; this makes sense as these doses around 0.5 are more common than doses closer to 0 or 1.")
+```
+
+
+### Question 6
+
+Use the function `cont_twfe_weights` provided above to create a plot of the TWFE weights as a function of the dose.  How is this plot related to the result from Question 3?
+
+```{r echo=sol, eval=sol}
+twfe_weights <- sapply(dose_grid, cont_twfe_weights, D=dose)
+
 plot_df <- cbind.data.frame(twfe_weights, dose_grid)
   
 twfe_weights_plot <- ggplot(data=plot_df,
@@ -82,27 +229,16 @@ twfe_weights_plot <- ggplot(data=plot_df,
          max(dose_grid)))+
   ylab("TWFE weights") +
   xlab("Dose") +
-  geom_vline(xintercept = mean(D),
+  geom_vline(xintercept = mean(dose),
              colour="black",
              linewidth = 0.5,
              linetype = "dotted") +
-  ylim(c(0,wmax)) +
+  ylim(c(0,3)) +
   labs(title="TWFE weights")
 
 twfe_weights_plot
+```
 
-
-
-#-----------------------------------------------------------------------------
-# density of the dose
-dose_grid <- seq(dL, dU, length.out=100)
-frq_weights_plot <- ggplot(data.frame(dose=D[D>0]), aes(x=dose)) +
-  geom_density(colour = "darkblue", linewidth = 1.2) +
-  xlim(c(min(dose_grid), max(dose_grid)))+
-  ylab("Density weights") +
-  xlab("Dose") +
-  ylim(c(0,wmax)) + 
-  labs(title="Density of dose")
-frq_weights_plot
-
+```{r echo=FALSE, eval=sol, results="asis"}
+cat("These weights explain why we get so much different results from the TWFE regression relative to the nonparametric approach.  The TWFE regression puts substantially more weight on low values of the dose.  We know that the $ACRT(d|d)$ was larger for small values of the dose.  Therefore, if we put more weight on those values of the dose, then we will get a larger estimate of the summary measure &mdash; this is exactly what is happening with the TWFE regression.")
 ```
