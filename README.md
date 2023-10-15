@@ -25,7 +25,11 @@ Covariates good and bad
 
 <b>Coding Exercises</b>
 
-a
+[Exercise 1](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/exercise1.html)
+
+[Data](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/job_displacement_data.RData)
+
+[Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/exercise1.html_sol.html)
 
 </details><br />
 
@@ -42,7 +46,11 @@ Continuous treatment. General things to think about when estimating effects.
 
 <b>Coding Exercises</b>
 
-a
+[Exercise 2a](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2a.html)
+
+[Data](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/medicare1.RData)
+
+[Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2a_sol.html)
 
 </details><br />
 
@@ -59,7 +67,12 @@ Changes-in-changes, Factor models, and lagged outcomes.
 
 <b>Coding Exercises</b>
 
-a
+
+[Exercise 2b](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2b.html)
+
+Data Same as Exercise 1
+
+[Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2b_sol.html)
 
 </details><br />
 
