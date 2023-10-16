@@ -1,0 +1,153 @@
+---
+format: 
+  html: default
+  gfm: default
+---
+
+```{r echo=FALSE, results="asis"}
+sol <- TRUE
+
+if (sol) cat("# Exercise 2b Solutions") else cat("# Exercise 2b")
+
+if (sol) {
+  start_sol = '<details><summary>Solutions:</summary><div style="border-left: 2px solid black; padding-left: 1rem">'
+  end_sol = '</div></details>'
+} else {
+  start_sol = '<div style="display: none;">'
+  end_sol =   '</div>'
+}
+```
+
+For this exercise, we will revisit the job displacement example from Exercise 1, but we will try out some alternative identification strategies: (i) change-in-changes, (ii) conditioning on lagged outcomes, and (iii) interactive fixed effects.
+
+To start with, load the data from the file `job_displacement_data.RData` by running
+
+```{r}
+load("job_displacement_data.RData")
+```
+
+which will load a `data.frame` called `job_displacement_data`.  This is what the data looks like
+
+```{r}
+head(job_displacement_data)
+```
+
+You can see that the data contains the following columns:
+
+* `id` - an individual identifier
+* `year` - the year for this observation
+* `group` - the year that person lost his/her job.  `group=0` for those that do not lose a job in any period being considered.
+* `income` - a person's wage and salary income in this year
+* `female` - 1 for females, 0 for males
+* `white` - 1 for white, 0 for non-white
+
+For the results below, we will mainly use the `qte`, `pte`, and `ife` packages.  `pte` and `ife` in particular are new packages, so we will download the newest versions of these from GitHub.  We will also need the `BMisc` and `dplyr` packages.
+
+```{r, eval=FALSE}
+devtools::install_github("bcallaway11/qte")
+devtools::install_github("bcallaway11/pte")
+devtools::install_github("bcallaway11/ife")
+devtools::install_github("bcallaway11/BMisc")
+install.packages("dplyr")
+```
+
+and then the packages can be loaded by
+
+```{r warning=FALSE, message=FALSE}
+library(qte) # for change-in-changes
+library(pte) # for lagged outcomes
+library(ife) # for interactive fixed effects
+library(BMisc)
+library(dplyr)
+```
+
+Below, we will basically try to replicate Question 1 from Exercise 1, but use alternative identification strategies.
+
+## Question 1 &mdash; change-in-changes
+
+Use the `qte` package to compute all available group-time average treatment effects, an event study, and an overall average treatment effect.  The function that can deal with multiple periods and variation in treatment timing is called `cic2`.  In the results below, I also allow for one year of anticipation based on our discussion in the previous exercise.
+
+`r start_sol`
+```{r echo=sol, eval=sol, cache=TRUE}
+set.seed(1234)
+cic_res <- cic2(yname="income",
+                tname="year",
+                idname="id",
+                gname="group",
+                data=job_displacement_data,
+                cl=4, # inference uses bootstrap, so using 4 cores here for parallel computing
+                anticipation=1)
+# show group-time average treatment effects
+cic_res$attgt_results
+
+# recover event study and overall average treatment effect
+summary(cic_res)
+
+# plot event study
+ggpte(cic_res)
+```
+`r end_sol`
+    
+
+## Question 2 &mdash; lagged outcome
+
+Use the `pte` package to compute all available group-time average treatment effects, an event study, and an overall average treatment effect.  The function `pte_default` can allow for conditioning on lagged outcomes (it can also allow for a number of other extensions as well &mdash; see documentation)  In the results below, I also allow for one year of anticipation based on our discussion in the previous exercise.
+
+`r start_sol`
+```{r echo=sol, eval=sol, cache=TRUE}
+set.seed(1234)
+lo_res <- pte_default(yname="income",
+                      tname="year",
+                      idname="id",
+                      gname="group",
+                      lagged_outcome_cov = TRUE, # this includes lagged outcome
+                      data=job_displacement_data,
+                      anticipation=1)
+
+# show group-time average treatment effects
+lo_res$att_gt
+
+# recover event study and overall average treatment effect
+summary(lo_res)
+
+# plot event study
+ggpte(lo_res)
+
+```
+`r end_sol`
+
+
+## Question 3 &mdash; interactive fixed effects
+
+Use the `ife` package to compute all available group-time average treatment effects, an event study, and an overall average treatment effect.  The function that can deal with multiple periods and variation in treatment timing is called `staggered_ife2` &mdash; this function will use the groups to identify causal effect parameters and does not require us to specify additional instruments.  We will allow for one interactive fixed effect, by setting `nife=1`, but you can try other values.  `ife` does not currently support allowing for anticipation, so we will remove it for these results.
+
+`r start_sol`
+```{r echo=sol, eval=sol, cache=TRUE}
+set.seed(1234)
+ife_res <- staggered_ife2(yname="income",
+                          tname="year",
+                          idname="id",
+                          gname="group",
+                          data=job_displacement_data,
+                          anticipation=0,
+                          nife=1)
+# show group-time average treatment effects
+ife_res$att_gt
+
+# recover event study and overall average treatment effect
+summary(ife_res)
+
+# plot event study
+ggpte(ife_res)
+```
+`r end_sol`
+
+# Question 4
+
+What do you make of the results in this excercise relative to each other and relative to the previous results from Exercise 1 that used difference-in-differences?
+
+`r start_sol`
+```{r echo=FALSE, eval=sol, results="asis"}
+cat("To me, the results look pretty similar for difference-in-differences, change-in-changes, and unconfoundedness conditional on the lagged outcome.  For the event study, in pre-treatment periods, they all deliver non-statistically significant effects in pre-treatment periods (though some of the results still seem fairly large in magnitude; also, if you look at the group-time average treatment effects, then there are some apparent violations of parallel trends in pre-treatment periods) and then indicate a statistically significant drop in income in the two or three years following job displacement.  For interactive fixed effects, the estimates themselves in pre-treatment periods seem to be at least as close to 0 as for the other approaches though, in this application, there appears to be sharp price to pay in terms of larger standard errors.")
+```
+`r end_sol`
