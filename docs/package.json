@@ -1,0 +1,23 @@
+{
+  "name": "docs",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "tailwind:dev": "npx tailwindcss -i ./input.css -o ./output.css --watch",
+    "tailwind:build": "npx tailwindcss -i ./input.css -o ./output.css",
+    "dev": "npx vite dev"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.10",
+    "autoprefixer": "^10.4.16",
+    "bun-types": "latest",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "vite": "^4.4.11"
+  }
+}
