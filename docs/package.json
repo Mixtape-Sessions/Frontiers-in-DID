@@ -3,8 +3,8 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "tailwind:dev": "npx tailwindcss -i ./input.css -o ./output.css --watch",
-    "tailwind:build": "npx tailwindcss -i ./input.css -o ./output.css",
+    "tailwind:dev": "npx tailwindcss -i ./input.css -o ./public/output.css --watch",
+    "tailwind:build": "npx tailwindcss -i ./input.css -o ./public/output.css",
     "dev": "npx vite dev"
   },
   "devDependencies": {
