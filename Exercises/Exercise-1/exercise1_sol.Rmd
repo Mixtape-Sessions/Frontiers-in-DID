@@ -3,12 +3,28 @@ output: html_document
 ---
 
 ```{r echo=FALSE, results="asis"}
-sol <- TRUE
-
+sol <- FALSE
 if(sol) cat("# Exercise 1 Solutions") else cat("# Exercise 1")
+
+if (sol) {
+cat(r'(
+<style>
+  .solution {
+    padding-left: 1rem; 
+    border-left: 2px solid black;
+  }
+</style>
+)')
+} else {
+cat(r'(
+<style>
+  .solution {
+    display: none;
+  }
+</style>
+)')
+}
 ```
-
-
 
 This exercise will involve estimating causal effect parameters using a difference-in-differences identification strategy that involves conditioning on covariates in the parallel trends assumption and possibly allows for anticipation effects.
 
@@ -46,6 +62,7 @@ We will start by computing group-time average treatment effects without includin
 
 a) Use the `did` package to compute all available group-time average treatment effects.
 
+::::::: {.solution}
     ```{r echo=sol, eval=sol}
     no_covs <- att_gt(yname="income",
                       tname="year",
@@ -54,41 +71,52 @@ a) Use the `did` package to compute all available group-time average treatment e
                       data=job_displacement_data)
     summary(no_covs)
     ```
+:::::::
 
 b) *Bonus Question* Try to manually calculate $ATT(g=1992, t=1992)$.  Can you calculate exactly the same number as in part (a)?
 
+::::::: {.solution}
     ```{r echo=sol, eval=sol}
     mean(subset(job_displacement_data, group==1992 & year==1992)$income) -
       mean(subset(job_displacement_data, group==1992 & year==1991)$income) - 
       ( mean(subset(job_displacement_data, group==0 & year==1992)$income) -
       mean(subset(job_displacement_data, group==0 & year==1991)$income) )
     ```
+:::::::
 
 c) Aggregate the group-time average treatment effects into an event study and plot the results.  What do you notice?  Is there evidence against parallel trends?
+
+::::::: {.solution}
     ```{r echo=sol, eval=sol}
     no_covs_es <- aggte(no_covs, type="dynamic")
     ggdid(no_covs_es)
     ```
-    
+:::::::    
+
 d) Aggregate the group-time average treatment effects into a single overall treatment effect.  How do you interpret the results?
 
+::::::: {.solution}
     ```{r echo=sol, eval=sol}
     no_covs_overall <- aggte(no_covs, type="group")
     summary(no_covs_overall)
     ```
-    
+::::::: 
+
 # Question 2
 
 A major issue in the job displacement literature concerns a version of anticipation.  In particular, there is some empirical evidence that earnings of displaced workers start to decline *before* they are actually displaced (a rough explanation is that firms where there are mass layoffs typically "struggle" in the time period before the mass layoff actually takes place and this can lead to slower income growth for workers at those firms).  
 
 a) Is there evidence of anticipation in your results from Question 1?
 
+::::::: {.solution}
     ```{r echo=FALSE, eval=sol, results="asis"}
     cat("There is a moderate amount of evidence for anticipation in the previous results.  It hinges on the estimate for event-time equal to -1.  It is negative which is in line with the discussion about anticipation above, but it is only marginally statistically significant.")
     ```
+:::::::  
     
 b) Repeat parts (a)-(d) of Question 1 allowing for one year of anticipation.
 
+::::::: {.solution}
     ```{r echo=sol, eval=sol}
     # part a
     ant_res <- att_gt(yname="income",
@@ -113,6 +141,7 @@ b) Repeat parts (a)-(d) of Question 1 allowing for one year of anticipation.
     ant_overall <- aggte(ant_res, type="group")
     summary(ant_overall)
     ```
+:::::::
 
 # Question 3
 
@@ -120,6 +149,7 @@ Now, let's suppose that we think that parallel trends holds only after we condit
 
 a) Answer parts (a), (c), and (d) of Question 1 but including `sex` and `white` as covariates.
 
+::::::: {.solution}
     ```{r echo=sol, eval=sol}
     # part a
     covs_res <- att_gt(yname="income",
@@ -139,38 +169,40 @@ a) Answer parts (a), (c), and (d) of Question 1 but including `sex` and `white` 
     covs_overall <- aggte(covs_res, type="group")
     summary(covs_overall)
     ```
+:::::::
 
 b) By default, the `did` package uses the doubly robust approach that we discussed during our session.  How do the results change if you use a regression approach or propensity score re-weighting?
 
-    ```{r echo=FALSE, eval=sol, results="asis"}
-    cat("For simplicity, I am just going to show the overall results when using the regression approach and the propensity score re-weighting approach.")
-    ```
-    
-    ```{r echo=sol, eval=sol}
-    reg_res <- att_gt(yname="income",
-                      tname="year",
-                      idname="id",
-                      gname="group",
-                      data=job_displacement_data,
-                      anticipation=1,
-                      xformla=~female + white,
-                      est_method="reg")
-    summary(aggte(reg_res, type="group"))
-    
-    ipw_res <- att_gt(yname="income",
-                      tname="year",
-                      idname="id",
-                      gname="group",
-                      data=job_displacement_data,
-                      anticipation=1,
-                      xformla=~female + white,
-                      est_method="ipw")
-    summary(aggte(ipw_res, type="group"))
-    ```
-    
-    ```{r echo=FALSE, eval=sol, results="asis"}
-    cat("You can see that the results are very similar across estimation strategies in this example.")
-    ```
+```{r echo=FALSE, eval=sol, results="asis"}
+cat("For simplicity, I am just going to show the overall results when using the regression approach and the propensity score re-weighting approach.")
+```
+
+```{r echo=sol, eval=sol}
+reg_res <- att_gt(yname="income",
+                  tname="year",
+                  idname="id",
+                  gname="group",
+                  data=job_displacement_data,
+                  anticipation=1,
+                  xformla=~female + white,
+                  est_method="reg")
+summary(aggte(reg_res, type="group"))
+
+ipw_res <- att_gt(yname="income",
+                  tname="year",
+                  idname="id",
+                  gname="group",
+                  data=job_displacement_data,
+                  anticipation=1,
+                  xformla=~female + white,
+                  est_method="ipw")
+summary(aggte(ipw_res, type="group"))
+```
+
+```{r echo=FALSE, eval=sol, results="asis"}
+cat("You can see that the results are very similar across estimation strategies in this example.")
+```
+
 
 # Question 4
 
@@ -178,6 +210,7 @@ Finally, the data that we have contains a variable called `occ_score` which is r
 
 a) Repeat parts (a), (c), and (d) of Question 1 but including `occ_score` in the parallel trends assumption.  Continue to allow for 1 year of anticipation effects.
 
+::::::: {.solution}
   ```{r echo=sol, eval=sol}
     # part a
     occ_res <- att_gt(yname="income",
@@ -197,5 +230,6 @@ a) Repeat parts (a), (c), and (d) of Question 1 but including `occ_score` in the
     occ_overall <- aggte(occ_res, type="group")
     summary(occ_overall)
     ```
+:::::::
 
 b) What additional assumptions (with respect to occupation) do you need to make in order to rationalize this approach?
