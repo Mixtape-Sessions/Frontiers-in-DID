@@ -11,15 +11,13 @@ sol <- TRUE
 if (sol) cat("# Exercise 1 Solutions") else cat("# Exercise 1")
 
 if (sol) {
-  start_sol = r'(
-::::::: {style="border-left: 2px solid black; padding-left: 1rem"}
-<b>Solution:</b>
-
-)'
+  start_sol = '<details><summary>Solutions:</summary><div style="border-left: 2px solid black; padding-left: 1rem">'
+  end_sol = '</div></details>'
 } else {
-  start_sol = '::::::: {style="display: none;"}'
+  start_sol = '<div style="display: none;">'
+  end_sol =   '</div>'
 }
-end_sol =   ':::::::'
+
 ```
 
 
@@ -170,6 +168,7 @@ a) Answer parts (a), (c), and (d) of Question 1 but including `sex` and `white` 
 `r end_sol`
 
 b) By default, the `did` package uses the doubly robust approach that we discussed during our session.  How do the results change if you use a regression approach or propensity score re-weighting?
+
 
 `r start_sol`
 ```{r echo=FALSE, eval=sol, results="asis"}
