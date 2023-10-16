@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-<script src="Relaxing-Parallel-Trends_files/libs/clipboard/clipboard.min.js"></script>
-<script src="Relaxing-Parallel-Trends_files/libs/quarto-html/tabby.min.js"></script>
-<script src="Relaxing-Parallel-Trends_files/libs/quarto-html/popper.min.js"></script>
-<script src="Relaxing-Parallel-Trends_files/libs/quarto-html/tippy.umd.min.js"></script>
-<link href="Relaxing-Parallel-Trends_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="Relaxing-Parallel-Trends_files/libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="Relaxing-Parallel-Trends_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
-<link href="Relaxing-Parallel-Trends_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<script src="DID-Introduction_files/libs/clipboard/clipboard.min.js"></script>
+<script src="DID-Introduction_files/libs/quarto-html/tabby.min.js"></script>
+<script src="DID-Introduction_files/libs/quarto-html/popper.min.js"></script>
+<script src="DID-Introduction_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="DID-Introduction_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="DID-Introduction_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="DID-Introduction_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="DID-Introduction_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.3.353">
 
   <meta name="author" content="Brantly Callaway">
@@ -16,8 +16,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="Relaxing-Parallel-Trends_files/libs/revealjs/dist/reset.css">
-  <link rel="stylesheet" href="Relaxing-Parallel-Trends_files/libs/revealjs/dist/reveal.css">
+  <link rel="stylesheet" href="DID-Introduction_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="DID-Introduction_files/libs/revealjs/dist/reveal.css">
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -30,12 +30,77 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="Relaxing-Parallel-Trends_files/libs/revealjs/dist/theme/quarto.css">
-  <link href="Relaxing-Parallel-Trends_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
-  <link href="Relaxing-Parallel-Trends_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
-  <link href="Relaxing-Parallel-Trends_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
-  <link href="Relaxing-Parallel-Trends_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <link rel="stylesheet" href="DID-Introduction_files/libs/revealjs/dist/theme/quarto.css">
+  <link href="DID-Introduction_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="DID-Introduction_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="DID-Introduction_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="DID-Introduction_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
 
   .callout {
@@ -321,8 +386,8 @@
     }
   </style>
   
-  <script src="Relaxing-Parallel-Trends_files/libs/kePrint-0.0.1/kePrint.js"></script>
-  <link href="Relaxing-Parallel-Trends_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+  <script src="DID-Introduction_files/libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="DID-Introduction_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -330,29 +395,195 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Frontiers in Difference-in-Differences</h1>
-  <p class="subtitle">Relaxing Parallel Trends</p>
+  <p class="subtitle">Introduction to Panel Data Approaches to Causal Inference</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
 Brantly Callaway 
 </div>
-<div class="quarto-title-author-email">
-<a href="mailto:brantly.callaway@uga.edu">brantly.callaway@uga.edu</a>
 </div>
-        <p class="quarto-title-affiliation">
-            University of Georgia
-          </p>
-    </div>
 </div>
 
   <p class="date">October 17, 2023</p>
 </section>
+<section id="introduction" class="slide level2">
+<h2>Introduction</h2>
+<p><span class="math inline">\(\newcommand{\E}{\mathbb{E}} \newcommand{\E}{\mathbb{E}} \newcommand{\var}{\mathrm{var}} \newcommand{\cov}{\mathrm{cov}} \newcommand{\Var}{\mathrm{var}} \newcommand{\Cov}{\mathrm{cov}} \newcommand{\Corr}{\mathrm{corr}} \newcommand{\corr}{\mathrm{corr}} \newcommand{\L}{\mathrm{L}} \renewcommand{\P}{\mathrm{P}} \newcommand{\independent}{{\perp\!\!\!\perp}} \newcommand{\indicator}[1]{ \mathbf{1}\{#1\} }\)</span> Panel data gives researchers the opportunity to follow the same person, firm, location, etc. over multiple time periods</p>
+<div class="fragment">
+<p>Having this sort of data seems fundamentally useful for learning about causal effects of some treatment/policy variable.</p>
+</div>
+<div class="fragment">
+<p>To see this, the <span class="alert">fundamental problem of causal inference</span> is that we can either see a unit’s treated or untreated potential outcomes (but not both)</p>
+</div>
+<div class="fragment">
+<p>However, with panel data, this is not 100% true. In some cases, we can see both a unit’s treated and untreated potential outcome outcome…just at different points in time</p>
+<ul>
+<li>Example: 2 time periods, a unit is untreated in the first period but becomes treated in the second period</li>
+</ul>
+</div>
+<div class="fragment">
+<p>This seems extremely useful for learning about causal effects</p>
+</div>
+</section>
+<section id="introduction-1" class="slide level2">
+<h2>Introduction</h2>
+<p>Panel data approaches are also extremely common in empirical work</p>
+<ul>
+<li>Currie, Kleven, and Zwiers (AER P&amp;P, 2020): 25% of NBER working papers in applied micro use difference-in-differences (i.e., a subset of panel data approaches to causal inference)</li>
+</ul>
+<div class="fragment">
+<p>Some of this is likely due to the reasons mentioned above, but (at least as importantly) its popularity is due to wide availability of panel data</p>
+<p><span class="alert-blue">References: </span></p>
+<ul>
+<li><p>Callaway (2023, <em>Handbook of Labor, Human Resources and Population Economics</em>)</p></li>
+<li><p>Baker, Callaway, Cunningham, Goodman-Bacon, Sant’Anna (2023, draft is days away)</p></li>
+</ul>
+</div>
+</section>
+<section id="overview-of-different-approaches-to-causal-inference-with-panel-data" class="slide level2">
+<h2>Overview of Different Approaches to Causal Inference with Panel Data</h2>
+<p><span class="alert">Types of Panel Data Approaches to Causal Inference:</span></p>
+<ul>
+<li><p>Difference-in-differences</p></li>
+<li><p>Conditioning on lagged outcomes</p></li>
+<li><p>Unit-specific linear trends, interactive fixed effects models, change-in-changes, triple differences, others…</p></li>
+</ul>
+</section>
+<section id="setup" class="slide level2">
+<h2>Setup</h2>
+<p><span class="alert">Setting: Exploit a data structure where the researcher observes:</span></p>
+<ol type="1">
+<li><p>Multiple periods of data</p></li>
+<li><p>Some pre-treatment data for all units</p></li>
+<li><p>Some units become treated while other units remain untreated</p></li>
+</ol>
+<div class="fragment">
+<p>(In my view) this particular data setup is a key distinguishing feature of the approaches that we’ll mainly talk about today relative to traditional panel data models (i.e., fixed effects, dynamic panel, etc.)</p>
+<ul>
+<li>This setup also explains why the methods we consider today are often grouped among “natural experiment” types of methods such as IV or RD.</li>
+</ul>
+</div>
+<div class="fragment">
+<p><span class="alert-blue">Running Examples:</span></p>
+<ul>
+<li><p>Causal effects of a state-level minimum wage increase on employment</p></li>
+<li><p>Causal effects of job displacement</p></li>
+</ul>
+</div>
+</section>
+<section id="setup-1" class="slide level2">
+<h2>Setup</h2>
+<p>Modern approaches also typically allow for <span class="alert">treatment effect heterogeneity</span></p>
+<ul>
+<li>That is, that effects of the treatment can vary across different units in potentially complicated ways</li>
+</ul>
+<p>This is going to be a major issue in the discussion below</p>
+<p>We’ll consider implications for various estimation strategies as well as for “traditional” regression approaches</p>
+</section>
+<section id="difference-in-differences" class="slide level2">
+<h2>Difference-in-differences</h2>
+<p>There have been a number of notable advances in recent years on panel data approaches to causal inference.</p>
+<ul>
+<li><p>Many of these have been in the context of differences-in-differences</p></li>
+<li><p>That said, a number of the insights in this literature extend to other identification strategies</p></li>
+</ul>
+</section>
+<section id="the-logic-of-did" class="slide level2">
+<h2>The Logic of DID</h2>
+<p><span class="alert-blue">Intuition for DID identification strategy</span> is to compare:</p>
+<ul>
+<li><p>The change in outcomes over time for units that participate in the treatment to</p></li>
+<li><p>The change in outcomes over time for units that didn’t participate in the treatment</p></li>
+</ul>
+<div class="fragment">
+<p>Rough explanation: Compares a treated unit’s outcomes to its past outcomes while making adjustment for <span class="alert">common shocks</span> using the comparison group.</p>
+</div>
+</section>
+<section id="textbook-case-with-two-periods" class="slide level2">
+<h2>Textbook Case with Two Periods</h2>
+<p><span class="alert">Data: </span></p>
+<ul>
+<li>2 periods: <span class="math inline">\(t^*\)</span>, <span class="math inline">\(t^*-1\)</span>
+<ul>
+<li>No one treated until period <span class="math inline">\(t^*\)</span></li>
+<li>Some units remain untreated in period <span class="math inline">\(t^*\)</span></li>
+</ul></li>
+<li>2 groups: <span class="math inline">\(D=1\)</span> or <span class="math inline">\(D=0\)</span> (treated and untreated)</li>
+</ul>
+<div class="fragment">
+<p><span class="alert">Potential Outcomes: </span> <span class="math inline">\(Y_{it}(1)\)</span> and <span class="math inline">\(Y_{it}(0)\)</span></p>
+</div>
+<div class="fragment">
+<p><span class="alert">Observed Outcomes: </span> <span class="math inline">\(Y_{it^*}\)</span> and <span class="math inline">\(Y_{it^*-1}\)</span></p>
+<p><span class="math display">\[\begin{align*}
+  Y_{it^*} = D_i Y_{it^*}(1) +(1-D_i)Y_{it^*}(0) \quad \textrm{and} \quad Y_{it^*-1} = Y_{it^*-1}(0)
+\end{align*}\]</span></p>
+</div>
+</section>
+<section id="target-parameter" class="slide level2">
+<h2>Target Parameter</h2>
+<p><span class="alert">Average Treatment Effect on the Treated: </span> <span class="math display">\[ATT = \E[Y_{t^*}(1) - Y_{t^*}(0) | D=1]\]</span></p>
+<p>Explanation: Mean difference between treated and untreated potential outcomes in the second period among the treated group</p>
+</section>
+<section id="did-with-two-periods" class="slide level2">
+<h2>DID with Two Periods</h2>
+<p><span class="alert">Parallel Trends Assumption: </span> <span class="math display">\[\E[\Delta Y_{t^*}(0) | D=1] = \E[\Delta Y_{t^*}(0) | D=0]\]</span> Explanation: Mean path of untreated potential outcomes is the same for the treated group as for the untreated group</p>
+<div class="fragment">
+<p><span class="alert">Identification: </span>Under PTA, we can identify <span class="math inline">\(ATT\)</span>: <span class="math display">\[
+\begin{aligned}
+ATT &amp;= \E[\Delta Y_{t^*} | D=1] - \E[\Delta Y_{t^*}(0) | D=1]
+\end{aligned}
+\]</span></p>
+</div>
+</section>
+<section id="did-with-two-periods-1" class="slide level2" data-visibility="uncounted">
+<h2>DID with Two Periods</h2>
+<p><span class="alert">Parallel Trends Assumption: </span> <span class="math display">\[\E[\Delta Y_{t^*}(0) | D=1] = \E[\Delta Y_{t^*}(0) | D=0]\]</span> Explanation: Mean path of untreated potential outcomes is the same for the treated group as for the untreated group</p>
+<p><span class="alert">Identification: </span>Under PTA, we can identify <span class="math inline">\(ATT\)</span>: <span class="math display">\[
+\begin{aligned}
+ATT &amp;= \E[\Delta Y_{t^*} | D=1] - \E[\Delta Y_{t^*}(0) | D=1]\\
+&amp;= \E[\Delta Y_{t^*} | D=1] - \E[\Delta Y_{t^*} | D=0]
+\end{aligned}
+\]</span></p>
+<div class="fragment">
+<p><span class="math inline">\(\implies ATT\)</span> is identified can be recovered by the difference in outcomes over time (difference 1) relative to the difference in outcomes over time for the untreated group (difference 2)</p>
+</div>
+</section>
+<section id="twfe-regression" class="slide level2">
+<h2>TWFE Regression</h2>
+<p>TWFE regression: <span class="math display">\[Y_{it} = \theta_t + \eta_i + \alpha D_{it} + e_{it}\]</span></p>
+<p><span class="alert-blue">Some more things to point out:</span></p>
+<div class="fragment">
+<ul>
+<li><p>Even though it looks like this model has restricted the effect of participating in the treatment to be constant (and equal to <span class="math inline">\(\alpha\)</span>) across all individuals,</p>
+<p>TWFE (in this case) is actually <span class="alert">robust</span> to treatment effect heterogeneity. To see this, notice that (with two periods) the previous regression is equivalent to <span class="math display">\[\begin{align*}
+\Delta Y_{it} = \Delta \theta_t + \alpha \Delta D_{it} + \Delta e_{it}
+\end{align*}\]</span> This is fully saturated in <span class="math inline">\(\Delta D_{it}\)</span> (which is binary) <span class="math inline">\(\implies\)</span> <span class="math display">\[\begin{align*}
+\alpha = \E[\Delta Y_{it}|D_{it}=1] - \E[\Delta Y_{it}|D=0] = ATT
+\end{align*}\]</span></p></li>
+</ul>
+</div>
+</section>
+<section id="twfe-regression-1" class="slide level2">
+<h2>TWFE Regression</h2>
+<p>It’s easy to make the TWFE regression more complicated:</p>
+<ul>
+<li><p>Multiple time periods</p></li>
+<li><p>Variation in treatment timing</p></li>
+<li><p>More complicated treatments</p></li>
+<li><p>Introducing additional covariates</p></li>
+</ul>
+<p>Unfortunately, the robustness of TWFE regressions to treatment effect heterogeneity or these more complicated (and empirically relevant) settings does not seem to hold</p>
+<div class="fragment">
+<ul>
+<li>Much of the recent (mostly negative) literature on TWFE in the context of DID has considered these types of “realistic” settings</li>
+</ul>
+</div>
+</section>
 <section id="more-complicated-treatment-regimes" class="slide level2">
 <h2>More Complicated Treatment Regimes</h2>
-<div class="fragment">
 <p>The arguments above are fairly easy and well-known.</p>
-</div>
 <div class="fragment">
 <p>Most applications, however, involve more complicated settings (more periods, more complicated treatment regimes, etc.)</p>
 </div>
@@ -380,9 +611,9 @@ Brantly Callaway
 <ul>
 <li>Units can become treated at different points in time
 <ul>
-<li><span class="alert-blue">staggered treatment adoption:</span> Once a unit becomes treated they remain treated.</li>
-<li><span class="math inline">\(D_{it}\)</span> - treatment indicator. In math, staggered treatment adoption means: <span class="math inline">\(D_{it-1}=1 \implies D_{it}=1\)</span>.</li>
-<li><span class="math inline">\(G_i\)</span> - a unit’s <span class="alert-blue">group</span> - the time period that unit becomes treated. Also, define <span class="math inline">\(U_i=1\)</span> for never-treated units and <span class="math inline">\(U_i=0\)</span> otherwise.</li>
+<li><span class="alert-blue">staggered treatment adoption: </span> Once a unit becomes treated they remain treated.</li>
+<li><span class="math inline">\(D_{it}\)</span> — treatment indicator. In math, staggered treatment adoption means: <span class="math inline">\(D_{it-1}=1 \implies D_{it}=1\)</span>.</li>
+<li><span class="math inline">\(G_i\)</span> — a unit’s <span class="alert-blue">group</span> — the time period that unit becomes treated. Also, define <span class="math inline">\(U_i=1\)</span> for never-treated units and <span class="math inline">\(U_i=0\)</span> otherwise.</li>
 </ul></li>
 </ul>
 </div>
@@ -465,26 +696,58 @@ w^O(g,t) = \frac{\P(G=g|U=0)}{\mathcal{T}-g+1}
 </section>
 <section id="did-identification-of-attgt" class="slide level2">
 <h2>DID Identification of <span class="math inline">\(ATT(g,t)\)</span></h2>
-<h4 id="multiple-period-version-of-parallel-trends-assumption">Multiple Period Version of Parallel Trends Assumption</h4>
+<p><br></p>
+<div class="callout callout-note no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>Multiple Period Version of Parallel Trends Assumption</strong></p>
+</div>
+<div class="callout-content">
 <p>For all groups <span class="math inline">\(g \in \bar{\mathcal{G}}\)</span> (all groups except the never-treated group) and for all time periods <span class="math inline">\(t=2,\ldots,\mathcal{T}\)</span>, <span class="math display">\[\begin{align*}
   \E[\Delta Y_{t}(0) | G=g] = \E[\Delta Y_{t}(0) | U=1]
 \end{align*}\]</span></p>
+</div>
+</div>
+</div>
 <p><br></p>
 <div class="fragment">
 <p>Using very similar arguments as before, can show that <span class="math display">\[\begin{align*}
   ATT(g,t) = \E[Y_t - Y_{g-1} | G=g] - \E[Y_t - Y_{g-1} | U=1]
 \end{align*}\]</span></p>
 </div>
+<div class="fragment">
 <p>where the main difference is that we use <span class="math inline">\((g-1)\)</span> as the “base period” (this is the period right before group <span class="math inline">\(g\)</span> becomes treated).</p>
-<p>class: inverse, middle, center count: false</p>
+</div>
 </section>
-<section>
-<section id="empirical-example-minimum-wages-and-employment" class="title-slide slide level1 center">
-<h1>Empirical Example: Minimum Wages and Employment</h1>
-
+<section id="extensionssummary" class="slide level2">
+<h2>Extensions/Summary</h2>
+<p>The previous discussion emphasizes a general purpose identification strategy with staggered treatment adoption:</p>
+<div class="fragment">
+<p>Step 1: Target disaggregated treatment effect parameters (i.e., group-time average treatment effects)</p>
+<ul>
+<li><p>You can use many existing approaches for this step (generally with very minor modification) that work for smaller problems without staggered treatment adoption</p></li>
+<li><p>Discussion above has been for DID identification strategy, but other possibilities fit into this framework: conditioning on lagged outcomes, unit-specific linear trends, interactive fixed effects, change-in-changes, triple differences, etc.</p></li>
+</ul>
+</div>
+<div class="fragment">
+<p>Step 2: (If desired) combine disaggregated treatment effects into lower dimensional summary treatment effect parameter</p>
+</div>
 </section>
-<section id="example-minimum-wage" class="slide level2">
-<h2>Example: Minimum Wage</h2>
+<section id="estimation" class="slide level2">
+<h2>Estimation</h2>
+<p>CS</p>
+<p>Other approaches</p>
+</section>
+<section id="other-issues" class="slide level2">
+<h2>Other Issues</h2>
+<p>Selecting comparison group</p>
+<p>anticipation</p>
+</section>
+<section id="limitation-of-twfe-regressions-in-this-context" class="slide level2">
+<h2>Limitation of TWFE Regressions in this Context</h2>
+</section>
+<section id="empirical-example-minimum-wages-and-employment" class="slide level2">
+<h2>Empirical Example: Minimum Wages and Employment</h2>
 <ul>
 <li>Use county-level data from 2003-2007 during a period where the federal minimum wage was flat</li>
 </ul>
@@ -503,25 +766,41 @@ w^O(g,t) = \frac{\P(G=g|U=0)}{\mathcal{T}-g+1}
 </div>
 <div class="fragment">
 <ul>
-<li><p>We’ll also make a number of simplifications:</p>
+<li>We’ll also make a number of simplifications:
 <ul>
-<li><p>Not worry much about issues like clustered standard errors</p></li>
-<li><p>Not worry about variation in the amount of the minimum wage change (or whether it keeps changing) across states</p></li>
+<li>not worry much about issues like clustered standard errors</li>
+<li>not worry about variation in the amount of the minimum wage change (or whether it keeps changing) across states</li>
 </ul></li>
 </ul>
 </div>
 <div class="fragment">
-<p><span class="alert">Goal: </span> How much do the issues that we have been talking about matter in practice?</p>
+<p><span class="alert">Goals:</span></p>
+<ul>
+<li><p>Get some experience with an application and DID-related code</p></li>
+<li><p>Assess how much do the issues that we have been talking about matter in practice</p></li>
+</ul>
 </div>
 </section>
 <section id="code" class="slide level2">
 <h2>Code</h2>
 <p>Full code is available on my website: <a href="https://bcallaway11.github.io/files/presentations/northwestern-causal-inference-workshop">https://bcallaway11.github.io/files/presentations/northwestern-causal-inference-workshop</a> or link is on my homepage <a href="https://www.brantlycallaway.com">brantlycallaway.com</a></p>
 <p><span class="alert">R packages used in empirical example</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(did)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(BMisc)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(twfeweights)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">library</span>(fixest)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">library</span>(modelsummary)</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="fu">load</span>(<span class="fu">url</span>(<span class="st">"https://github.com/bcallaway11/did_chapter/raw/master/mw_data_ch2.RData"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="setup-data" class="slide level2">
 <h2>Setup Data</h2>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># drops NE region and a couple of small groups</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>mw_data_ch2 <span class="ot">&lt;-</span> <span class="fu">subset</span>(mw_data_ch2, (G <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2004</span>,<span class="dv">2006</span>,<span class="dv">2007</span>,<span class="dv">0</span>)) <span class="sc">&amp;</span> (region <span class="sc">!=</span> <span class="st">"1"</span>))</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="fu">head</span>(mw_data_ch2[,<span class="fu">c</span>(<span class="st">"id"</span>,<span class="st">"year"</span>,<span class="st">"G"</span>,<span class="st">"lemp"</span>,<span class="st">"lpop"</span>,<span class="st">"region"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      id year    G     lemp     lpop region
 554 8003 2001 2007 5.556828 9.614137      4
@@ -531,12 +810,22 @@ w^O(g,t) = \frac{\P(G=g|U=0)}{\mathcal{T}-g+1}
 558 8003 2005 2007 5.303305 9.637958      4
 559 8003 2006 2007 5.342334 9.633056      4</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># drop 2007 as these are right before fed. minimum wage change</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>data2 <span class="ot">&lt;-</span> <span class="fu">subset</span>(mw_data_ch2, G<span class="sc">!=</span><span class="dv">2007</span> <span class="sc">&amp;</span> year <span class="sc">&gt;=</span> <span class="dv">2003</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="co"># keep 2007 =&gt; larger sample size</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>data3 <span class="ot">&lt;-</span> <span class="fu">subset</span>(mw_data_ch2, year <span class="sc">&gt;=</span> <span class="dv">2003</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>name: twfe-results</p>
 </section>
-<section id="twfe-regression" class="slide level2">
+<section id="twfe-regression-2" class="slide level2">
 <h2>TWFE Regression</h2>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>twfe_res2 <span class="ot">&lt;-</span> fixest<span class="sc">::</span><span class="fu">feols</span>(lemp <span class="sc">~</span> post <span class="sc">|</span> id <span class="sc">+</span> year,</span>
+<span id="cb5-2"><a href="#cb5-2"></a>                           <span class="at">data=</span>data2,</span>
+<span id="cb5-3"><a href="#cb5-3"></a>                           <span class="at">cluster=</span><span class="st">"id"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><br></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">modelsummary</span>(<span class="fu">list</span>(twfe_res2), <span class="at">gof_omit=</span><span class="st">".*"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table" data-quarto-postprocess="true" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
@@ -560,34 +849,42 @@ w^O(g,t) = \frac{\P(G=g|U=0)}{\mathcal{T}-g+1}
 
 </div>
 </div>
-<p><br></p>
-<p>[<a href="#/lo-results">LO Unconfoundedness Results</a>]</p>
 </section>
 <section id="attgt-callaway-and-santanna" class="slide level2">
 <h2><span class="math inline">\(ATT(g,t)\)</span> (Callaway and Sant’Anna)</h2>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>attgt <span class="ot">&lt;-</span> did<span class="sc">::</span><span class="fu">att_gt</span>(<span class="at">yname=</span><span class="st">"lemp"</span>,</span>
+<span id="cb7-2"><a href="#cb7-2"></a>                     <span class="at">idname=</span><span class="st">"id"</span>,</span>
+<span id="cb7-3"><a href="#cb7-3"></a>                     <span class="at">gname=</span><span class="st">"G"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4"></a>                     <span class="at">tname=</span><span class="st">"year"</span>,</span>
+<span id="cb7-5"><a href="#cb7-5"></a>                     <span class="at">data=</span>data2,</span>
+<span id="cb7-6"><a href="#cb7-6"></a>                     <span class="at">control_group=</span><span class="st">"nevertreated"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7"></a>                     <span class="at">base_period=</span><span class="st">"universal"</span>)</span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="fu">tidy</span>(attgt)[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>] <span class="co"># print results, drop some extra columns</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>             term group time    estimate   std.error
 1  ATT(2004,2003)  2004 2003  0.00000000          NA
-2  ATT(2004,2004)  2004 2004 -0.03266653 0.020978363
-3  ATT(2004,2005)  2004 2005 -0.06827991 0.021302082
-4  ATT(2004,2006)  2004 2006 -0.12335404 0.021124830
-5  ATT(2004,2007)  2004 2007 -0.13109136 0.023831150
-6  ATT(2006,2003)  2006 2003 -0.03408910 0.011971080
-7  ATT(2006,2004)  2006 2004 -0.01669977 0.008169449
+2  ATT(2004,2004)  2004 2004 -0.03266653 0.020263266
+3  ATT(2004,2005)  2004 2005 -0.06827991 0.021559496
+4  ATT(2004,2006)  2004 2006 -0.12335404 0.019212347
+5  ATT(2004,2007)  2004 2007 -0.13109136 0.022446895
+6  ATT(2006,2003)  2006 2003 -0.03408910 0.012301913
+7  ATT(2006,2004)  2006 2004 -0.01669977 0.008251089
 8  ATT(2006,2005)  2006 2005  0.00000000          NA
-9  ATT(2006,2006)  2006 2006 -0.01939335 0.009300720
-10 ATT(2006,2007)  2006 2007 -0.06607568 0.009450070</code></pre>
+9  ATT(2006,2006)  2006 2006 -0.01939335 0.008841767
+10 ATT(2006,2007)  2006 2007 -0.06607568 0.009122270</code></pre>
 </div>
 </div>
 </section>
 <section id="plot-attgts" class="slide level2">
 <h2>Plot <span class="math inline">\(ATT(g,t)\)</span>’s</h2>
 
-<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="compute-atto" class="slide level2">
 <h2>Compute <span class="math inline">\(ATT^O\)</span></h2>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>attO <span class="ot">&lt;-</span> did<span class="sc">::</span><span class="fu">aggte</span>(attgt, <span class="at">type=</span><span class="st">"group"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="fu">summary</span>(attO)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -598,13 +895,13 @@ Reference: Callaway, Brantly and Pedro H.C. Sant'Anna.  "Difference-in-Differenc
 
 Overall summary of ATT's based on group/cohort aggregation:  
      ATT    Std. Error     [ 95%  Conf. Int.]  
- -0.0571        0.0081     -0.073     -0.0411 *
+ -0.0571        0.0087    -0.0742       -0.04 *
 
 
 Group Effects:
  Group Estimate Std. Error [95% Simult.  Conf. Band]  
-  2004  -0.0888     0.0195       -0.1295     -0.0482 *
-  2006  -0.0427     0.0081       -0.0596     -0.0259 *
+  2004  -0.0888     0.0195       -0.1309     -0.0468 *
+  2006  -0.0427     0.0078       -0.0595     -0.0259 *
 ---
 Signif. codes: `*' confidence band does not cover 0
 
@@ -617,22 +914,22 @@ Estimation Method:  Doubly Robust</code></pre>
 <h2>Comments</h2>
 <p>The differences between the CS estimates and the TWFE estimates are fairly large here: the CS estimate is about 50% larger than the TWFE estimate, though results are qualitatively similar.</p>
 <div class="fragment">
-<p><span class="alert">Let’s see if we can figure out what’s going on…</span></p>
+<p><a href="DID-Introduction.html#/de-chaisemartin-and-dhaultfoeuille-weights">Additional Details</a></p>
 </div>
 </section>
-<section id="de-chaisemartin-and-dhaultfoeuille-weights" class="slide level2">
+<section id="de-chaisemartin-and-dhaultfoeuille-weights" class="slide level2" data-visibility="uncounted">
 <h2>de Chaisemartin and d’Haultfoeuille weights</h2>
 
-<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="atto-weights" class="slide level2">
+<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="atto-weights" class="slide level2" data-visibility="uncounted">
 <h2><span class="math inline">\(ATT^O\)</span> weights</h2>
 
-<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="weight-comparison" class="slide level2">
+<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="weight-comparison" class="slide level2" data-visibility="uncounted">
 <h2>Weight Comparison</h2>
 
-<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="discussion" class="slide level2">
+<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="discussion" class="slide level2" data-visibility="uncounted">
 <h2>Discussion</h2>
 <p>To summarize: <span class="math inline">\(ATT^O = -0.057\)</span> while <span class="math inline">\(\alpha^{TWFE} = -0.038\)</span>. This difference can be fully accounted for</p>
 <ul>
@@ -646,22 +943,28 @@ Estimation Method:  Doubly Robust</code></pre>
 </ul>
 </div>
 </section>
-<section id="additional-comments" class="slide level2">
-<h2>Additional Comments</h2>
-<p>One more comment: there is a lot concern about negative weights (both in econometrics and empirical work).</p>
+<section id="additional-comments-on-weights" class="slide level2" data-visibility="uncounted">
+<h2>Additional Comments on Weights</h2>
+<p>One more comment: there is a lot concern about <span class="alert">negative weights</span> (both in econometrics and empirical work).</p>
+<div class="fragment">
 <ul>
 <li><p>There were no negative weights in the example above, but the weights still weren’t great.</p>
 <ul>
 <li>No negative weights does rule out “sign reversal”</li>
 </ul></li>
-<li><p>But, in my view, the more important issue is the non-transparent weighting scheme.</p>
+</ul>
+</div>
+<div class="fragment">
 <ul>
-<li><p>Example 1: If you try using <code>data3</code> (the data that includes <span class="math inline">\(G=2007\)</span>), you will get a negative weight on <span class="math inline">\(ATT(g=2004,t=2007)\)</span>. But it turns out not to matter much, and TWFE works better in this case than in the case that I showed you.</p></li>
-<li><p>Example 2: Alternative treatment effect parameter <span class="math inline">\(\rightarrow\)</span></p></li>
+<li>But, in my view, the <span class="alert">more important issue is the non-transparent weighting scheme</span>.
+<ul>
+<li>Example 1: If you try using <code>data3</code> (the data that includes <span class="math inline">\(G=2007\)</span>), you will get a negative weight on <span class="math inline">\(ATT(g=2004,t=2007)\)</span>. But it turns out not to matter much, and TWFE works better in this case than in the case that I showed you.</li>
+<li>Example 2: Alternative treatment effect parameter <span class="math inline">\(\rightarrow\)</span></li>
 </ul></li>
 </ul>
+</div>
 </section>
-<section id="simple-aggregation" class="slide level2">
+<section id="simple-aggregation" class="slide level2" data-visibility="uncounted">
 <h2>“Simple” Aggregation</h2>
 <p>Consider the following alternative aggregated treatment effect parameter <span class="math display">\[\begin{align*}
   ATT^{simple} := \sum_{t=g}^\mathcal{T} ATT(g,t) \frac{\P(G=g | G \in \bar{\mathcal{G}})}{\sum_{t=g}^{\mathcal{T}} \P(G=g| G \in \bar{\mathcal{G}})}
@@ -673,11 +976,11 @@ Estimation Method:  Doubly Robust</code></pre>
 <p>By construction, weights are all positive. However, they are different from <span class="math inline">\(ATT^O\)</span> weights</p>
 </div>
 </section>
-<section id="simple-aggregation-1" class="slide level2">
+<section id="simple-aggregation-1" class="slide level2" data-visibility="uncounted">
 <h2>“Simple” Aggregation</h2>
 
-<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="simple-aggregation-2" class="slide level2">
+<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="simple-aggregation-2" class="slide level2" data-visibility="uncounted">
 <h2>“Simple” Aggregation</h2>
 <p>Besides the violations of parallel trends in pre-treatment periods, these weights are further away from <span class="math inline">\(ATT^O\)</span> than the TWFE regression weights are!</p>
 <div class="fragment">
@@ -688,223 +991,28 @@ Estimation Method:  Doubly Robust</code></pre>
 </div>
 <div class="fragment">
 <p>In my view, the discussion above suggests that clearly stating a target aggregate treatment effect parameter and choosing weights that target that parameter is probably more important than checking for negative weights</p>
-</div>
-</section></section>
-<section>
-<section id="covariates-in-the-parallel-trends-assumption" class="title-slide slide level1 center">
-<h1>Covariates in the Parallel Trends Assumption</h1>
-<p><span id="covs"></span></p>
-</section>
-<section id="covariates-in-the-parallel-trends-assumption-1" class="slide level2">
-<h2>Covariates in the Parallel Trends Assumption</h2>
-<h4 id="conditional-parallel-trends-assumption">Conditional Parallel Trends Assumption</h4>
-<p>For all time periods,</p>
-<p><span class="math display">\[\E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=1] = \E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=0]\]</span></p>
-<div class="fragment">
-<p>In words: Parallel trends holds conditional on having the same covariates <span class="math inline">\(X\)</span>.</p>
-</div>
-<div class="fragment">
-<p>Minimum wage example: path of teen employment may depend on a state’s population / population growth / region of the country</p>
-<p>Job displacement example: path of earnings may depend on year’s of education / race / occupation</p>
-</div>
-</section>
-<section id="limitations-of-twfe-regressions" class="slide level2">
-<h2>Limitations of TWFE Regressions</h2>
-<p>In this setting, it is common to run the following TWFE regression:</p>
-<p><span class="math display">\[Y_{it} = \theta_t + \eta_i + \alpha D_{it} + X_{it}'\beta + e_{it}\]</span></p>
-<div class="fragment">
-<p>However, there are a number of issues: <!--(most of these apply even in the friendly setting with two periods)--></p>
-<p>Issue 1: Issues related to multiple periods and variation in treatment timing still arise</p>
-</div>
-<div class="fragment">
-<p>Issue 2: Hard to allow parallel trends to depend on time-invariant covariates</p>
-</div>
-<div class="fragment">
-<p>Issue 3: Hard to allow for covariates that could be affected by the treatment</p>
-</div>
-</section>
-<section id="limitations-of-twfe-regressions-1" class="slide level2">
-<h2>Limitations of TWFE Regressions</h2>
-<p>In this setting, it is common to run the following TWFE regression:</p>
-<p><span class="math display">\[Y_{it} = \theta_t + \eta_i + \alpha D_{it} + X_{it}'\beta + e_{it}\]</span></p>
-<p>However, there are a number of issues: <!--(most of these apply even in the friendly setting with two periods)--></p>
-<p>Issue 4: Linearity results in mixing identification and estimation…e.g., with 2 periods <span class="math display">\[\begin{align*}
-\Delta Y_{it} = \Delta \theta_t + \alpha D_{it} + \Delta X_{it}'\beta + \Delta e_{it}
-\end{align*}\]</span> <span class="math inline">\(\implies\)</span> differencing out unit fixed effects can have implications about what researcher controls for</p>
-<ul>
-<li><p>This doesn’t matter if model for untreated potential outcomes is truly linear</p></li>
-<li><p>However, if we think of linear model as an approximation, this may have meaningful implications.</p></li>
-</ul>
-</section>
-<section id="limitations-of-twfe-regressions-2" class="slide level2">
-<h2>Limitations of TWFE Regressions</h2>
-<p>Even if none of the previous 4 issues apply, <span class="math inline">\(\alpha\)</span> will still be equal to a weighted average of underlying (conditional-on-covariates) treatment effect parameters.</p>
-<ul>
-<li><p>The weights can be negative, and suffer from “weight reversal” (as discussed in Sloczynski (2020))</p></li>
-<li><p>In other words, weights <span class="math inline">\(\alpha\)</span> is a weighted average of <span class="math inline">\(ATT(X)\)</span> where (relative to a baseline of weighting based on the distribution of <span class="math inline">\(X\)</span> for the treated group), the weights put larger weight on <span class="math inline">\(ATT(X)\)</span> for values of the covariates that are <em>uncommon</em> for the treated group relative to the untreated group and smaller weight on <span class="math inline">\(ATT(X)\)</span> for values of the covariates that are <em>common</em> for the treated group relative to the untreated group</p></li>
-</ul>
-<p>See Caetano and Callaway (2023) for more details</p>
-</section>
-<section id="covariate-balancing" class="slide level2">
-<h2>Covariate Balancing</h2>
-<p>Alternatively, if we could choose “balancing weights” <span class="math inline">\(\nu_0(X)\)</span> such that the distribution of <span class="math inline">\(X\)</span> was the same in the untreated group as it is in the treated group after applying the balancing weights, then we would have that (from the second term above) <span class="math display">\[\begin{align*}
-  \E\Big[ \E[\Delta Y_{it}(0) | X_i, D_i=0 ] \Big| D_i=1\Big] &amp;= \E\Big[ \nu_0(X_i) \E[\Delta Y_{it}(0) | X_i, D_i=0 ] \Big| D_i=0\Big] \\
-  &amp;= \E[\nu_0(X_i) \Delta Y_{it}(0) | D_i=0]
-\end{align*}\]</span> where the first equality is due to balancing weights and the second by the law of iterated expectations.</p>
-<div class="fragment">
-<p>The most common way to re-weight is based on the propensity score, you can show: <span class="math display">\[\begin{align*}
-  \nu_0(x) = \frac{p(x)(1-p)}{(1-p(x))p}
-\end{align*}\]</span> where <span class="math inline">\(p(x) = \P(D=1|X=x)\)</span> and <span class="math inline">\(p=\P(D=1)\)</span>.</p>
-</div>
-<div class="fragment">
-<p>This is the approach suggested in Abadie (2005). In practice, you need to estimate the propensity score. The most common choices are probit or logit.</p>
-</div>
-</section>
-<section id="doubly-robust" class="slide level2">
-<h2>Doubly Robust</h2>
-<p>Alternatively, you can show</p>
-<p><span class="math display">\[ATT=\E\left[ \left( \frac{D}{p} - \frac{p(X)(1-D)}{(1-p(X))p} \right)(\Delta Y_t - \E[\Delta Y_t | X, D=0]) \right]\]</span></p>
-<div class="fragment">
-<p>This requires estimating both <span class="math inline">\(p(X)\)</span> and <span class="math inline">\(\E[\Delta Y_{t^*}|X,D=0]\)</span>.</p>
-</div>
-<div class="fragment">
-<p>Big advantage:</p>
-<ul>
-<li>This expression for <span class="math inline">\(ATT\)</span> is <em>doubly robust</em>. This means that, it will deliver consistent estimates of <span class="math inline">\(ATT\)</span> if <span class="alert">either</span> the model for <span class="math inline">\(p(X)\)</span> or for <span class="math inline">\(\E[\Delta Y_{t^*}|X,D=0]\)</span>.</li>
-</ul>
-</div>
-<div class="fragment">
-<ul>
-<li>In my experience, doubly robust estimators perform much better than either the regression or propensity score weighting estimators</li>
-</ul>
-</div>
-<div class="fragment">
-<ul>
-<li>This also provides a connection to estimating <span class="math inline">\(ATT\)</span> under conditional parallel trends using machine learning for <span class="math inline">\(p(X)\)</span> and <span class="math inline">\(\E[\Delta Y_{t^*}|X,D=0]\)</span> (see: Chang (2020) and Callaway, Drukker, Liu, and Sant’Anna (2023))</li>
-</ul>
-</div>
-</section>
-<section id="additional-comments-1" class="slide level2">
-<h2>Additional Comments</h2>
-<p>In panel data applications, an additional consideration that arises with time-varying covariates is that they could be affected by the treatment, often referred to as a <span class="highlight">“bad control”</span></p>
-<ul>
-<li>In fact, I sneaked an example of this earlier: a person’s occupation</li>
-</ul>
-<p>In my view, a good default option for dealing with a covariate that could be affected by the treatment is to include its pre-treatment value</p>
-<ul>
-<li>Note: this is different from the traditional approach of excluding it altogether in a TWFE regression</li>
-</ul>
-<div class="fragment">
-<p>What about time-varying covariates not affected by the treatment? Most important: include it’s level in some period (or average across periods), can also include more periods and/or differences over time, etc.</p>
-</div>
-</section>
-<section id="back-to-minimum-wage-example" class="slide level2">
-<h2>Back to Minimum Wage Example</h2>
-<p>We’ll allow for path of outcomes to depend on region of the country</p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table" data-quarto-postprocess="true" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
-<th style="text-align: center;" data-quarto-table-cell-role="th">&nbsp;(1)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">post</td>
-<td style="text-align: center;">0.001</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: center;">(0.008)</td>
-</tr>
-</tbody>
-</table>
-
+<div class="footer footer-default">
 
 </div>
 </div>
-<p>Relative to previous results, this is much smaller and statistically insignificant and is similar to the result in Dube et al.&nbsp;(2010).</p>
 </section>
-<section id="use-doubly-robust-approach-from-cs" class="slide level2">
-<h2>Use Doubly Robust Approach from CS</h2>
-</section>
-<section id="use-doubly-robust-approach-from-cs-1" class="slide level2">
-<h2>Use Doubly Robust Approach from CS</h2>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-aggte(MP = cs_x, type = "group")
-
-Reference: Callaway, Brantly and Pedro H.C. Sant'Anna.  "Difference-in-Differences with Multiple Time Periods." Journal of Econometrics, Vol. 225, No. 2, pp. 200-230, 2021. &lt;https://doi.org/10.1016/j.jeconom.2020.12.001&gt;, &lt;https://arxiv.org/abs/1803.09015&gt; 
-
-
-Overall summary of ATT's based on group/cohort aggregation:  
-     ATT    Std. Error     [ 95%  Conf. Int.]  
- -0.0273        0.0077    -0.0424     -0.0121 *
-
-
-Group Effects:
- Group Estimate Std. Error [95% Simult.  Conf. Band]  
-  2004  -0.0436     0.0199       -0.0849     -0.0024 *
-  2006  -0.0199     0.0078       -0.0360     -0.0038 *
----
-Signif. codes: `*' confidence band does not cover 0
-
-Control Group:  Never Treated,  Anticipation Periods:  0
-Estimation Method:  Doubly Robust</code></pre>
-</div>
-</div>
-</section>
-<section id="comments-1" class="slide level2">
-<h2>Comments</h2>
-<p>Even more than in the previous case, the results in this case are notably different depending on the estimation strategy.</p>
-<p>name: violations</p>
-</section>
-<section id="what-about-violations-of-parallel-trends" class="slide level2">
-<h2>What about violations of parallel trends?</h2>
-<p>Parallel trends assumptions don’t automatically hold in applications with repeated observations over time.</p>
-<div class="fragment">
-<p>The most natural way to motivate parallel trends is with a linear model for untreated potential outcomes: <span class="math display">\[\begin{align*}
-  Y_{it}(0) = \theta_t + \eta_i + e_{it}
-\end{align*}\]</span> where the key feature is the additive separability of <span class="math inline">\(\eta_i\)</span></p>
-</div>
-<div class="fragment">
-<p>But it’s not always clear if additive separability (and hence parallel trends) is reasonable</p>
-<ul>
-<li>The most common “response” is pre-testing…checking if parallel trends holds in pre-treatment periods</li>
-</ul>
-</div>
-<div class="fragment">
-<p>DID + pre-tests are a very powerful/useful approach to “validating” the parallel trends assumption</p>
-</div>
-</section>
-<section id="what-about-our-case" class="slide level2">
-<h2>What about our case?</h2>
-
-<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch quarto-figure-center"><div class="footer footer-default">
-
-</div>
-</section></section>
     </div>
   </div>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script>
-  <script src="Relaxing-Parallel-Trends_files/libs/revealjs/dist/reveal.js"></script>
+  <script src="DID-Introduction_files/libs/revealjs/dist/reveal.js"></script>
   <!-- reveal.js plugins -->
-  <script src="Relaxing-Parallel-Trends_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
-  <script src="Relaxing-Parallel-Trends_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
-  <script src="Relaxing-Parallel-Trends_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
-  <script src="Relaxing-Parallel-Trends_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
-  <script src="Relaxing-Parallel-Trends_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  <script src="DID-Introduction_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="DID-Introduction_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="DID-Introduction_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="DID-Introduction_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="DID-Introduction_files/libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
-  <script src="Relaxing-Parallel-Trends_files/libs/revealjs/plugin/notes/notes.js"></script>
-  <script src="Relaxing-Parallel-Trends_files/libs/revealjs/plugin/search/search.js"></script>
-  <script src="Relaxing-Parallel-Trends_files/libs/revealjs/plugin/zoom/zoom.js"></script>
-  <script src="Relaxing-Parallel-Trends_files/libs/revealjs/plugin/math/math.js"></script>
+  <script src="DID-Introduction_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="DID-Introduction_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="DID-Introduction_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="DID-Introduction_files/libs/revealjs/plugin/math/math.js"></script>
   <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
 
   <script>
