@@ -11,4 +11,4 @@ contributes:
       slide-number: true
       date-format: long
       callout-icon: false
-
+      embed-resources: true
