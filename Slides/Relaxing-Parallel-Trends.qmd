@@ -343,7 +343,7 @@ library(twfeweights)
 library(fixest)
 library(modelsummary)
 library(ggplot2)
-load("apm.RData")
+load("data2.RData")
 ```
 
 ```{r}
