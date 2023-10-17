@@ -20,7 +20,7 @@ High-level discussion about using panel data for causal inference and an introdu
 
 <b>Slides</b>
 
-[Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/DID-Introduction.html)
+[Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/DID-Introduction.html)
 
 [Data](https://mixtape-sessions.github.io/Frontiers-in-DID/apm.RData)
 
@@ -32,7 +32,7 @@ Relaxing the parallel trends assumption by conditioning on covariates and dealin
 
 <b>Slides</b>
 
-[Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Relaxing-Parallel-Trends.html)
+[Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/Relaxing-Parallel-Trends.html)
 
 <b>Coding Exercises</b>
 
@@ -53,7 +53,7 @@ Continuous treatment and a treatment that can turn on and off plus a high-level 
 
 <b>Slides</b>
 
-[Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/More-Complicated-Treatment-Regimes.html)
+[Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/More-Complicated-Treatment-Regimes.html)
 
 <b>Coding Exercises</b>
 
@@ -74,7 +74,7 @@ Many recent developments in panel data approaches to causal inference have come 
 
 <b>Slides</b>
 
-[Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Alternative-Identification-Strategies.html)
+[Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/Alternative-Identification-Strategies.html)
 
 <b>Coding Exercises</b>
 
