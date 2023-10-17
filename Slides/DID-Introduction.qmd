@@ -659,7 +659,7 @@ load(url("https://github.com/bcallaway11/did_chapter/raw/master/mw_data_ch2.RDat
 ```{r}
 # drops NE region and a couple of small groups
 mw_data_ch2 <- subset(mw_data_ch2, (G %in% c(2004,2006,2007,0)) & (region != "1"))
-head(mw_data_ch2[,c("id","year","G","lemp","lpop","region")])
+head(mw_data_ch2[,c("id","year","G","lemp","lpop","lavg_pay","region")])
 ```
 
 <br>

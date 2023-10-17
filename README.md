@@ -22,7 +22,11 @@ High-level discussion about using panel data for causal inference and an introdu
 
 [Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/DID-Introduction.html)
 
-[Data](https://mixtape-sessions.github.io/Frontiers-in-DID/apm.RData)
+[[R Data full](https://mixtape-sessions.github.io/Frontiers-in-DID/mw_data_ch2.RData)] [[Stata dta full](https://mixtape-sessions.github.io/Frontiers-in-DID/mw_data_ch2.dta)]
+
+[[R Data subset used in slides](https://mixtape-sessions.github.io/Frontiers-in-DID/data2.RData)] [[Stata dta subset used in slides](https://mixtape-sessions.github.io/Frontiers-in-DID/data2.dta)]
+
+[[R Code used in slides](https://mixtape-sessions.github.io/Frontiers-in-DID/DID-Introduction.R)]
 
 <details open><summary><b>Relaxing Parallel Trends (& Covariates Good and Bad)</b></summary><br/>
 
@@ -34,11 +38,15 @@ Relaxing the parallel trends assumption by conditioning on covariates and dealin
 
 [Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/Relaxing-Parallel-Trends.html)
 
+[Data] - same as in first session
+
+[[R Code used in slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Relaxing-Parallel-Trends.R)]
+
 <b>Coding Exercises</b>
 
 [Exercise 1](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/exercise1.html)
 
-[Data](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/job_displacement_data.RData)
+[[R data](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/job_displacement_data.RData)] [[Stata dta](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/job_displacement_data.dta)]
 
 [Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/exercise1_sol.html)
 

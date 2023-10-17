@@ -12,12 +12,25 @@ knitr:
     echo: true
 ---
 
-## Covariates in the Parallel Trends Assumption
-
-
 ```{r echo=FALSE}
 library(revealEquations)
 ```
+
+## Covariates in the Parallel Trends Assumption
+
+Including covariates in the parallel trends assumption can often make DID identification strategies more plausible:
+
+. . .
+
+[Example]{.alert-blue}
+
+* [Minimum wage example:]{.alert} path of teen employment may depend on a state's population / population growth / region of the country
+
+* [Job displacement example:]{.alert} path of earnings may depend on year's of education / race / occupation
+
+. . .
+
+However, there are a number of new issues that can arise in this setting...
 
 $\newcommand{\E}{\mathbb{E}}
 \newcommand{\E}{\mathbb{E}}
@@ -32,15 +45,44 @@ $\newcommand{\E}{\mathbb{E}}
 \newcommand{\independent}{{\perp\!\!\!\perp}}
 \newcommand{\indicator}[1]{ \mathbf{1}\{#1\} }$
 
+
+## Outline
+
+<br>
+
+
+1. Limitations of TWFE Regression
+
+2. Identification with Two Periods
+
+3. Alternative Estimation Strategies
+
+4. Multiple Periods
+
+5. Minimum Wage Application
+
+6. Dealing with "Bad" Controls
+
+## Notation
+
+Start with the case with only two time periods
+
+Only need a little bit of new notation here:
+
+* $X_{t^*}$ and $X_{t^*-1}$ &mdash; time-varying covariates
+
+* $Z$ &mdash; time-invariant covariates
+
+## Covariates in the Parallel Trends Assumption
+
 <br>
 
 ::: {.callout-note}
 
 ### Conditional Parallel Trends Assumption
 
-For all time periods,
 
-$$\E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=1] = \E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=0]$$
+$$\E[\Delta Y_{t^*}(0) | X_{t^*}, X_{t^*-1},Z,D=1] = \E[\Delta Y_{t^*}(0) | X_{t^*}, X_{t^*-1},Z,D=0]$$
 :::
 
 ::: {.fragment}
@@ -51,14 +93,11 @@ In words: Parallel trends holds conditional on having the same covariates $(X_t,
 
 ::: {.fragment}
 
-
-Minimum wage example: path of teen employment may depend on a state's population / population growth / region of the country
-
-Job displacement example: path of earnings may depend on year's of education / race / occupation
+[Minimum wage example]{.alert} (e.g.) Parallel trends conditional on counties have the same population (like $X_t$) and being in the same region of the country (like $Z$)
 
 :::
 
-
+# Limitations of TWFE Regressions {visibility="uncounted"}
 
 ## Limitations of TWFE Regressions
 
@@ -127,9 +166,9 @@ title <- "Identification under Conditional Parallel Trends"
 
 before <- "Under conditional parallel trends, we have that"
 
-eqlist <- list("ATT &= \\E[\\Delta Y_t | D=1] - \\E[\\Delta Y_t(0) | D=1] \\hspace{150pt}",
-               "&=\\E[\\Delta Y_t | D=1] - \\E\\Big[ \\E[\\Delta Y_t(0) | X, D=1] \\Big| D=1\\Big]",
-               "&= \\E[\\Delta Y_t | D=1] - \\E\\Big[ \\underbrace{\\E[\\Delta Y_t(0) | X, D=0]}_{=:m_0(X)} \\Big| D=1\\Big]")
+eqlist <- list("ATT &= \\E[\\Delta Y_{t^*} | D=1] - \\E[\\Delta Y_{t^*}(0) | D=1] \\hspace{150pt}",
+               "&=\\E[\\Delta Y_{t^*} | D=1] - \\E\\Big[ \\E[\\Delta Y_{t^*}(0) | X, D=1] \\Big| D=1\\Big]",
+               "&= \\E[\\Delta Y_{t^*} | D=1] - \\E\\Big[ \\underbrace{\\E[\\Delta Y_{t^*}(0) | X, D=0]}_{=:m_0(X)} \\Big| D=1\\Big]")
 
 
 after <- "
@@ -140,23 +179,47 @@ Intuition: (i) Compare path of outcomes for treated group to (conditional on cov
 
 . . .
 
-This expression suggests a [regression adjustment]{.alert} estimator.  For example, if we assume that $m_0(X) = X'\\beta_0$, then we have that
+This argument also require an [overlap condition]{.alert}
 
-$$ATT = \\E[\\Delta Y_t | D=1] - \\E[X'|D=1]\\beta_0$$
+* For all possible values of the covariates, $p(x) := \\P(D=1|X=x) < 1$.
+
+* In words: for all treated units, we can find untreated units that have the same characteristics
 
 . . .
 
-It is easy to extend these arguments to multiple periods and variation in treatment timing (just change the base period)"
+There are several possible ways to turn this identification result into an estimation strategy $\\rightarrow$
+
+"
 
 step_by_step_eq(eqlist, before, after, title)
 ```
+
+## Regression Adjustment
+
+The challenging term to deal with in the previous expression for $ATT$ is
+
+$$\E\Big[ \underbrace{\E[\Delta Y_{t^*}(0) | X, D=0]}_{=:m_0(X)} \Big| D=1\Big]$$
+
+The most direct way to proceed is by proposing a model for $m_0(X)$.
+
+This expression suggests a [regression adjustment]{.alert} estimator.  For example, if we assume that $m_0(X) = X'\\beta_0$, then we have that
+
+$$ATT = \E[\Delta Y_{t^*} | D=1] - \E[X'|D=1]\beta_0$$
+
+. . .
+
+and we can estimate the $ATT$ by
+
+* Step 1: Estimate $\beta_0$ using untreated group
+
+* Step 2: Combine this estimate with estimates of $\E[\Delta Y_t | D=1]$ and $\E[X'|D=1]$ (using treated group) to estimate $ATT$
 
 ## Covariate Balancing
 
 Alternatively, if we could choose [balancing weights]{.alert} $\nu_0(X)$ such that the distribution of $X$ was the same in the untreated group as it is in the treated group after applying the balancing weights, then we would have that (from the second term above)
 \begin{align*}
-  \E\Big[ \E[\Delta Y_{it}(0) | X_i, D_i=0 ] \Big| D_i=1\Big] &= \E\Big[ \nu_0(X_i) \E[\Delta Y_{it}(0) | X_i, D_i=0 ] \Big| D_i=0\Big] \\
-  &= \E[\nu_0(X_i) \Delta Y_{it}(0) | D_i=0]
+  \E\Big[ \E[\Delta Y_{t^*}(0) | X, D=0 ] \Big| D=1\Big] &= \E\Big[ \nu_0(X) \E[\Delta Y_{t^*}(0) | X, D=0 ] \Big| D=0\Big] \\
+  &= \E[\nu_0(X) \Delta Y_{t^*}(0) | D=0]
 \end{align*}
 where the first equality is due to balancing weights and the second by the law of iterated expectations.
 
@@ -212,6 +275,12 @@ Big advantage:
 
 :::
 
+::: {.fragment}
+
+[More Details](Relaxing-Parallel-Trends.html#/understanding-double-robustness)
+
+:::
+
 ## Multiple Time Periods and Variation in Treatment Timing
 
 <br>
@@ -244,6 +313,25 @@ Because $\mathbf{X}$ contains $X_t$ for all time periods, terms like $m_{gt}^0(\
 * $(X_{it}-X_{ig-1})$ &mdash; the change in covariates over time
 
 
+# Empirical Example {visibility="uncounted"}
+
+::: {.notes}
+
+* walk through a bunch of examples
+
+* including covariates in the parallel trend assumtpion, compare to regression
+
+* regression adjustment, ipw, doubly robust
+
+* change base period
+
+* change comparison group
+
+* allow for anticipation
+
+:::
+
+
 ## Back to Minimum Wage Example
 
 We'll allow for path of outcomes to depend on region of the country
@@ -273,6 +361,7 @@ Relative to previous results, this is much smaller and statistically insignifica
 
 
 ```{r eval=FALSE}
+#| code-line-numbers: "|6"
 # callaway and sant'anna including covariates
 cs_x <- att_gt(yname="lemp",
                tname="year",
@@ -330,7 +419,7 @@ modelsummary(twfe_x, gof_omit=".*")
 
 
 ```{r eval=FALSE}
-#| code-line-numbers: "|9"
+#| code-line-numbers: "|6|9"
 # callaway and sant'anna including covariates
 cs_x <- att_gt(yname="lemp",
                tname="year",
@@ -372,7 +461,7 @@ cs_x_dyn <- aggte(cs_x, type="dynamic")
 ggdid(cs_x_dyn)
 ```
 
-## Inverse Probability Weighting
+## Inverse Propensity Score Weighting
 
 ```{r eval=FALSE}
 #| code-line-numbers: "|9"
@@ -394,7 +483,7 @@ ggdid(cs_x_dyn)
 
 
 
-## Inverse Probability Weighting
+## Inverse Propensity Score Weighting
 
 ```{r echo=FALSE}
 cs_x <- att_gt(yname="lemp",
@@ -410,7 +499,7 @@ cs_x_res <- aggte(cs_x, type="group")
 summary(cs_x_res)
 ```
 
-## Inverse Probability Weighting
+## Inverse Propensity Score Weighting
 
 ```{r echo=FALSE}
 cs_x_dyn <- aggte(cs_x, type="dynamic")
@@ -644,7 +733,7 @@ One idea is to just ignore that the covariates may have been affected by the tre
 
 ::: {.callout-note} 
 
-### Alt CPT I
+### Alternative Conditional Parallel Trends 1
 
 $$\E[\Delta Y_{t^*}(0) | X_{t^*}, X_{t^*-1}(0), Z, D=1] = \E[\Delta Y_{t^*}(0) |  X_{t^*}, X_{t^*-1}(0), Z, D=0]$$
 :::
@@ -661,7 +750,7 @@ It is more common in empirical work to drop $X_t(0)$ entirely from the parallel 
 
 ::: {.callout-note} 
 
-### Alt CPT II
+### Alternative Conditional Parallel Trends 2
 
 $$\E[\Delta Y_{t^*}(0) | Z, D=1] = \E[\Delta Y_{t^*}(0) |  Z, D=0]$$
 :::
@@ -678,7 +767,7 @@ Perhaps a better alternative identifying assumption is the following one
 
 ::: {.callout-note} 
 
-### Alt CPT III
+### Alternative Conditional Parallel Trends 3
 
 $$\E[\Delta Y_{t^*}(0) | X_{t^*-1}(0), Z, D=1] = \E[\Delta Y_{t^*}(0) |  X_{t^*-1}(0), Z, D=0]$$
 :::
@@ -743,5 +832,19 @@ See Caetano et al. (2023) for more details about bad controls.
 
 To understand double robustness, we can rewrite the expression for $ATT$ as
 \begin{align*}
-  ATT = \E\left[ \frac{D}{p} \Big(\Delta Y_t - m_0(X)\Big) \right] - \E\left[ \frac{p(X)(1-D)}{(1-p(X))p} \Big(\Delta Y_t - m_0(X)\Big)\right]
+  ATT = \E\left[ \frac{D}{p} \Big(\Delta Y_{t^*} - m_0(X)\Big) \right] - \E\left[ \frac{p(X)(1-D)}{(1-p(X))p} \Big(\Delta Y_{t^*} - m_0(X)\Big)\right]
 \end{align*}
+
+The first term is exactly the same as what comes from regression adjustment
+
+* If we correctly specify a model for $m_0(X)$, it will be equal to $ATT$.
+
+* If $m_0(X)$ not correctly specified, then, by itself, this term will be biased for $ATT$
+
+The second term can be thought of as a de-biasing term
+
+* If $m_0(X)$ is correctly specified, it is equal to 0
+
+* If $p(X)$ is correctly specified, it reduces to $\E[\Delta Y_t(0) | D=1] - \E[m_0(X)|D=1]$ which both delivers counterfactual untreated potential outcomes and removes the (possibly misspecified) second term from the first equation
+
+[Back](Relaxing-Parallel-Trends.html#/doubly-robust)
