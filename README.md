@@ -20,7 +20,7 @@ High-level discussion about using panel data for causal inference and an introdu
 
 <b>Slides</b>
 
-[Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/DID-Introduction.html)
+[Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/)
 
 [[R Data full](https://mixtape-sessions.github.io/Frontiers-in-DID/mw_data_ch2.RData)] [[Stata dta full](https://mixtape-sessions.github.io/Frontiers-in-DID/mw_data_ch2.dta)]
 
