@@ -7,506 +7,45 @@ author:
     email: brantly.callaway@uga.edu
     affiliations: University of Georgia
 date: October 17, 2023
+knitr:
+  opts_chunk:
+    echo: true
 ---
-
-
-
-## More Complicated Treatment Regimes
-
-::: {.fragment}
-The arguments above are fairly easy and well-known.
-:::
-
-::: {.fragment}
-Most applications, however, involve more complicated settings (more periods, more complicated treatment regimes, etc.)
-:::
-
-::: {.fragment}
-One of the most active areas in causal inference with panel data in the past few years has been to these more "realistic" settings
-:::
-
-
-::: {.fragment}
-A lot of these advancements have been in a DID framework (so I will emphasize this below)
-
-* However, I think that a lot of the same insights apply to other identification strategies as well
-
-* I'll make the case that you can just "substitute in", say, LO unconfoundedness in the "first step" for parallel trends, and a lot of the same arguments go through
-
-* If we have time, I'll argue that you can use other identification strategies in the "first step" such as interactive fixed effects models and change-in-changes
-:::
-
-::: {.fragment}
-The first more complicated treatment regime that we'll discuss is <span class="alert">staggered treatment adoption</span>
-:::
-
-## Setup w/ Staggered Treatment Adoption
-
-- $\mathcal{T}$ time periods
-
-::: {.fragment}
-- Units can become treated at different points in time
-  - [staggered treatment adoption:]{.alert-blue} Once a unit becomes treated they remain treated.
-  - $D_{it}$ - treatment indicator.  In math, staggered treatment adoption means: $D_{it-1}=1 \implies D_{it}=1$.
-  - $G_i$ - a unit's <span class="alert-blue">group</span> - the time period that unit becomes treated.  Also, define $U_i=1$ for never-treated units and $U_i=0$ otherwise.
-:::
-
-::: {.fragment}
-<span class="alert">Examples:</span>
-
-* Government policies that roll out in different locations at different times (minimum wage is close to this over short time horizons)
-
-* "Scarring" treatments: e.g., job displacement does not typically happen year after year, but rather labor economists think of being displaced as changing a person's "state" (the treatment is more like: has a person ever been displaced) 
-:::
-
-## Setup w/ Staggered Treatment Adoption
-
-- Potential outcomes: $Y_{it}(g)$ - the outcome that unit $i$ would experience in time period $t$ if they became treated in period $g$.
-
-::: {.fragment}
-
-- Untreated potential outcome: $Y_{it}(0)$ - the outcome unit $i$ would experience in time period $t$ if they did not participate in the treatment in any period.  
-
-:::
-
-::: {.fragment}
-- Observed outcome: $Y_{it}=Y_{it}(G_i)$
-:::
-
-::: {.fragment}
-- No anticipation condition: $Y_{it} = Y_{it}(0)$ for all $t < G_i$ (pre-treatment periods for unit $i$)
-:::
-
-
-## Unit-Level Treatment Effects
-
-<span class="alert">Unit-level treatment effect</span>
-$$\tau_{it}(g) = Y_{it}(g) - Y_{it}(0)$$
-
-::: {.fragment}
-
-<span class="alert">Average treatment effect for unit $i$</span> (across time periods):
-$$\bar{\tau}_i(g) = \frac{1}{\mathcal{T} - g + 1} \sum_{t=g}^{\mathcal{T}} \tau_{it}(g)$$
-
-:::
-
-## Target Parameters
-
-* <span class="alert">Group-time average treatment effects</span> 
-\begin{align*}
-  ATT(g,t) = \E[ \tau_{it}(G) | G=g]
-\end{align*}
-Explanation: $ATT$ for group $g$ in time period $t$
-
-::: {.fragment}
-
-* <span class="alert">Event Study</span> 
-\begin{align*}
-  ATT^{ES}(e) = \E[\tau_{i,g+e}(G) | G \in \mathcal{G}_e]
-\end{align*}
-where $\mathcal{G}_e$ is the set of groups observed to have experienced the treatment for $e$ periods at some point.
-
-    Explanation: $ATT$ when units have been treated for $e$ periods
-
-<!--In math: $\mathcal{G}_e = \{g : (g+e) \in [2,T] \textrm{ and } g > 0\}$-->
-
-:::
-
-::: {.fragment}
-
-
-* <span class="alert">Overall ATT</span> 
-\begin{align*}
-  ATT^O = \E[\bar{\tau}_i(G) | U=0]
-\end{align*}
-Explanation: $ATT$ across all units that every participate in the treatment
-
-:::
-
-## Target Parameters
-
-To understand the discussion later, it is also helpful to think of $ATT(g,t)$ as a <span class="alert">building block</span> for the other parameters discussed above.
-
-::: {.fragment}
-
-Notice that:
-
-\begin{align*}
-  ATT^{ES}(e) = \sum_{g \in \bar{\mathcal{G}}} w^{ES}(g,e) ATT(g,g+e) \qquad \textrm{ and } \qquad ATT^O = \sum_{g \in \bar{\mathcal{G}}} \sum_{t=g}^{\mathcal{T}} w^O(g,t) ATT(g,t)
-\end{align*}
-where
-\begin{align*}
-  w^{ES}(g,e) = \indicator{g \in \mathcal{G}_e} \P(G=g|G\in \mathcal{G}_e) \qquad \textrm{and} \qquad
-w^O(g,t) = \frac{\P(G=g|U=0)}{\mathcal{T}-g+1}
-\end{align*}
-
-:::
-
-::: {.fragment}
-
-
-<br>
-
-In other words, if we can identify/recover $ATT(g,t)$, then we can proceed to recover $ATT^{ES}(e)$ and $ATT^O$.
-
-:::
-
-## DID Identification of $ATT(g,t)$
-
-#### Multiple Period Version of Parallel Trends Assumption
-
-For all groups $g \in \bar{\mathcal{G}}$ (all groups except the never-treated group) and for all time periods $t=2,\ldots,\mathcal{T}$,
-\begin{align*}
-  \E[\Delta Y_{t}(0) | G=g] = \E[\Delta Y_{t}(0) | U=1]
-\end{align*}
-
-<br>
-
-::: {.fragment}
-
-Using very similar arguments as before, can show that 
-\begin{align*}
-  ATT(g,t) = \E[Y_t - Y_{g-1} | G=g] - \E[Y_t - Y_{g-1} | U=1]
-\end{align*}
-
-:::
-
-
-where the main difference is that we use $(g-1)$ as the "base period" (this is the period right before group $g$ becomes treated).
-
-class: inverse, middle, center
-count: false
-
-# Empirical Example: Minimum Wages and Employment
-
-
-
-## Example: Minimum Wage
-
-- Use county-level data from 2003-2007 during a period where the federal minimum wage was flat
-
-::: {.fragment}
-
-- Exploit minimum wage changes across states
-
-    - Any state that increases their minimum wage above the federal minimum wage will be considered as treated
-  
-:::
-
-::: {.fragment}
-
-
-- Interested in the effect of the minimum wage on teen employment
-
-:::
-
-::: {.fragment}
-
-
-- We'll also make a number of simplifications:
-
-    - Not worry much about issues like clustered standard errors
-    
-    - Not worry about variation in the amount of the minimum wage change (or whether it keeps changing) across states
-
-:::
-
-::: {.fragment}
-
-
-<span class="alert">Goal: </span> How much do the issues that we have been talking about matter in practice?
-
-:::
-
-## Code
-
-Full code is available on my website: [https://bcallaway11.github.io/files/presentations/northwestern-causal-inference-workshop](https://bcallaway11.github.io/files/presentations/northwestern-causal-inference-workshop) or link is on my homepage [brantlycallaway.com](https://www.brantlycallaway.com)
-
-<span class="alert">R packages used in empirical example</span>
-
-```{r, message=FALSE}
-library(did)
-library(BMisc)
-library(twfeweights)
-library(fixest)
-library(modelsummary)
-library(ggplot2)
-load(url("https://github.com/bcallaway11/did_chapter/raw/master/mw_data_ch2.RData"))
-```
-
-
-
-## Setup Data
-
-```{r}
-# drops NE region and a couple of small groups
-mw_data_ch2 <- subset(mw_data_ch2, (G %in% c(2004,2006,2007,0)) & (region != "1"))
-head(mw_data_ch2[,c("id","year","G","lemp","lpop","region")])
-# drop 2007 as these are right before fed. minimum wage change
-data2 <- subset(mw_data_ch2, G!=2007 & year >= 2003)
-# keep 2007 => larger sample size
-data3 <- subset(mw_data_ch2, year >= 2003)
-```
-
-
-
-name: twfe-results
-
-## TWFE Regression
-
-```{r}
-twfe_res2 <- fixest::feols(lemp ~ post | id + year,
-                           data=data2,
-                           cluster="id")
-
-modelsummary(list(twfe_res2), gof_omit=".*")
-
-```
-
-<br>
-
-[[LO Unconfoundedness Results](#lo-results)]
-
-
-
-## $ATT(g,t)$ (Callaway and Sant'Anna)
-
-```{r warning=FALSE}
-attgt <- did::att_gt(yname="lemp",
-                     idname="id",
-                     gname="G",
-                     tname="year",
-                     data=data2,
-                     control_group="nevertreated",
-                     base_period="universal")
-tidy(attgt)[,1:5] # print results, drop some extra columns
-```
-
-
-
-
-
-## Plot $ATT(g,t)$'s
-
-
-```{r, fig.align="center", fig.width=10, fig.height=8, echo=FALSE}
-ggdid(attgt)
-```
-
-
-
-## Compute $ATT^O$
-
-```{r}
-attO <- did::aggte(attgt, type="group")
-summary(attO)
-```
-
-
-
-
-## Comments
-
-The differences between the CS estimates and the TWFE estimates are fairly large here: the CS estimate is about 50% larger than the TWFE estimate, though results are qualitatively similar.
-
-::: {.fragment}
-
-<span class="alert">Let's see if we can figure out what's going on...</span>
-
-
-:::
-
-## de Chaisemartin and d'Haultfoeuille weights
-
-```{r echo=FALSE, fig.align="center", fig.width=10, fig.height=8}
-tw <- twfeweights::twfe_weights(attgt)
-tw <- tw[tw$G != 0,]
-tw$post <- as.factor(1*(tw$TP >= tw$G))
-twfe_est <- sum(tw$wTWFEgt*tw$attgt)
-ggplot(data=tw,
-       mapping=aes(x=wTWFEgt, y=attgt, color=post)) +
-  geom_hline(yintercept=0, linewidth=1.5) +
-  geom_vline(xintercept=0, linewidth=1.5) + 
-  geom_point(size=6) +
-  theme_bw() +
-  ylim(c(-.15,.05)) + xlim(c(-.4,.7))
-```
-
-
-
-## $ATT^O$ weights
-
-```{r echo=FALSE, fig.align="center", fig.width=10, fig.height=8}
-wO <- attO_weights(attgt)
-wO <- wO[wO$G != 0,]
-attO_est = sum(wO$wOgt*wO$attgt)
-wO$post <- as.factor(1*(wO$TP >= wO$G))
-ggplot(data=wO,
-       mapping=aes(x=wOgt, y=attgt, color=post)) +
-  geom_hline(yintercept=0, linewidth=1.5) +
-  geom_vline(xintercept=0, linewidth=1.5) + 
-  geom_point(shape=18, size=8) +
-  theme_bw() +
-  ylim(c(-.15,.05)) + xlim(c(-.4,.7))
-```
-
-
-
-## Weight Comparison 
-
-```{r echo=FALSE, fig.align="center", fig.width=10, fig.height=8}
-plot_df <- cbind.data.frame(tw, wOgt=wO$wOgt)
-plot_df <- plot_df[plot_df$post==1,]
-plot_df$g.t <- as.factor(paste0(plot_df$G,",",plot_df$TP))
-
-ggplot(plot_df, aes(x=wTWFEgt, y=attgt, color=g.t)) +
-  geom_point(size=6) +
-  theme_bw() +
-  ylim(c(-.15,.05)) + xlim(c(-.4,.7)) + 
-  geom_point(aes(x=wOgt), shape=18, size=8) +
-  geom_hline(yintercept=0, linewidth=1.5) +
-  geom_vline(xintercept=0, linewidth=1.5) + 
-  xlab("weight")
-```
-
-
-
-## Discussion
-
-To summarize: $ATT^O = -0.057$ while $\alpha^{TWFE} = -0.038$.  This difference can be fully accounted for
-
-* Pre-treatment differences in paths of outcomes across groups: explains about 64% of the difference
-
-* Differences in weights applied to the same post-treatment $ATT(g,t)$: explains about 36% of the difference. [If you apply the post-treatment weights and "zero out" pre-treatment differences, the estimate would be $-0.050$.]
-
-```{r echo=FALSE, eval=FALSE}
-twfe_post <- sum(tw$wTWFEgt[tw$post==1] * tw$attgt[tw$post==1])
-twfe_post
-
-# pre-treatment contamination/bias
-pre_bias <- sum(tw$wTWFEgt[tw$post==0] * tw$attgt[tw$post==0])
-pre_bias
-
-twfe_bias <- twfe_est - attO_est
-pre_bias/twfe_bias # bias from pre-treatment PTA violations
-(twfe_post-attO_est)/twfe_bias # bias from TWFE weights instead of ATT^O weights
-```
-
-::: {.fragment}
-
-In my experience: this is fairly representative of how much new DID approaches matter relative to TWFE regressions.  It does not seem like "catastrophic failure" of TWFE, but (in my view) these are meaningful differences (and, e.g., given slightly different $ATT(g,t)$'s, the difference in the weighting schemes could change the qualitative results).
-
-* Of course, this whole discussion hinges crucially on how much treatment effect heterogeneity there is.  More TE Het $\implies$ more sensitivity to weighting schemes [just looking at TWFE regression does not give insight into how much TE Het there is.]
-
-:::
-
-## Additional Comments
-
-One more comment: there is a lot concern about negative weights (both in econometrics and empirical work).  
-
-* There were no negative weights in the example above, but the weights still weren't great.  
-
-    * No negative weights does rule out "sign reversal"
-
-* But, in my view, the more important issue is the non-transparent weighting scheme.
-
-    * Example 1: If you try using `data3` (the data that includes $G=2007$), you will get a negative weight on $ATT(g=2004,t=2007)$.  But it turns out not to matter much, and TWFE works better in this case than in the case that I showed you.
-    
-    * Example 2: Alternative treatment effect parameter $\rightarrow$
-
-
-
-## "Simple" Aggregation
-
-Consider the following alternative aggregated treatment effect parameter
-\begin{align*}
-  ATT^{simple} := \sum_{t=g}^\mathcal{T} ATT(g,t) \frac{\P(G=g | G \in \bar{\mathcal{G}})}{\sum_{t=g}^{\mathcal{T}} \P(G=g| G \in \bar{\mathcal{G}})}
-\end{align*}
-Consider imputation so that you have $Y_{it}-\hat{Y}_{it}(0)$ available in all periods.  This is the $ATT$ parameter that you get by averaging all of those.
-
-::: {.fragment}
-
-Relative to $ATT^O$, early treated units get more weight (because we have more $Y_{it}-\hat{Y}_{it}(0)$ for them).
-
-:::
-
-::: {.fragment}
-
-
-By construction, weights are all positive.  However, they are different from $ATT^O$ weights
-
-:::
-
-## "Simple" Aggregation
-
-```{r echo=FALSE, eval=FALSE}
-att_simple_est <- aggte(attgt, type="simple")$overall.att #-0.0646
-(att_simple_est - attO_est) / attO_est
-
-```{r echo=FALSE, fig.align="center", fig.width=10, fig.height=8}
-# calculate att^simple weights
-wsimple <- att_simple_weights(attgt)
-wsimple <- wsimple[wsimple$G != 0,]
-attsimple_est <- sum(wsimple$wsimplegt*wsimple$attgt)
-wsimple$post <- as.factor(1*(wsimple$TP >= wsimple$G))
-
-# comparison of att^O and att^simple weights
-plot_df <- cbind.data.frame(wsimple, wOgt=wO$wOgt)
-plot_df <- plot_df[plot_df$post==1,]
-plot_df$g.t <- as.factor(paste0(plot_df$G,",",plot_df$TP))
-
-ggplot(plot_df, aes(x=wsimplegt, y=attgt, color=g.t)) +
-  geom_point(shape=15, size=6) +
-  theme_bw() +
-  ylim(c(-.15,.05)) + xlim(c(-.4,.7)) + 
-  geom_point(aes(x=wOgt), shape=18, size=8) +
-  geom_hline(yintercept=0, linewidth=1.5) +
-  geom_vline(xintercept=0, linewidth=1.5) + 
-  xlab("weight")
-```
-
-
-
-## "Simple" Aggregation
-
-Besides the violations of parallel trends in pre-treatment periods, these weights are further away from $ATT^O$ than the TWFE regression weights are!
-
-::: {.fragment}
-
-In fact, you calculate $ATT^{simple} = -0.065$ (13% larger in magnitude that $ATT^O$)
-
-:::
-
-::: {.fragment}
-
-
-Finally, if you are "content with" non-negative weights, then you can get any summary measure from $-0.019$ (the smallest $ATT(g,t)$) to $-0.13$ (the largest).  This is a wide range of estimates.
-
-:::
-
-::: {.fragment}
-
-
-In my view, the discussion above suggests that clearly stating a target aggregate treatment effect parameter and choosing weights that target that parameter is probably more important than checking for negative weights
-
-:::
-
-
-# Covariates in the Parallel Trends Assumption
-
-[]{#covs}
 
 ## Covariates in the Parallel Trends Assumption
 
-#### Conditional Parallel Trends Assumption
+
+```{r echo=FALSE}
+library(revealEquations)
+```
+
+$\newcommand{\E}{\mathbb{E}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\Var}{\mathrm{var}}
+\newcommand{\Cov}{\mathrm{cov}}
+\newcommand{\Corr}{\mathrm{corr}}
+\newcommand{\corr}{\mathrm{corr}}
+\newcommand{\L}{\mathrm{L}}
+\renewcommand{\P}{\mathrm{P}}
+\newcommand{\independent}{{\perp\!\!\!\perp}}
+\newcommand{\indicator}[1]{ \mathbf{1}\{#1\} }$
+
+<br>
+
+::: {.callout-note}
+
+### Conditional Parallel Trends Assumption
 
 For all time periods,
 
 $$\E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=1] = \E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=0]$$
+:::
 
 ::: {.fragment}
 
-In words: Parallel trends holds conditional on having the same covariates $X$.
+In words: Parallel trends holds conditional on having the same covariates $(X_t,X_{t-1},Z)$.
 
 :::
 
@@ -574,13 +113,11 @@ $\implies$ differencing out unit fixed effects can have implications about what 
 
 Even if none of the previous 4 issues apply, $\alpha$ will still be equal to a weighted average of underlying (conditional-on-covariates) treatment effect parameters.
 
-  * The weights can be negative, and suffer from "weight reversal" (as discussed in Sloczynski (2020))
+  * The weights can be negative, and suffer from "weight reversal" (similar to the issue discussed in Sloczynski (2020) in the context of cross-sectional regressions with covaraites)
   
   * In other words, weights $\alpha$ is a weighted average of $ATT(X)$ where (relative to a baseline of weighting based on the distribution of $X$ for the treated group), the weights put larger weight on $ATT(X)$ for values of the covariates that are *uncommon* for the treated group relative to the untreated group and smaller weight on $ATT(X)$ for values of the covariates that are *common* for the treated group relative to the untreated group
     
 See Caetano and Callaway (2023) for more details
-
-
 
 
 
@@ -597,28 +134,26 @@ eqlist <- list("ATT &= \\E[\\Delta Y_t | D=1] - \\E[\\Delta Y_t(0) | D=1] \\hspa
 
 after <- "
 
---
+. . .
 
 Intuition: (i) Compare path of outcomes for treated group to (conditional on covariates) path of outcomes for untreated group, (ii) adjust for differences in the distribution of covariates between groups.
 
---
+. . .
 
-This expression suggests a \"regression adjustment\" estimator.  For example, if we assume that $m_0(X) = X'\\beta_0$, then we have that
+This expression suggests a [regression adjustment]{.alert} estimator.  For example, if we assume that $m_0(X) = X'\\beta_0$, then we have that
 
 $$ATT = \\E[\\Delta Y_t | D=1] - \\E[X'|D=1]\\beta_0$$
 
---
+. . .
 
-It is easy to extend these arguments to multiple periods and variation in treatment timing (just change the base period)
+It is easy to extend these arguments to multiple periods and variation in treatment timing (just change the base period)"
 
-"
-
-
+step_by_step_eq(eqlist, before, after, title)
 ```
 
 ## Covariate Balancing
 
-Alternatively, if we could choose "balancing weights" $\nu_0(X)$ such that the distribution of $X$ was the same in the untreated group as it is in the treated group after applying the balancing weights, then we would have that (from the second term above)
+Alternatively, if we could choose [balancing weights]{.alert} $\nu_0(X)$ such that the distribution of $X$ was the same in the untreated group as it is in the treated group after applying the balancing weights, then we would have that (from the second term above)
 \begin{align*}
   \E\Big[ \E[\Delta Y_{it}(0) | X_i, D_i=0 ] \Big| D_i=1\Big] &= \E\Big[ \nu_0(X_i) \E[\Delta Y_{it}(0) | X_i, D_i=0 ] \Big| D_i=0\Big] \\
   &= \E[\nu_0(X_i) \Delta Y_{it}(0) | D_i=0]
@@ -677,21 +212,37 @@ Big advantage:
 
 :::
 
-## Additional Comments
+## Multiple Time Periods and Variation in Treatment Timing
 
-In panel data applications, an additional consideration that arises with time-varying covariates is that they could be affected by the treatment, often referred to as a <span class="highlight">"bad control"</span>
+<br>
 
-* In fact, I sneaked an example of this earlier: a person's occupation
+::: {.callout-note} 
+### Conditional Parallel Trends with Multiple Periods
 
-In my view, a good default option for dealing with a covariate that could be affected by the treatment is to include its pre-treatment value
+For all groups $g \in \bar{\mathcal{G}}$ (all groups except the never-treated group) and for all time periods $t=2, \ldots, \mathcal{T}$, 
 
-* Note: this is different from the traditional approach of excluding it altogether in a TWFE regression
+$$\E[\Delta Y_t(0) | \mathbf{X}, Z, G=g] = \E[\Delta Y_t(0) | \mathbf{X}, Z, U=1]$$
 
-::: {.fragment}
-
-What about time-varying covariates not affected by the treatment?  Most important: include it's level in some period (or average across periods), can also include more periods and/or differences over time, etc.
-
+where $\mathbf{X} := (X_1,X_2,\ldots,X_\mathcal{T})$.
 :::
+
+Under this assumption, using similar arguments to the ones above, one can show that
+
+$$ATT(g,t) = \E\left[ \left( \frac{\indicator{G=g}}{p_g} - \frac{p_g(\mathbf{X},Z)U}{(1-p_g(\mathbf{X},Z))p_g}\right)\Big(Y_t - Y_{g-1} - m_{gt}^0(\mathbf{X},Z)\Big) \right]$$
+
+where $p_g(\mathbf{X},Z) := \P(G=g|\mathbf{X},Z,\indicator{G=g}+U=1)$ and $m_{gt}^0(\mathbf{X},Z) := \E[Y_t-Y_{g-1}|\mathbf{X},Z,U=1]$.
+
+## Practical Considerations
+
+Because $\mathbf{X}$ contains $X_t$ for all time periods, terms like $m_{gt}^0(\mathbf{X},Z)$ can be quite high-dimensional (and hard to estimate) in many applications.  In many cases, it may be reasonable to replace with lower dimensional function $\mathbf{X}$:
+
+. . .
+
+* $\bar{X}_i$ &mdash; the average of $X_{it}$ across time periods
+* $X_{it}, X_{ig-1}$ &mdash; the covariates in the current period and base period (this is possible in the `pte` package currently and may be added to `did` soon).
+* $X_{ig-1}$ &mdash; the covariates in the base period (this is the default in `did`)
+* $(X_{it}-X_{ig-1})$ &mdash; the change in covariates over time
+
 
 ## Back to Minimum Wage Example
 
@@ -718,9 +269,7 @@ Relative to previous results, this is much smaller and statistically insignifica
 
 
 
-
-
-## Use Doubly Robust Approach from CS
+## Callaway and Sant'Anna (2021) Results
 
 
 ```{r eval=FALSE}
@@ -735,11 +284,13 @@ cs_x <- att_gt(yname="lemp",
                data=data2)
 cs_x_res <- aggte(cs_x, type="group")
 summary(cs_x_res)
+cs_x_dyn <- aggte(cs_x, type="dynamic")
+ggdid(cs_x_dyn)
 ```
 
 
 
-## Use Doubly Robust Approach from CS
+## Callaway and Sant'Anna (2021) Results
 
 ```{r echo=FALSE}
 cs_x <- att_gt(yname="lemp",
@@ -754,54 +305,443 @@ cs_x_res <- aggte(cs_x, type="group")
 summary(cs_x_res)
 ```
 
+## Callaway and Sant'Anna (2021) Results
 
-
-
+```{r echo=FALSE}
+cs_x_dyn <- aggte(cs_x, type="dynamic")
+ggdid(cs_x_dyn)
+```
 
 ## Comments
 
 Even more than in the previous case, the results in this case are notably different depending on the estimation strategy.
 
+## Add Covariates
 
-
-name: violations
-
-
-## What about violations of parallel trends?
-
-Parallel trends assumptions don't automatically hold in applications with repeated observations over time.
-
-::: {.fragment}
-
-The most natural way to motivate parallel trends is with a linear model for untreated potential outcomes:
-\begin{align*}
-  Y_{it}(0) = \theta_t + \eta_i + e_{it}
-\end{align*}
-where the key feature is the additive separability of $\eta_i$
-
-:::
-
-::: {.fragment}
-
-
-But it's not always clear if additive separability (and hence parallel trends) is reasonable
-
-* The most common "response" is pre-testing...checking if parallel trends holds in pre-treatment periods
-
-:::
-
-::: {.fragment}
-
-
-DID + pre-tests are a very powerful/useful approach to "validating" the parallel trends assumption
-
-:::
-
-
-
-## What about our case?
-
-```{r, fig.align="center", fig.width=10, fig.height=8, echo=FALSE}
-ggdid(aggte(attgt,type="dynamic",cband=FALSE))
+```{r}
+# run TWFE regression
+twfe_x <- fixest::feols(lemp ~ post + lpop + lavg_pay | id + region^year,
+                        data=data2)
+modelsummary(twfe_x, gof_omit=".*")
 ```
 
+
+## Regression Adjustment
+
+
+```{r eval=FALSE}
+#| code-line-numbers: "|9"
+# callaway and sant'anna including covariates
+cs_x <- att_gt(yname="lemp",
+               tname="year",
+               idname="id",
+               gname="G",
+               xformla=~region + lpop + lavg_pay,
+               control_group="nevertreated",
+               base_period="universal",
+               est_method="reg",
+               data=data2)
+cs_x_res <- aggte(cs_x, type="group")
+summary(cs_x_res)
+cs_x_dyn <- aggte(cs_x, type="dynamic")
+ggdid(cs_x_dyn)
+```
+
+
+
+## Regression Adjustment
+
+```{r echo=FALSE}
+cs_x <- att_gt(yname="lemp",
+               tname="year",
+               idname="id",
+               gname="G",
+               xformla=~region + lpop + lavg_pay,
+               control_group="nevertreated",
+               base_period="universal",
+               est_method="reg",
+               data=data2)
+cs_x_res <- aggte(cs_x, type="group")
+summary(cs_x_res)
+```
+
+## Regression Adjustment
+
+```{r echo=FALSE}
+cs_x_dyn <- aggte(cs_x, type="dynamic")
+ggdid(cs_x_dyn)
+```
+
+## Inverse Probability Weighting
+
+```{r eval=FALSE}
+#| code-line-numbers: "|9"
+# callaway and sant'anna including covariates
+cs_x <- att_gt(yname="lemp",
+               tname="year",
+               idname="id",
+               gname="G",
+               xformla=~region + lpop + lavg_pay,
+               control_group="nevertreated",
+               base_period="universal",
+               est_method="ipw",
+               data=data2)
+cs_x_res <- aggte(cs_x, type="group")
+summary(cs_x_res)
+cs_x_dyn <- aggte(cs_x, type="dynamic")
+ggdid(cs_x_dyn)
+```
+
+
+
+## Inverse Probability Weighting
+
+```{r echo=FALSE}
+cs_x <- att_gt(yname="lemp",
+               tname="year",
+               idname="id",
+               gname="G",
+               xformla=~region + lpop + lavg_pay,
+               control_group="nevertreated",
+               base_period="universal",
+               est_method="ipw",
+               data=data2)
+cs_x_res <- aggte(cs_x, type="group")
+summary(cs_x_res)
+```
+
+## Inverse Probability Weighting
+
+```{r echo=FALSE}
+cs_x_dyn <- aggte(cs_x, type="dynamic")
+ggdid(cs_x_dyn)
+```
+
+
+## Doubly Robust
+
+```{r eval=FALSE}
+#| code-line-numbers: "|9"
+# callaway and sant'anna including covariates
+cs_x <- att_gt(yname="lemp",
+               tname="year",
+               idname="id",
+               gname="G",
+               xformla=~region + lpop + lavg_pay,
+               control_group="nevertreated",
+               base_period="universal",
+               est_method="dr",
+               data=data2)
+cs_x_res <- aggte(cs_x, type="group")
+summary(cs_x_res)
+cs_x_dyn <- aggte(cs_x, type="dynamic")
+ggdid(cs_x_dyn)
+```
+
+
+
+## Doubly Robust
+
+```{r echo=FALSE}
+cs_x <- att_gt(yname="lemp",
+               tname="year",
+               idname="id",
+               gname="G",
+               xformla=~region + lpop + lavg_pay,
+               control_group="nevertreated",
+               base_period="universal",
+               est_method="dr",
+               data=data2)
+cs_x_res <- aggte(cs_x, type="group")
+summary(cs_x_res)
+```
+
+## Doubly Robust
+
+```{r echo=FALSE}
+cs_x_dyn <- aggte(cs_x, type="dynamic")
+ggdid(cs_x_dyn)
+```
+
+## Change base period
+
+```{r eval=FALSE}
+#| code-line-numbers: "|8"
+# callaway and sant'anna including covariates
+cs_x <- att_gt(yname="lemp",
+               tname="year",
+               idname="id",
+               gname="G",
+               xformla=~region + lpop + lavg_pay,
+               control_group="nevertreated",
+               base_period="varying",
+               est_method="dr",
+               data=data2)
+cs_x_res <- aggte(cs_x, type="group")
+summary(cs_x_res)
+cs_x_dyn <- aggte(cs_x, type="dynamic")
+ggdid(cs_x_dyn)
+```
+
+
+
+## Change base period
+
+```{r echo=FALSE}
+cs_x <- att_gt(yname="lemp",
+               tname="year",
+               idname="id",
+               gname="G",
+               xformla=~region + lpop + lavg_pay,
+               control_group="nevertreated",
+               base_period="varying",
+               est_method="dr",
+               data=data2)
+cs_x_res <- aggte(cs_x, type="group")
+summary(cs_x_res)
+```
+
+## Change base period
+
+```{r echo=FALSE}
+cs_x_dyn <- aggte(cs_x, type="dynamic")
+ggdid(cs_x_dyn)
+```
+
+## Change comparison group
+
+```{r eval=FALSE}
+#| code-line-numbers: "|7"
+# callaway and sant'anna including covariates
+cs_x <- att_gt(yname="lemp",
+               tname="year",
+               idname="id",
+               gname="G",
+               xformla=~region + lpop + lavg_pay,
+               control_group="notyettreated",
+               base_period="universal",
+               est_method="dr",
+               data=data2)
+cs_x_res <- aggte(cs_x, type="group")
+summary(cs_x_res)
+cs_x_dyn <- aggte(cs_x, type="dynamic")
+ggdid(cs_x_dyn)
+```
+
+
+
+## Change comparison group
+
+```{r echo=FALSE}
+cs_x <- att_gt(yname="lemp",
+               tname="year",
+               idname="id",
+               gname="G",
+               xformla=~region + lpop + lavg_pay,
+               control_group="notyettreated",
+               base_period="universal",
+               est_method="dr",
+               data=data2)
+cs_x_res <- aggte(cs_x, type="group")
+summary(cs_x_res)
+```
+
+## Change comparison group
+
+```{r echo=FALSE}
+cs_x_dyn <- aggte(cs_x, type="dynamic")
+ggdid(cs_x_dyn)
+```
+
+## Allow for anticipation
+
+```{r eval=FALSE}
+#| code-line-numbers: "|10"
+# callaway and sant'anna including covariates
+cs_x <- att_gt(yname="lemp",
+               tname="year",
+               idname="id",
+               gname="G",
+               xformla=~region + lpop + lavg_pay,
+               control_group="nevertreated",
+               base_period="universal",
+               est_method="dr",
+               anticipation=1,
+               data=data2)
+cs_x_res <- aggte(cs_x, type="group")
+summary(cs_x_res)
+cs_x_dyn <- aggte(cs_x, type="dynamic")
+ggdid(cs_x_dyn)
+```
+
+
+
+## Allow for anticipation
+
+```{r echo=FALSE}
+cs_x <- att_gt(yname="lemp",
+               tname="year",
+               idname="id",
+               gname="G",
+               xformla=~region + lpop + lavg_pay,
+               control_group="nevertreated",
+               base_period="universal",
+               est_method="dr",
+               anticipation=1,
+               data=data2)
+cs_x_res <- aggte(cs_x, type="group")
+summary(cs_x_res)
+```
+
+## Doubly Robust
+
+```{r echo=FALSE}
+cs_x_dyn <- aggte(cs_x, type="dynamic")
+ggdid(cs_x_dyn)
+```
+
+# Covariates Affected by the Treatment {visibility="uncounted"}
+
+## Motivation
+
+So far, our discussion has been for the case where the time-varying covariates [evolve exogenously]{.alert}.
+
+* Many (probably most) covariates fit into this category: in the minimum wage example, a county's population probably fits here.
+
+But in other cases, there can exist covariates that we would like to include in the parallel trends assumption that could be affected by the treatment (this type of covariate is often referred to as a [bad control]{.alert}.
+
+* Example: Job displacement
+  * Path of earnings (in the absence of job displacement) likely depends on occupation, industry, and/or union status, which could all be affected by job displacement
+
+The traditional approach in empirical work is to completely drop covariates that could have been affected by the treatment.
+
+* Not clear if this is the right idea though...
+
+## Additional Notation
+
+To wrap our heads around this, let's go back to the case with two time periods.  
+
+Define treated and untreated [potential covariates]{.alert}: $X_{it}(1)$ and $X_{it}(0)$.  Notice that in the "textbook" two period setting, we observe
+$$X_{it^*} = D_i X_{it^*}(1) + (1-D_i) X_{it^*}(0) \qquad \textrm{and} \qquad X_{it^*-1} = X_{it^*-1}(0)$$
+
+If the covariates are literally not affected by the treatment at all, then we can write the version of conditional parallel trends that we have been using above in terms of potential outcomes:
+
+<br>
+
+::: {.callout-note} 
+### Conditional Parallel Trends using Untreated Potential Covariates
+
+$$\E[\Delta Y_{t^*}(0) | X_{t^*}(0), X_{t^*-1}(0), Z, D=1] = \E[\Delta Y_{t^*}(0) | X_{t^*}(0), X_{t^*-1}(0), Z, D=0]$$
+:::
+
+<br>
+
+## Alternative Identification Strategies
+
+One idea is to just ignore that the covariates may have been affected by the treatment:
+
+<br>
+
+::: {.callout-note} 
+
+### Alt CPT I
+
+$$\E[\Delta Y_{t^*}(0) | X_{t^*}, X_{t^*-1}(0), Z, D=1] = \E[\Delta Y_{t^*}(0) |  X_{t^*}, X_{t^*-1}(0), Z, D=0]$$
+:::
+
+<br>
+
+The limitations of this approach are well known (even discussed in MHE), and this is not typically the approach taken in empirical work
+
+## Alternative Identification Strategies
+
+It is more common in empirical work to drop $X_t(0)$ entirely from the parallel trends assumption
+
+<br>
+
+::: {.callout-note} 
+
+### Alt CPT II
+
+$$\E[\Delta Y_{t^*}(0) | Z, D=1] = \E[\Delta Y_{t^*}(0) |  Z, D=0]$$
+:::
+
+<br>
+
+In my view, this is not attractive either though.  If we believe this assumption, then we have basically solved the bad control problem by assuming that it does not exist.
+
+## Alternative Identification Strategies
+
+Perhaps a better alternative identifying assumption is the following one
+
+<br>
+
+::: {.callout-note} 
+
+### Alt CPT III
+
+$$\E[\Delta Y_{t^*}(0) | X_{t^*-1}(0), Z, D=1] = \E[\Delta Y_{t^*}(0) |  X_{t^*-1}(0), Z, D=0]$$
+:::
+
+<br>
+
+This says that:
+
+* Conditional parallel trends holds after conditioning on pre-treatment time-varying covariates that could have been affected by treatment
+
+* It is not the same identifying assumption as the one that we started with, but we are at least allowing for the bad control to show up in the identifying assumption
+
+* Since $X_{t^*-1}(0)$ is observed for all units, we can immediately operationalize this assumption use our arguments from earlier (i.e., the ones without bad controls)
+
+* In practice, you can just include the bad control among other covariates in `did`
+
+## Identification under CPT
+
+Going back to the original conditional parallel trends assumption (that include both $X_{t^*}(0)$ and $X_{t^*-1}(0)$)...Using the same sort of arguments as for regression adjustment earlier, it follows that
+
+$$ATT = \E[\Delta Y_{t^*} | D=1] - \E\Big[ \E[\Delta Y_{t^*}(0) | X_{t^*}(0), X_{t^*-1}(0), Z, D=0] \Big| D=1\Big]$$ 
+
+Here:
+
+* The inside conditional expectation is identified &mdash; we see untreated potential outcomes and covariates for the untreated group
+
+* But the outside expectation is infeasible $\implies$ we are stuck
+
+## Dealing with $X_{t^*}(0)$
+
+::: {.callout-note}
+
+### Covariate Unconfoundedness Assumption
+
+$$X_{t^*}(0) \independent D | X_{t^*-1}(0), Z$$
+
+:::
+
+[Intuition:]{.alert} For the treated group, the time-varying covariate would have evolved in the same way over time as it actually did for the untreated group, conditional on $X_{t^*-1}$ and $Z$.
+
+* Notice that this assumption only concerns untreated potential covariates $\implies$ it allows for $X_{t^*}$ to be affected by the treatment
+
+* Making an assumption like this indicates that $X_{t^*}(0)$ is playing a dual role: (i) start by treating it as if it's an outcome, (ii) have it continue to play a role as a covariate
+
+Under this assumption, can show that we can recover the $ATT$:
+
+$$ATT = \E[\Delta Y_{t^*} | D=1] - \E\left[ \E[\Delta Y_{t^*} | X_{t^*-1}, Z, D=0] \Big| D=1 \right]$$
+
+## Additional Discussion
+
+In some cases, it may make sense to condition on other additional variables (e.g., the lagged outcome $Y_{t^*-1}$) in the covariate unconfoundedness assumption.  In this case, it is still possible to identify $ATT$, but it is more complicated
+
+It could also be possible to use alternative identifying assumptions besides covariate unconfoundedness &mdash; at a high-level, we somehow need to recover the distribution of $X_{t^*}(0)$
+
+* e.g., Brown, Butts, and Westerlund (2023)
+
+See Caetano et al. (2023) for more details about bad controls.
+
+# Appendix {visibility="uncounted"}
+
+## Understanding Double Robustness {visibility="uncounted"}
+
+To understand double robustness, we can rewrite the expression for $ATT$ as
+\begin{align*}
+  ATT = \E\left[ \frac{D}{p} \Big(\Delta Y_t - m_0(X)\Big) \right] - \E\left[ \frac{p(X)(1-D)}{(1-p(X))p} \Big(\Delta Y_t - m_0(X)\Big)\right]
+\end{align*}

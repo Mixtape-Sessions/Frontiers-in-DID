@@ -78,7 +78,15 @@ Some of this is likely due to the reasons mentioned above, but (at least as impo
 
 * Conditioning on lagged outcomes
 
-* Unit-specific linear trends, interactive fixed effects models, change-in-changes, triple differences, others...
+* Unit-specific linear trends
+
+* Interactive fixed effects 
+
+* Change-in-changes
+
+* Triple differences
+
+* Others...
 
 
 
@@ -430,15 +438,54 @@ Step 2: (If desired) combine disaggregated treatment effects into lower dimensio
 
 ## Estimation
 
-CS
+We are going to follow the approach in Callaway and Sant'Anna (2021) of directly estimating $ATT(g,t)$ based on the previous identification result (code is available in R: `did`, Stata: `csdid`, Python: `csdid`):
 
-Other approaches
+\begin{align*}
+  \widehat{ATT}(g,t) = \frac{1}{n_g} \sum_{i=1}^n \indicator{G_i = g} (Y_{it} - Y_{ig-1}) - \frac{1}{n_0} \sum_{i=1}^n \indicator{U_i = 1} (Y_{it} - Y_{ig-1})
+\end{align*}
+
+. . .
+
+### Other approaches
+
+1. Sun and Abraham (2021), R: `fixest`, Stata: `eventstudyinteract`
+
+2. Wooldridge (2021), R: `etwfe`, Stata: `JWDID`
+
+3. de Chaisemartin and d'Haultfoeuille (2020), R: `DIDmultiplegt`, Stata: `did_multiplegt`
+
+4. Gardner (2021) / Borusyak, Jaravel, Spiess (2022), R: `did2s`, Stata: `did2s` and `did_imputation`
+
+5. "Clean controls" (Cengiz, Dube, Lindner, and Zipperer (2019) and Dube, Girardi, Jorda, and Taylor (2023)), Stata: `stackedev`
+
+
+::: {.fragment}
+See Baker, Larcker, Wang (2022) and Callaway (2023) for more substantially more details.
+:::
 
 ## Other Issues
 
-Selecting comparison group
+### Alternative Comparison Group
 
-anticipation
+Above, we used the "never-treated" group (i.e., $U=1$) as the comparison group, but there are other possibilities:
+
+* Not-yet-treated group: includes both $U_i=1$ as well as other units that satisfy $G_i > t$
+* Not-yet-but-eventually-treated group: don't include $U_i=1$
+* Other possibilities as well...
+
+<br>
+
+::: {.fragment}
+
+### Anticipation
+
+In many applications, units may observe that a policy is about to be implemented and go ahead and change their behaviors before the policy is actually implemented.
+
+* This is straightforward to deal with.  If there is one period of anticipation, you can set the base period to be $g-2$ rather than $g-1$, so that
+
+$$ATT(g,t) = \E[Y_t - Y_{g-2} | G=g] - \E[Y_t - Y_{g-2} | U=1]$$
+
+:::
 
 ## Limitation of TWFE Regressions in this Context
 
@@ -492,10 +539,17 @@ load(url("https://github.com/bcallaway11/did_chapter/raw/master/mw_data_ch2.RDat
 
 ## Setup Data
 
+<br>
+
 ```{r}
 # drops NE region and a couple of small groups
 mw_data_ch2 <- subset(mw_data_ch2, (G %in% c(2004,2006,2007,0)) & (region != "1"))
 head(mw_data_ch2[,c("id","year","G","lemp","lpop","region")])
+```
+
+<br>
+
+```{r}
 # drop 2007 as these are right before fed. minimum wage change
 data2 <- subset(mw_data_ch2, G!=2007 & year >= 2003)
 # keep 2007 => larger sample size

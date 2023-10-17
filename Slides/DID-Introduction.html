@@ -447,7 +447,11 @@ Brantly Callaway
 <ul>
 <li><p>Difference-in-differences</p></li>
 <li><p>Conditioning on lagged outcomes</p></li>
-<li><p>Unit-specific linear trends, interactive fixed effects models, change-in-changes, triple differences, others…</p></li>
+<li><p>Unit-specific linear trends</p></li>
+<li><p>Interactive fixed effects</p></li>
+<li><p>Change-in-changes</p></li>
+<li><p>Triple differences</p></li>
+<li><p>Others…</p></li>
 </ul>
 </section>
 <section id="setup" class="slide level2">
@@ -735,13 +739,43 @@ w^O(g,t) = \frac{\P(G=g|U=0)}{\mathcal{T}-g+1}
 </section>
 <section id="estimation" class="slide level2">
 <h2>Estimation</h2>
-<p>CS</p>
-<p>Other approaches</p>
+<p>We are going to follow the approach in Callaway and Sant’Anna (2021) of directly estimating <span class="math inline">\(ATT(g,t)\)</span> based on the previous identification result (code is available in R: <code>did</code>, Stata: <code>csdid</code>, Python: <code>csdid</code>):</p>
+<p><span class="math display">\[\begin{align*}
+  \widehat{ATT}(g,t) = \frac{1}{n_g} \sum_{i=1}^n \indicator{G_i = g} (Y_{it} - Y_{ig-1}) - \frac{1}{n_0} \sum_{i=1}^n \indicator{U_i = 1} (Y_{it} - Y_{ig-1})
+\end{align*}\]</span></p>
+<div class="fragment">
+<h3 id="other-approaches">Other approaches</h3>
+<ol type="1">
+<li><p>Sun and Abraham (2021), R: <code>fixest</code>, Stata: <code>eventstudyinteract</code></p></li>
+<li><p>Wooldridge (2021), R: <code>etwfe</code>, Stata: <code>JWDID</code></p></li>
+<li><p>de Chaisemartin and d’Haultfoeuille (2020), R: <code>DIDmultiplegt</code>, Stata: <code>did_multiplegt</code></p></li>
+<li><p>Gardner (2021) / Borusyak, Jaravel, Spiess (2022), R: <code>did2s</code>, Stata: <code>did2s</code> and <code>did_imputation</code></p></li>
+<li><p>“Clean controls” (Cengiz, Dube, Lindner, and Zipperer (2019) and Dube, Girardi, Jorda, and Taylor (2023)), Stata: <code>stackedev</code></p></li>
+</ol>
+<div class="fragment">
+<p>See Baker, Larcker, Wang (2022) and Callaway (2023) for more substantially more details.</p>
+</div>
+</div>
 </section>
 <section id="other-issues" class="slide level2">
 <h2>Other Issues</h2>
-<p>Selecting comparison group</p>
-<p>anticipation</p>
+<h3 id="alternative-comparison-group">Alternative Comparison Group</h3>
+<p>Above, we used the “never-treated” group (i.e., <span class="math inline">\(U=1\)</span>) as the comparison group, but there are other possibilities:</p>
+<ul>
+<li>Not-yet-treated group: includes both <span class="math inline">\(U_i=1\)</span> as well as other units that satisfy <span class="math inline">\(G_i &gt; t\)</span></li>
+<li>Not-yet-but-eventually-treated group: don’t include <span class="math inline">\(U_i=1\)</span></li>
+<li>Other possibilities as well…</li>
+</ul>
+<p><br></p>
+<div class="fragment">
+<!-- -->
+<h3 id="anticipation">Anticipation</h3>
+<p>In many applications, units may observe that a policy is about to be implemented and go ahead and change their behaviors before the policy is actually implemented.</p>
+<ul>
+<li>This is straightforward to deal with. If there is one period of anticipation, you can set the base period to be <span class="math inline">\(g-2\)</span> rather than <span class="math inline">\(g-1\)</span>, so that</li>
+</ul>
+<p><span class="math display">\[ATT(g,t) = \E[Y_t - Y_{g-2} | G=g] - \E[Y_t - Y_{g-2} | U=1]\]</span></p>
+</div>
 </section>
 <section id="limitation-of-twfe-regressions-in-this-context" class="slide level2">
 <h2>Limitation of TWFE Regressions in this Context</h2>
@@ -797,6 +831,7 @@ w^O(g,t) = \frac{\P(G=g|U=0)}{\mathcal{T}-g+1}
 </section>
 <section id="setup-data" class="slide level2">
 <h2>Setup Data</h2>
+<p><br></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># drops NE region and a couple of small groups</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a>mw_data_ch2 <span class="ot">&lt;-</span> <span class="fu">subset</span>(mw_data_ch2, (G <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2004</span>,<span class="dv">2006</span>,<span class="dv">2007</span>,<span class="dv">0</span>)) <span class="sc">&amp;</span> (region <span class="sc">!=</span> <span class="st">"1"</span>))</span>
@@ -810,6 +845,9 @@ w^O(g,t) = \frac{\P(G=g|U=0)}{\mathcal{T}-g+1}
 558 8003 2005 2007 5.303305 9.637958      4
 559 8003 2006 2007 5.342334 9.633056      4</code></pre>
 </div>
+</div>
+<p><br></p>
+<div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># drop 2007 as these are right before fed. minimum wage change</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a>data2 <span class="ot">&lt;-</span> <span class="fu">subset</span>(mw_data_ch2, G<span class="sc">!=</span><span class="dv">2007</span> <span class="sc">&amp;</span> year <span class="sc">&gt;=</span> <span class="dv">2003</span>)</span>
 <span id="cb4-3"><a href="#cb4-3"></a><span class="co"># keep 2007 =&gt; larger sample size</span></span>
@@ -864,22 +902,22 @@ w^O(g,t) = \frac{\P(G=g|U=0)}{\mathcal{T}-g+1}
 <div class="cell-output cell-output-stdout">
 <pre><code>             term group time    estimate   std.error
 1  ATT(2004,2003)  2004 2003  0.00000000          NA
-2  ATT(2004,2004)  2004 2004 -0.03266653 0.020263266
-3  ATT(2004,2005)  2004 2005 -0.06827991 0.021559496
-4  ATT(2004,2006)  2004 2006 -0.12335404 0.019212347
-5  ATT(2004,2007)  2004 2007 -0.13109136 0.022446895
-6  ATT(2006,2003)  2006 2003 -0.03408910 0.012301913
-7  ATT(2006,2004)  2006 2004 -0.01669977 0.008251089
+2  ATT(2004,2004)  2004 2004 -0.03266653 0.021851419
+3  ATT(2004,2005)  2004 2005 -0.06827991 0.021359965
+4  ATT(2004,2006)  2004 2006 -0.12335404 0.020345110
+5  ATT(2004,2007)  2004 2007 -0.13109136 0.021185659
+6  ATT(2006,2003)  2006 2003 -0.03408910 0.011396037
+7  ATT(2006,2004)  2006 2004 -0.01669977 0.008235523
 8  ATT(2006,2005)  2006 2005  0.00000000          NA
-9  ATT(2006,2006)  2006 2006 -0.01939335 0.008841767
-10 ATT(2006,2007)  2006 2007 -0.06607568 0.009122270</code></pre>
+9  ATT(2006,2006)  2006 2006 -0.01939335 0.009168451
+10 ATT(2006,2007)  2006 2007 -0.06607568 0.009157222</code></pre>
 </div>
 </div>
 </section>
 <section id="plot-attgts" class="slide level2">
 <h2>Plot <span class="math inline">\(ATT(g,t)\)</span>’s</h2>
 
-<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="compute-atto" class="slide level2">
 <h2>Compute <span class="math inline">\(ATT^O\)</span></h2>
 <div class="cell">
@@ -895,13 +933,13 @@ Reference: Callaway, Brantly and Pedro H.C. Sant'Anna.  "Difference-in-Differenc
 
 Overall summary of ATT's based on group/cohort aggregation:  
      ATT    Std. Error     [ 95%  Conf. Int.]  
- -0.0571        0.0087    -0.0742       -0.04 *
+ -0.0571        0.0086    -0.0739     -0.0403 *
 
 
 Group Effects:
  Group Estimate Std. Error [95% Simult.  Conf. Band]  
-  2004  -0.0888     0.0195       -0.1309     -0.0468 *
-  2006  -0.0427     0.0078       -0.0595     -0.0259 *
+  2004  -0.0888     0.0197       -0.1297     -0.0480 *
+  2006  -0.0427     0.0079       -0.0591     -0.0263 *
 ---
 Signif. codes: `*' confidence band does not cover 0
 
@@ -920,15 +958,15 @@ Estimation Method:  Doubly Robust</code></pre>
 <section id="de-chaisemartin-and-dhaultfoeuille-weights" class="slide level2" data-visibility="uncounted">
 <h2>de Chaisemartin and d’Haultfoeuille weights</h2>
 
-<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="atto-weights" class="slide level2" data-visibility="uncounted">
 <h2><span class="math inline">\(ATT^O\)</span> weights</h2>
 
-<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="weight-comparison" class="slide level2" data-visibility="uncounted">
 <h2>Weight Comparison</h2>
 
-<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-13-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="discussion" class="slide level2" data-visibility="uncounted">
 <h2>Discussion</h2>
 <p>To summarize: <span class="math inline">\(ATT^O = -0.057\)</span> while <span class="math inline">\(\alpha^{TWFE} = -0.038\)</span>. This difference can be fully accounted for</p>
@@ -979,7 +1017,7 @@ Estimation Method:  Doubly Robust</code></pre>
 <section id="simple-aggregation-1" class="slide level2" data-visibility="uncounted">
 <h2>“Simple” Aggregation</h2>
 
-<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="DID-Introduction_files/figure-revealjs/unnamed-chunk-16-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="simple-aggregation-2" class="slide level2" data-visibility="uncounted">
 <h2>“Simple” Aggregation</h2>
 <p>Besides the violations of parallel trends in pre-treatment periods, these weights are further away from <span class="math inline">\(ATT^O\)</span> than the TWFE regression weights are!</p>
