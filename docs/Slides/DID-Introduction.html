@@ -1001,15 +1001,15 @@ ATT^O = \E[\bar{\tau}_i(G) | U=0]
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># drops NE region and a couple of small groups</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a>mw_data_ch2 <span class="ot">&lt;-</span> <span class="fu">subset</span>(mw_data_ch2, (G <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2004</span>,<span class="dv">2006</span>,<span class="dv">2007</span>,<span class="dv">0</span>)) <span class="sc">&amp;</span> (region <span class="sc">!=</span> <span class="st">"1"</span>))</span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="fu">head</span>(mw_data_ch2[,<span class="fu">c</span>(<span class="st">"id"</span>,<span class="st">"year"</span>,<span class="st">"G"</span>,<span class="st">"lemp"</span>,<span class="st">"lpop"</span>,<span class="st">"region"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="fu">head</span>(mw_data_ch2[,<span class="fu">c</span>(<span class="st">"id"</span>,<span class="st">"year"</span>,<span class="st">"G"</span>,<span class="st">"lemp"</span>,<span class="st">"lpop"</span>,<span class="st">"lavg_pay"</span>,<span class="st">"region"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      id year    G     lemp     lpop region
-554 8003 2001 2007 5.556828 9.614137      4
-555 8003 2002 2007 5.356586 9.623972      4
-556 8003 2003 2007 5.389072 9.620859      4
-557 8003 2004 2007 5.356586 9.626548      4
-558 8003 2005 2007 5.303305 9.637958      4
-559 8003 2006 2007 5.342334 9.633056      4</code></pre>
+<pre><code>      id year    G     lemp     lpop lavg_pay region
+554 8003 2001 2007 5.556828 9.614137 10.05750      4
+555 8003 2002 2007 5.356586 9.623972 10.09712      4
+556 8003 2003 2007 5.389072 9.620859 10.10761      4
+557 8003 2004 2007 5.356586 9.626548 10.14034      4
+558 8003 2005 2007 5.303305 9.637958 10.17550      4
+559 8003 2006 2007 5.342334 9.633056 10.21859      4</code></pre>
 </div>
 </div>
 <p><br></p>
@@ -1068,15 +1068,15 @@ ATT^O = \E[\bar{\tau}_i(G) | U=0]
 <div class="cell-output cell-output-stdout">
 <pre><code>             term group time    estimate   std.error
 1  ATT(2004,2003)  2004 2003  0.00000000          NA
-2  ATT(2004,2004)  2004 2004 -0.03266653 0.020658421
-3  ATT(2004,2005)  2004 2005 -0.06827991 0.021291063
-4  ATT(2004,2006)  2004 2006 -0.12335404 0.019695398
-5  ATT(2004,2007)  2004 2007 -0.13109136 0.021812947
-6  ATT(2006,2003)  2006 2003 -0.03408910 0.012116487
-7  ATT(2006,2004)  2006 2004 -0.01669977 0.008391537
+2  ATT(2004,2004)  2004 2004 -0.03266653 0.020060591
+3  ATT(2004,2005)  2004 2005 -0.06827991 0.020485157
+4  ATT(2004,2006)  2004 2006 -0.12335404 0.021714005
+5  ATT(2004,2007)  2004 2007 -0.13109136 0.024539485
+6  ATT(2006,2003)  2006 2003 -0.03408910 0.011639612
+7  ATT(2006,2004)  2006 2004 -0.01669977 0.008098019
 8  ATT(2006,2005)  2006 2005  0.00000000          NA
-9  ATT(2006,2006)  2006 2006 -0.01939335 0.009419948
-10 ATT(2006,2007)  2006 2007 -0.06607568 0.009498458</code></pre>
+9  ATT(2006,2006)  2006 2006 -0.01939335 0.008933296
+10 ATT(2006,2007)  2006 2007 -0.06607568 0.009083188</code></pre>
 </div>
 </div>
 </section>
@@ -1099,13 +1099,13 @@ Reference: Callaway, Brantly and Pedro H.C. Sant'Anna.  "Difference-in-Differenc
 
 Overall summary of ATT's based on group/cohort aggregation:  
      ATT    Std. Error     [ 95%  Conf. Int.]  
- -0.0571        0.0082    -0.0732     -0.0409 *
+ -0.0571        0.0083    -0.0733     -0.0409 *
 
 
 Group Effects:
  Group Estimate Std. Error [95% Simult.  Conf. Band]  
-  2004  -0.0888     0.0205       -0.1318     -0.0459 *
-  2006  -0.0427     0.0075       -0.0585     -0.0270 *
+  2004  -0.0888     0.0185       -0.1273     -0.0504 *
+  2006  -0.0427     0.0083       -0.0600     -0.0255 *
 ---
 Signif. codes: `*' confidence band does not cover 0
 

@@ -415,7 +415,42 @@ Brantly Callaway
 </section>
 <section id="covariates-in-the-parallel-trends-assumption" class="slide level2">
 <h2>Covariates in the Parallel Trends Assumption</h2>
+<p>Including covariates in the parallel trends assumption can often make DID identification strategies more plausible:</p>
+<div class="fragment">
+<p><span class="alert-blue">Example</span></p>
+<ul>
+<li><p><span class="alert">Minimum wage example:</span> path of teen employment may depend on a state’s population / population growth / region of the country</p></li>
+<li><p><span class="alert">Job displacement example:</span> path of earnings may depend on year’s of education / race / occupation</p></li>
+</ul>
+</div>
+<div class="fragment">
+<p>However, there are a number of new issues that can arise in this setting…</p>
 <p><span class="math inline">\(\newcommand{\E}{\mathbb{E}} \newcommand{\E}{\mathbb{E}} \newcommand{\var}{\mathrm{var}} \newcommand{\cov}{\mathrm{cov}} \newcommand{\Var}{\mathrm{var}} \newcommand{\Cov}{\mathrm{cov}} \newcommand{\Corr}{\mathrm{corr}} \newcommand{\corr}{\mathrm{corr}} \newcommand{\L}{\mathrm{L}} \renewcommand{\P}{\mathrm{P}} \newcommand{\independent}{{\perp\!\!\!\perp}} \newcommand{\indicator}[1]{ \mathbf{1}\{#1\} }\)</span></p>
+</div>
+</section>
+<section id="outline" class="slide level2">
+<h2>Outline</h2>
+<p><br></p>
+<ol type="1">
+<li><p>Limitations of TWFE Regression</p></li>
+<li><p>Identification with Two Periods</p></li>
+<li><p>Alternative Estimation Strategies</p></li>
+<li><p>Multiple Periods</p></li>
+<li><p>Minimum Wage Application</p></li>
+<li><p>Dealing with “Bad” Controls</p></li>
+</ol>
+</section>
+<section id="notation" class="slide level2">
+<h2>Notation</h2>
+<p>Start with the case with only two time periods</p>
+<p>Only need a little bit of new notation here:</p>
+<ul>
+<li><p><span class="math inline">\(X_{t^*}\)</span> and <span class="math inline">\(X_{t^*-1}\)</span> — time-varying covariates</p></li>
+<li><p><span class="math inline">\(Z\)</span> — time-invariant covariates</p></li>
+</ul>
+</section>
+<section id="covariates-in-the-parallel-trends-assumption-1" class="slide level2">
+<h2>Covariates in the Parallel Trends Assumption</h2>
 <p><br></p>
 <div class="callout callout-note no-icon callout-titled callout-style-default">
 <div class="callout-body">
@@ -423,8 +458,7 @@ Brantly Callaway
 <p><strong>Conditional Parallel Trends Assumption</strong></p>
 </div>
 <div class="callout-content">
-<p>For all time periods,</p>
-<p><span class="math display">\[\E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=1] = \E[\Delta Y_t(0) | X_t, X_{t-1},Z,D=0]\]</span></p>
+<p><span class="math display">\[\E[\Delta Y_{t^*}(0) | X_{t^*}, X_{t^*-1},Z,D=1] = \E[\Delta Y_{t^*}(0) | X_{t^*}, X_{t^*-1},Z,D=0]\]</span></p>
 </div>
 </div>
 </div>
@@ -432,11 +466,15 @@ Brantly Callaway
 <p>In words: Parallel trends holds conditional on having the same covariates <span class="math inline">\((X_t,X_{t-1},Z)\)</span>.</p>
 </div>
 <div class="fragment">
-<p>Minimum wage example: path of teen employment may depend on a state’s population / population growth / region of the country</p>
-<p>Job displacement example: path of earnings may depend on year’s of education / race / occupation</p>
+<p><span class="alert">Minimum wage example</span> (e.g.) Parallel trends conditional on counties have the same population (like <span class="math inline">\(X_t\)</span>) and being in the same region of the country (like <span class="math inline">\(Z\)</span>)</p>
 </div>
 </section>
-<section id="limitations-of-twfe-regressions" class="slide level2">
+<section>
+<section id="limitations-of-twfe-regressions" class="title-slide slide level1 center" data-visibility="uncounted">
+<h1>Limitations of TWFE Regressions</h1>
+
+</section>
+<section id="limitations-of-twfe-regressions-1" class="slide level2">
 <h2>Limitations of TWFE Regressions</h2>
 <p>In this setting, it is common to run the following TWFE regression:</p>
 <p><span class="math display">\[Y_{it} = \theta_t + \eta_i + \alpha D_{it} + X_{it}'\beta + e_{it}\]</span></p>
@@ -451,7 +489,7 @@ Brantly Callaway
 <p>Issue 3: Hard to allow for covariates that could be affected by the treatment</p>
 </div>
 </section>
-<section id="limitations-of-twfe-regressions-1" class="slide level2">
+<section id="limitations-of-twfe-regressions-2" class="slide level2">
 <h2>Limitations of TWFE Regressions</h2>
 <p>In this setting, it is common to run the following TWFE regression:</p>
 <p><span class="math display">\[Y_{it} = \theta_t + \eta_i + \alpha D_{it} + X_{it}'\beta + e_{it}\]</span></p>
@@ -464,7 +502,7 @@ Brantly Callaway
 <li><p>However, if we think of linear model as an approximation, this may have meaningful implications.</p></li>
 </ul>
 </section>
-<section id="limitations-of-twfe-regressions-2" class="slide level2">
+<section id="limitations-of-twfe-regressions-3" class="slide level2">
 <h2>Limitations of TWFE Regressions</h2>
 <p>Even if none of the previous 4 issues apply, <span class="math inline">\(\alpha\)</span> will still be equal to a weighted average of underlying (conditional-on-covariates) treatment effect parameters.</p>
 <ul>
@@ -477,7 +515,7 @@ Brantly Callaway
 <h2>Identification under Conditional Parallel Trends</h2>
 <p>Under conditional parallel trends, we have that <span class="math display">\[
 \begin{aligned}
-ATT &amp;= \E[\Delta Y_t | D=1] - \E[\Delta Y_t(0) | D=1] \hspace{150pt}
+ATT &amp;= \E[\Delta Y_{t^*} | D=1] - \E[\Delta Y_{t^*}(0) | D=1] \hspace{150pt}
 \end{aligned}
 \]</span></p>
 </section>
@@ -485,8 +523,8 @@ ATT &amp;= \E[\Delta Y_t | D=1] - \E[\Delta Y_t(0) | D=1] \hspace{150pt}
 <h2>Identification under Conditional Parallel Trends</h2>
 <p>Under conditional parallel trends, we have that <span class="math display">\[
 \begin{aligned}
-ATT &amp;= \E[\Delta Y_t | D=1] - \E[\Delta Y_t(0) | D=1] \hspace{150pt}\\
-&amp;=\E[\Delta Y_t | D=1] - \E\Big[ \E[\Delta Y_t(0) | X, D=1] \Big| D=1\Big]
+ATT &amp;= \E[\Delta Y_{t^*} | D=1] - \E[\Delta Y_{t^*}(0) | D=1] \hspace{150pt}\\
+&amp;=\E[\Delta Y_{t^*} | D=1] - \E\Big[ \E[\Delta Y_{t^*}(0) | X, D=1] \Big| D=1\Big]
 \end{aligned}
 \]</span></p>
 </section>
@@ -494,27 +532,45 @@ ATT &amp;= \E[\Delta Y_t | D=1] - \E[\Delta Y_t(0) | D=1] \hspace{150pt}\\
 <h2>Identification under Conditional Parallel Trends</h2>
 <p>Under conditional parallel trends, we have that <span class="math display">\[
 \begin{aligned}
-ATT &amp;= \E[\Delta Y_t | D=1] - \E[\Delta Y_t(0) | D=1] \hspace{150pt}\\
-&amp;=\E[\Delta Y_t | D=1] - \E\Big[ \E[\Delta Y_t(0) | X, D=1] \Big| D=1\Big]\\
-&amp;= \E[\Delta Y_t | D=1] - \E\Big[ \underbrace{\E[\Delta Y_t(0) | X, D=0]}_{=:m_0(X)} \Big| D=1\Big]
+ATT &amp;= \E[\Delta Y_{t^*} | D=1] - \E[\Delta Y_{t^*}(0) | D=1] \hspace{150pt}\\
+&amp;=\E[\Delta Y_{t^*} | D=1] - \E\Big[ \E[\Delta Y_{t^*}(0) | X, D=1] \Big| D=1\Big]\\
+&amp;= \E[\Delta Y_{t^*} | D=1] - \E\Big[ \underbrace{\E[\Delta Y_{t^*}(0) | X, D=0]}_{=:m_0(X)} \Big| D=1\Big]
 \end{aligned}
 \]</span></p>
 <div class="fragment">
 <p>Intuition: (i) Compare path of outcomes for treated group to (conditional on covariates) path of outcomes for untreated group, (ii) adjust for differences in the distribution of covariates between groups.</p>
 </div>
 <div class="fragment">
-<p>This expression suggests a <span class="alert">regression adjustment</span> estimator. For example, if we assume that <span class="math inline">\(m_0(X) = X'\beta_0\)</span>, then we have that</p>
-<p><span class="math display">\[ATT = \E[\Delta Y_t | D=1] - \E[X'|D=1]\beta_0\]</span></p>
+<p>This argument also require an <span class="alert">overlap condition</span></p>
+<ul>
+<li><p>For all possible values of the covariates, <span class="math inline">\(p(x) := \P(D=1|X=x) &lt; 1\)</span>.</p></li>
+<li><p>In words: for all treated units, we can find untreated units that have the same characteristics</p></li>
+</ul>
 </div>
 <div class="fragment">
-<p>It is easy to extend these arguments to multiple periods and variation in treatment timing (just change the base period)</p>
+<p>There are several possible ways to turn this identification result into an estimation strategy <span class="math inline">\(\rightarrow\)</span></p>
+</div>
+</section>
+<section id="regression-adjustment" class="slide level2">
+<h2>Regression Adjustment</h2>
+<p>The challenging term to deal with in the previous expression for <span class="math inline">\(ATT\)</span> is</p>
+<p><span class="math display">\[\E\Big[ \underbrace{\E[\Delta Y_{t^*}(0) | X, D=0]}_{=:m_0(X)} \Big| D=1\Big]\]</span></p>
+<p>The most direct way to proceed is by proposing a model for <span class="math inline">\(m_0(X)\)</span>.</p>
+<p>This expression suggests a <span class="alert">regression adjustment</span> estimator. For example, if we assume that <span class="math inline">\(m_0(X) = X'\\beta_0\)</span>, then we have that</p>
+<p><span class="math display">\[ATT = \E[\Delta Y_{t^*} | D=1] - \E[X'|D=1]\beta_0\]</span></p>
+<div class="fragment">
+<p>and we can estimate the <span class="math inline">\(ATT\)</span> by</p>
+<ul>
+<li><p>Step 1: Estimate <span class="math inline">\(\beta_0\)</span> using untreated group</p></li>
+<li><p>Step 2: Combine this estimate with estimates of <span class="math inline">\(\E[\Delta Y_t | D=1]\)</span> and <span class="math inline">\(\E[X'|D=1]\)</span> (using treated group) to estimate <span class="math inline">\(ATT\)</span></p></li>
+</ul>
 </div>
 </section>
 <section id="covariate-balancing" class="slide level2">
 <h2>Covariate Balancing</h2>
 <p>Alternatively, if we could choose <span class="alert">balancing weights</span> <span class="math inline">\(\nu_0(X)\)</span> such that the distribution of <span class="math inline">\(X\)</span> was the same in the untreated group as it is in the treated group after applying the balancing weights, then we would have that (from the second term above) <span class="math display">\[\begin{align*}
-  \E\Big[ \E[\Delta Y_{it}(0) | X_i, D_i=0 ] \Big| D_i=1\Big] &amp;= \E\Big[ \nu_0(X_i) \E[\Delta Y_{it}(0) | X_i, D_i=0 ] \Big| D_i=0\Big] \\
-  &amp;= \E[\nu_0(X_i) \Delta Y_{it}(0) | D_i=0]
+  \E\Big[ \E[\Delta Y_{t^*}(0) | X, D=0 ] \Big| D=1\Big] &amp;= \E\Big[ \nu_0(X) \E[\Delta Y_{t^*}(0) | X, D=0 ] \Big| D=0\Big] \\
+  &amp;= \E[\nu_0(X) \Delta Y_{t^*}(0) | D=0]
 \end{align*}\]</span> where the first equality is due to balancing weights and the second by the law of iterated expectations.</p>
 <div class="fragment">
 <p>The most common way to re-weight is based on the propensity score, you can show: <span class="math display">\[\begin{align*}
@@ -548,6 +604,9 @@ ATT &amp;= \E[\Delta Y_t | D=1] - \E[\Delta Y_t(0) | D=1] \hspace{150pt}\\
 <li>This also provides a connection to estimating <span class="math inline">\(ATT\)</span> under conditional parallel trends using machine learning for <span class="math inline">\(p(X)\)</span> and <span class="math inline">\(\E[\Delta Y_{t^*}|X,D=0]\)</span> (see: Chang (2020) and Callaway, Drukker, Liu, and Sant’Anna (2023))</li>
 </ul>
 </div>
+<div class="fragment">
+<p><a href="Relaxing-Parallel-Trends.html#/understanding-double-robustness">More Details</a></p>
+</div>
 </section>
 <section id="multiple-time-periods-and-variation-in-treatment-timing" class="slide level2">
 <h2>Multiple Time Periods and Variation in Treatment Timing</h2>
@@ -579,6 +638,30 @@ ATT &amp;= \E[\Delta Y_t | D=1] - \E[\Delta Y_t(0) | D=1] \hspace{150pt}\\
 <li><span class="math inline">\((X_{it}-X_{ig-1})\)</span> — the change in covariates over time</li>
 </ul>
 </div>
+</section></section>
+<section>
+<section id="empirical-example" class="title-slide slide level1 center" data-visibility="uncounted">
+<h1>Empirical Example</h1>
+<aside class="notes">
+<ul>
+<li><p>walk through a bunch of examples</p></li>
+<li><p>including covariates in the parallel trend assumtpion, compare to regression</p></li>
+<li><p>regression adjustment, ipw, doubly robust</p></li>
+<li><p>change base period</p></li>
+<li><p>change comparison group</p></li>
+<li><p>allow for anticipation</p></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="back-to-minimum-wage-example" class="slide level2">
 <h2>Back to Minimum Wage Example</h2>
@@ -616,7 +699,7 @@ ATT &amp;= \E[\Delta Y_t | D=1] - \E[\Delta Y_t(0) | D=1] \hspace{150pt}\\
 <section id="callaway-and-santanna-2021-results" class="slide level2">
 <h2>Callaway and Sant’Anna (2021) Results</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># callaway and sant'anna including covariates</span></span>
+<div class="sourceCode cell-code" id="cb2" data-code-line-numbers="|6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># callaway and sant'anna including covariates</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a>cs_x <span class="ot">&lt;-</span> <span class="fu">att_gt</span>(<span class="at">yname=</span><span class="st">"lemp"</span>,</span>
 <span id="cb2-3"><a href="#cb2-3"></a>               <span class="at">tname=</span><span class="st">"year"</span>,</span>
 <span id="cb2-4"><a href="#cb2-4"></a>               <span class="at">idname=</span><span class="st">"id"</span>,</span>
@@ -714,10 +797,10 @@ Estimation Method:  Doubly Robust</code></pre>
 </div>
 </div>
 </section>
-<section id="regression-adjustment" class="slide level2">
+<section id="regression-adjustment-1" class="slide level2">
 <h2>Regression Adjustment</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5" data-code-line-numbers="|9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># callaway and sant'anna including covariates</span></span>
+<div class="sourceCode cell-code" id="cb5" data-code-line-numbers="|6|9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># callaway and sant'anna including covariates</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a>cs_x <span class="ot">&lt;-</span> <span class="fu">att_gt</span>(<span class="at">yname=</span><span class="st">"lemp"</span>,</span>
 <span id="cb5-3"><a href="#cb5-3"></a>               <span class="at">tname=</span><span class="st">"year"</span>,</span>
 <span id="cb5-4"><a href="#cb5-4"></a>               <span class="at">idname=</span><span class="st">"id"</span>,</span>
@@ -733,7 +816,7 @@ Estimation Method:  Doubly Robust</code></pre>
 <span id="cb5-14"><a href="#cb5-14"></a><span class="fu">ggdid</span>(cs_x_dyn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="regression-adjustment-1" class="slide level2">
+<section id="regression-adjustment-2" class="slide level2">
 <h2>Regression Adjustment</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
@@ -761,12 +844,12 @@ Estimation Method:  Outcome Regression</code></pre>
 </div>
 </div>
 </section>
-<section id="regression-adjustment-2" class="slide level2">
+<section id="regression-adjustment-3" class="slide level2">
 <h2>Regression Adjustment</h2>
 
 <img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
-<section id="inverse-probability-weighting" class="slide level2">
-<h2>Inverse Probability Weighting</h2>
+<section id="inverse-propensity-score-weighting" class="slide level2">
+<h2>Inverse Propensity Score Weighting</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7" data-code-line-numbers="|9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># callaway and sant'anna including covariates</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a>cs_x <span class="ot">&lt;-</span> <span class="fu">att_gt</span>(<span class="at">yname=</span><span class="st">"lemp"</span>,</span>
@@ -784,8 +867,8 @@ Estimation Method:  Outcome Regression</code></pre>
 <span id="cb7-14"><a href="#cb7-14"></a><span class="fu">ggdid</span>(cs_x_dyn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="inverse-probability-weighting-1" class="slide level2">
-<h2>Inverse Probability Weighting</h2>
+<section id="inverse-propensity-score-weighting-1" class="slide level2">
+<h2>Inverse Propensity Score Weighting</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -812,8 +895,8 @@ Estimation Method:  Inverse Probability Weighting</code></pre>
 </div>
 </div>
 </section>
-<section id="inverse-probability-weighting-2" class="slide level2">
-<h2>Inverse Probability Weighting</h2>
+<section id="inverse-propensity-score-weighting-2" class="slide level2">
+<h2>Inverse Propensity Score Weighting</h2>
 
 <img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"></section>
 <section id="doubly-robust-1" class="slide level2">
@@ -1019,7 +1102,7 @@ Estimation Method:  Doubly Robust</code></pre>
 <section id="allow-for-anticipation-2" class="slide level2">
 <h2>Allow for anticipation</h2>
 
-<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-26-1.png" width="960" class="r-stretch"></section>
+<img data-src="Relaxing-Parallel-Trends_files/figure-revealjs/unnamed-chunk-26-1.png" width="960" class="r-stretch"></section></section>
 <section>
 <section id="covariates-affected-by-the-treatment" class="title-slide slide level1 center" data-visibility="uncounted">
 <h1>Covariates Affected by the Treatment</h1>
@@ -1068,7 +1151,7 @@ Estimation Method:  Doubly Robust</code></pre>
 <div class="callout callout-note no-icon callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
-<p><strong>Alt CPT I</strong></p>
+<p><strong>Alternative Conditional Parallel Trends 1</strong></p>
 </div>
 <div class="callout-content">
 <p><span class="math display">\[\E[\Delta Y_{t^*}(0) | X_{t^*}, X_{t^*-1}(0), Z, D=1] = \E[\Delta Y_{t^*}(0) |  X_{t^*}, X_{t^*-1}(0), Z, D=0]\]</span></p>
@@ -1085,7 +1168,7 @@ Estimation Method:  Doubly Robust</code></pre>
 <div class="callout callout-note no-icon callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
-<p><strong>Alt CPT II</strong></p>
+<p><strong>Alternative Conditional Parallel Trends 2</strong></p>
 </div>
 <div class="callout-content">
 <p><span class="math display">\[\E[\Delta Y_{t^*}(0) | Z, D=1] = \E[\Delta Y_{t^*}(0) |  Z, D=0]\]</span></p>
@@ -1102,7 +1185,7 @@ Estimation Method:  Doubly Robust</code></pre>
 <div class="callout callout-note no-icon callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
-<p><strong>Alt CPT III</strong></p>
+<p><strong>Alternative Conditional Parallel Trends 3</strong></p>
 </div>
 <div class="callout-content">
 <p><span class="math display">\[\E[\Delta Y_{t^*}(0) | X_{t^*-1}(0), Z, D=1] = \E[\Delta Y_{t^*}(0) |  X_{t^*-1}(0), Z, D=0]\]</span></p>
@@ -1165,8 +1248,19 @@ Estimation Method:  Doubly Robust</code></pre>
 <section id="understanding-double-robustness" class="slide level2" data-visibility="uncounted">
 <h2>Understanding Double Robustness</h2>
 <p>To understand double robustness, we can rewrite the expression for <span class="math inline">\(ATT\)</span> as <span class="math display">\[\begin{align*}
-  ATT = \E\left[ \frac{D}{p} \Big(\Delta Y_t - m_0(X)\Big) \right] - \E\left[ \frac{p(X)(1-D)}{(1-p(X))p} \Big(\Delta Y_t - m_0(X)\Big)\right]
+  ATT = \E\left[ \frac{D}{p} \Big(\Delta Y_{t^*} - m_0(X)\Big) \right] - \E\left[ \frac{p(X)(1-D)}{(1-p(X))p} \Big(\Delta Y_{t^*} - m_0(X)\Big)\right]
 \end{align*}\]</span></p>
+<p>The first term is exactly the same as what comes from regression adjustment</p>
+<ul>
+<li><p>If we correctly specify a model for <span class="math inline">\(m_0(X)\)</span>, it will be equal to <span class="math inline">\(ATT\)</span>.</p></li>
+<li><p>If <span class="math inline">\(m_0(X)\)</span> not correctly specified, then, by itself, this term will be biased for <span class="math inline">\(ATT\)</span></p></li>
+</ul>
+<p>The second term can be thought of as a de-biasing term</p>
+<ul>
+<li><p>If <span class="math inline">\(m_0(X)\)</span> is correctly specified, it is equal to 0</p></li>
+<li><p>If <span class="math inline">\(p(X)\)</span> is correctly specified, it reduces to <span class="math inline">\(\E[\Delta Y_t(0) | D=1] - \E[m_0(X)|D=1]\)</span> which both delivers counterfactual untreated potential outcomes and removes the (possibly misspecified) second term from the first equation</p></li>
+</ul>
+<p><a href="Relaxing-Parallel-Trends.html#/doubly-robust">Back</a></p>
 <div class="footer footer-default">
 
 </div>
