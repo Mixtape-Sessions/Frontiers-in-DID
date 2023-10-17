@@ -12,12 +12,23 @@ This is one of our advanced courses. These courses are designed <strong>assuming
 
 ## Schedule
 
-
-<details open><summary><b>Relaxing Parallel Trends (Covariates Good and Bad)</b></summary><br/>
+<details open><summary><b>Introduction</b></summary><br/>
 
 <b>About</b>
 
-Covariates good and bad
+High-level discussion about using panel data for causal inference and an introduction/review of DID approaches
+
+<b>Slides</b>
+
+[Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/DID-Introduction.html)
+
+[Data](https://mixtape-sessions.github.io/Frontiers-in-DID/apm.RData)
+
+<details open><summary><b>Relaxing Parallel Trends (& Covariates Good and Bad)</b></summary><br/>
+
+<b>About</b>
+
+Relaxing the parallel trends assumption by conditioning on covariates and dealing with covariates that could have been affected by the treatment
 
 <b>Slides</b>
 
@@ -34,11 +45,11 @@ Covariates good and bad
 </details><br />
 
 
-<details open><summary><b>More Complicated Treatment Regimes (or, I have a compliacated treatment, what now?)</b></summary><br/>
+<details open><summary><b>More Complicated Treatment Regimes (or, I have a complicated treatment, what now?)</b></summary><br/>
 
 <b>About</b>
 
-Continuous treatment. General things to think about when estimating effects.
+Continuous treatment and a treatment that can turn on and off plus a high-level discussion of how to adapt "heterogeneity robust" strategies to new empirical settings
 
 <b>Slides</b>
 
@@ -55,11 +66,11 @@ Continuous treatment. General things to think about when estimating effects.
 </details><br />
 
 
-<details open><summary><b>Alternative Identification Strategies in panel data</b></summary><br/>
+<details open><summary><b>Alternative Identification Strategies</b></summary><br/>
 
 <b>About</b>
 
-Changes-in-changes, Factor models, and lagged outcomes.
+Many recent developments in panel data approaches to causal inference have come in the context of difference-in-differences, but many of these insights extend (in a straighforward way) to other using other identification strategies as well.  This part will consider changes-in-changes, interactive fixed effects models, and conditioning on lagged outcomes as alternative under-the-hood identification strategies.
 
 <b>Slides</b>
 

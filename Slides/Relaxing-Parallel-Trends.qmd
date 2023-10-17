@@ -593,7 +593,7 @@ cs_x_res <- aggte(cs_x, type="group")
 summary(cs_x_res)
 ```
 
-## Doubly Robust
+## Allow for anticipation
 
 ```{r echo=FALSE}
 cs_x_dyn <- aggte(cs_x, type="dynamic")
