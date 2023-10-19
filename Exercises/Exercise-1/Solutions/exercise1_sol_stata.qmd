@@ -1,0 +1,251 @@
+---
+format: 
+  gfm: default
+  html: default
+---
+
+
+```{r echo=FALSE, results="asis"}
+sol <- TRUE
+stata <- TRUE
+
+if (sol) cat("# Exercise 1 Solutions") else cat("# Exercise 1")
+
+if (sol) {
+  start_sol = '<details><summary>Solutions:</summary><div style="border-left: 2px solid black; padding-left: 1rem">'
+  end_sol = '</div></details>'
+} else {
+  start_sol = '<div style="display: none;">'
+  end_sol =   '</div>'
+}
+
+```
+
+
+This exercise will involve estimating causal effect parameters using a difference-in-differences identification strategy that involves conditioning on covariates in the parallel trends assumption and possibly allows for anticipation effects.
+
+In particular, we will use data from the National Longitudinal Study of Youth to learn about causal effects of job displacement (where job displacement roughly means "losing your job through no fault of your own" &mdash; a mass layoff is a main example).
+
+To start with, load the data from the file `job_displacement_data.RData` by running
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+library(Statamarkdown)
+```
+
+```{stata, collectcode = TRUE}
+use "../job_displacement_data.dta", clear
+```
+
+which will load a dataset called `job_displacement_data`.  This is what the data looks like
+
+```{stata}
+list in 1/5
+```
+
+You can see that the data contains the following columns:
+
+* `id` - an individual identifier
+* `year` - the year for this observation
+* `group` - the year that person lost his/her job.  `group=0` for those that do not lose a job in any period being considered.
+* `income` - a person's wage and salary income in this year
+* `female` - 1 for females, 0 for males
+* `white` - 1 for white, 0 for non-white
+
+For the results below, we will mainly use the `csdid` package which you can install using `ssc install csdid`.
+
+## Question 1
+
+We will start by computing group-time average treatment effects without including any covariates in the parallel trends assumption.  
+
+a) Use the `did` package to compute all available group-time average treatment effects.
+
+`r start_sol`
+```{stata, echo=sol, eval=(sol & stata)}
+csdid income, ivar(id) time(year) gvar(group)
+```
+`r end_sol`
+
+b) *Bonus Question* Try to manually calculate $ATT(g=1992, t=1992)$.  Can you calculate exactly the same number as in part (a)?
+
+`r start_sol`
+```{stata, echo=sol, eval=(sol & stata)}
+quietly sum income if group == 1992 & year == 1992
+local y_11 = `r(mean)'
+quietly sum income if group == 1992 & year == 1991
+local y_10 = `r(mean)'
+quietly sum income if group == 0 & year == 1992
+local y_01 = `r(mean)'
+quietly sum income if group == 0 & year == 1991
+local y_00 = `r(mean)'
+local did = (`y_11' - `y_10') - (`y_01' - `y_00')
+disp "DID Estimate: `did'"
+```
+`r end_sol`
+
+c) Aggregate the group-time average treatment effects into an event study and plot the results.  What do you notice?  Is there evidence against parallel trends?
+
+`r start_sol`
+```{stata, echo=c(1,2), eval=(sol & stata)}
+csdid income, ivar(id) time(year) gvar(group) agg(event)
+csdid_plot
+quietly graph export stata-figure/es_simple.png, replace
+```
+![](stata-figure/es_simple.png)
+
+`r end_sol`    
+
+d) Aggregate the group-time average treatment effects into a single overall treatment effect.  How do you interpret the results?
+
+`r start_sol`
+```{stata, echo=sol, eval=(sol & stata)}
+csdid income, ivar(id) time(year) gvar(group) agg(group)
+```
+`r end_sol` 
+
+
+# Question 2
+
+A major issue in the job displacement literature concerns a version of anticipation.  In particular, there is some empirical evidence that earnings of displaced workers start to decline *before* they are actually displaced (a rough explanation is that firms where there are mass layoffs typically "struggle" in the time period before the mass layoff actually takes place and this can lead to slower income growth for workers at those firms).  
+
+a) Is there evidence of anticipation in your results from Question 1?
+
+`r start_sol`
+```{r echo=FALSE, eval=sol, results="asis"}
+  cat("There is a moderate amount of evidence for anticipation in the previous results.  It hinges on the estimate for event-time equal to -1.  It is negative which is in line with the discussion about anticipation above, but it is only marginally statistically significant.")
+```
+`r end_sol`  
+    
+b) Repeat parts (a)-(d) of Question 1 allowing for one year of anticipation.
+
+`r start_sol`
+```{stata, collectcode=TRUE, echo=sol, eval=(sol & stata)}
+* Move up "treatment date" by 1 year
+gen group_m1 = group
+replace group_m1 = group_m1 - 1 if group != 0
+```
+
+```{stata, echo=sol, eval=(sol & stata)}
+* part a
+csdid income, ivar(id) time(year) gvar(group_m1)
+```
+
+```{stata, echo=sol, eval=(sol & stata)}
+* part b
+quietly sum income if group == 1992 & year == 1992
+local y_11 = `r(mean)'
+quietly sum income if group == 1992 & year == 1990
+local y_10 = `r(mean)'
+quietly sum income if group == 0 & year == 1992
+local y_01 = `r(mean)'
+quietly sum income if group == 0 & year == 1990
+local y_00 = `r(mean)'
+local did = (`y_11' - `y_10') - (`y_01' - `y_00')
+disp "DID Estimate: `did'"
+```
+
+```{stata, echo=c(1,2,3), eval=(sol & stata)}
+* part c
+csdid income, ivar(id) time(year) gvar(group_m1) agg(event)
+csdid_plot
+quietly graph export stata-figure/es_ant_1.png, replace
+```
+![](stata-figure/es_ant_1.png)
+
+```{stata, echo=sol, eval=(sol & stata)}
+* part d
+csdid income, ivar(id) time(year) gvar(group_m1) agg(group)
+```
+`r end_sol`
+
+# Question 3
+
+Now, let's suppose that we think that parallel trends holds only after we condition on a person sex and race (in reality, you could think of including many other variables in the parallel trends assumption, but let's just keep it simple).  In my view, I think allowing for anticipation is desirable in this setting too, so let's keep allowing for one year of anticipation.
+
+a) Answer parts (a), (c), and (d) of Question 1 but including `sex` and `white` as covariates.
+
+`r start_sol`
+
+```{stata, echo=sol, eval=(sol & stata)}
+* part a
+csdid income i.female i.white, ivar(id) time(year) gvar(group_m1)
+```
+
+```{stata, echo=c(1,2,3), eval=(sol & stata)}
+* part c
+csdid income i.female i.white, ivar(id) time(year) gvar(group_m1) agg(event)
+csdid_plot
+quietly graph export stata-figure/es_cov.png, replace
+```
+![](stata-figure/es_cov.png)
+
+```{stata, echo=sol, eval=(sol & stata)}
+* part d
+csdid income i.female i.white, ivar(id) time(year) gvar(group_,1) agg(group)
+```
+
+`r end_sol`
+
+b) By default, the `did` package uses the doubly robust approach that we discussed during our session.  How do the results change if you use a regression approach or propensity score re-weighting?
+
+
+`r start_sol`
+```{r echo=FALSE, eval=sol, results="asis"}
+  cat("For simplicity, I am just going to show the overall results when using the regression approach and the propensity score re-weighting approach.")
+```
+
+```{stata, echo=sol, eval=(sol & stata)}
+* part a
+csdid income i.female i.white, ivar(id) time(year) gvar(group_m1) method(reg)
+```
+
+```{stata, echo=c(1,2,3), eval=(sol & stata)}
+* part c
+csdid income i.female i.white, ivar(id) time(year) gvar(group_m1) agg(event) method(reg)
+csdid_plot
+quietly graph export stata-figure/es_cov_reg.png, replace
+```
+![](stata-figure/es_cov_reg.png)
+
+```{stata, echo=sol, eval=(sol & stata)}
+* part d
+csdid income i.female i.white, ivar(id) time(year) gvar(group_,1) agg(group) method(reg)
+```
+
+```{r echo=FALSE, eval=sol, results="asis"}
+  cat("You can see that the results are very similar across estimation strategies in this example.")
+```
+`r end_sol`
+
+
+# Question 4
+
+Finally, the data that we have contains a variable called `occ_score` which is roughly a variable that measures the occupation "quality".  Suppose that we (i) are interested in including a person's occupation in the parallel trends assumption, (ii) are satisfied that `occ_score` sufficiently summarizes a person's occupation, but (iii) are worried that a person's occupation is a "bad control" (in the sense that it could be affected by the treatment).  
+
+a) Repeat parts (a), (c), and (d) of Question 1 but including `occ_score` in the parallel trends assumption.  Continue to allow for 1 year of anticipation effects.
+
+`r start_sol`
+
+
+```{stata, echo=sol, eval=(sol & stata)}
+* part a
+csdid income i.female i.white occ_score, ivar(id) time(year) gvar(group_m1)
+```
+
+```{stata, echo=c(1,2,3), eval=(sol & stata)}
+* part c
+csdid income i.female i.white occ_score, ivar(id) time(year) gvar(group_m1) agg(event)
+csdid_plot
+quietly graph export stata-figure/es_cov.png, replace
+```
+![](stata-figure/es_cov.png)
+
+```{stata, echo=sol, eval=(sol & stata)}
+* part d
+csdid income i.female i.white occ_score, ivar(id) time(year) gvar(group_,1) agg(group)
+```
+
+
+`r end_sol`
+
+b) What additional assumptions (with respect to occupation) do you need to make in order to rationalize this approach?
+
