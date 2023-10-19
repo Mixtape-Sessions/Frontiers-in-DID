@@ -725,7 +725,7 @@ $$\E[\Delta Y_{t^*}(0) | X_{t^*}(0), X_{t^*-1}(0), Z, D=1] = \E[\Delta Y_{t^*}(0
 
 <br>
 
-## Alternative Identification Strategies
+## Option 1: Ignore
 
 One idea is to just ignore that the covariates may have been affected by the treatment:
 
@@ -735,14 +735,18 @@ One idea is to just ignore that the covariates may have been affected by the tre
 
 ### Alternative Conditional Parallel Trends 1
 
-$$\E[\Delta Y_{t^*}(0) | X_{t^*}, X_{t^*-1}(0), Z, D=1] = \E[\Delta Y_{t^*}(0) |  X_{t^*}, X_{t^*-1}(0), Z, D=0]$$
+$$\E[\Delta Y_{t^*}(0) | { \color{red} X_{\color{red} t^\color{red}*} }, X_{t^*-1}(0), Z, D=1] = \E[\Delta Y_{t^*}(0) |  { \color{red} X_{\color{red} t^\color{red}*} }, X_{t^*-1}(0), Z, D=0]$$
 :::
 
 <br>
 
 The limitations of this approach are well known (even discussed in MHE), and this is not typically the approach taken in empirical work
 
-## Alternative Identification Strategies
+. . .
+
+[Job Displacement Example:]{.alert-blue} You would compare paths of outcomes for workers who left union [because they were displaced]{.alert} to paths of outcomes for non-displaced workers who also left union (e.g., [because of better non-unionized job opportunity]{.alert})
+
+## Option 2: Drop
 
 It is more common in empirical work to drop $X_t(0)$ entirely from the parallel trends assumption
 
@@ -759,7 +763,11 @@ $$\E[\Delta Y_{t^*}(0) | Z, D=1] = \E[\Delta Y_{t^*}(0) |  Z, D=0]$$
 
 In my view, this is not attractive either though.  If we believe this assumption, then we have basically solved the bad control problem by assuming that it does not exist.
 
-## Alternative Identification Strategies
+. . .
+
+[Job Displacement Example:]{.alert-blue} We have now just assumed that path of earnings (absent job displacement) doesn't depend on union status
+
+## Option 3: Tweak
 
 Perhaps a better alternative identifying assumption is the following one
 
@@ -774,29 +782,41 @@ $$\E[\Delta Y_{t^*}(0) | X_{t^*-1}(0), Z, D=1] = \E[\Delta Y_{t^*}(0) |  X_{t^*-
 
 <br>
 
-This says that:
+. . .
 
-* Conditional parallel trends holds after conditioning on pre-treatment time-varying covariates that could have been affected by treatment
+[Intuition:]{.alert} Conditional parallel trends holds after conditioning on pre-treatment time-varying covariates that could have been affected by treatment
 
-* It is not the same identifying assumption as the one that we started with, but we are at least allowing for the bad control to show up in the identifying assumption
+. . .
 
-* Since $X_{t^*-1}(0)$ is observed for all units, we can immediately operationalize this assumption use our arguments from earlier (i.e., the ones without bad controls)
+[Job Displacement Example:]{.alert-blue} Path of earnings (absent job displacement) depends on pre-treatment union status, but not untreated potential union status in the second period
+
+. . .
+
+[What to do:]{.alert} Since $X_{t^*-1}(0)$ is observed for all units, we can immediately operationalize this assumption use our arguments from earlier (i.e., the ones without bad controls)
+
+* This is difficult to operationalize with a TWFE regression
 
 * In practice, you can just include the bad control among other covariates in `did`
 
-## Identification under CPT
+::: {.notes}
+
+* It is not the same identifying assumption as the one that we started with, but we are at least allowing for the bad control to show up in the identifying assumption
+
+:::
+
+## Option 4: Extra Assumptions
 
 Going back to the original conditional parallel trends assumption (that include both $X_{t^*}(0)$ and $X_{t^*-1}(0)$)...Using the same sort of arguments as for regression adjustment earlier, it follows that
 
 $$ATT = \E[\Delta Y_{t^*} | D=1] - \E\Big[ \E[\Delta Y_{t^*}(0) | X_{t^*}(0), X_{t^*-1}(0), Z, D=0] \Big| D=1\Big]$$ 
 
-Here:
+The second term is the tricky one.  Notice that:
 
 * The inside conditional expectation is identified &mdash; we see untreated potential outcomes and covariates for the untreated group
 
-* But the outside expectation is infeasible $\implies$ we are stuck
+* But the outside expectation is infeasible $\implies$ we are stuck (Option 4a)
 
-## Dealing with $X_{t^*}(0)$
+## Option 4: Dealing with $X_{t^*}(0)$
 
 ::: {.callout-note}
 
@@ -816,7 +836,9 @@ Under this assumption, can show that we can recover the $ATT$:
 
 $$ATT = \E[\Delta Y_{t^*} | D=1] - \E\left[ \E[\Delta Y_{t^*} | X_{t^*-1}, Z, D=0] \Big| D=1 \right]$$
 
-## Additional Discussion
+This is the same expression as in Option 3
+
+## Option 4: Additional Discussion
 
 In some cases, it may make sense to condition on other additional variables (e.g., the lagged outcome $Y_{t^*-1}$) in the covariate unconfoundedness assumption.  In this case, it is still possible to identify $ATT$, but it is more complicated
 
