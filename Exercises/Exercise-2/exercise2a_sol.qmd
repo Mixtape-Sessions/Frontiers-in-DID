@@ -1,7 +1,7 @@
 ---
 format: 
-  gfm: default
   html: default
+  gfm: default
 ---
 
 ```{r echo=FALSE, results="asis"}
