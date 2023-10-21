@@ -63,6 +63,8 @@ Continuous treatment and a treatment that can turn on and off plus a high-level 
 
 [Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/More-Complicated-Treatment-Regimes.html)
 
+[Min. Wage Example Replication Code](https://mixtape-sessions.github.io/Frontiers-in-DID/mw_wage_application_example.R)
+
 <b>Coding Exercises</b>
 
 [Exercise 2a](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2a.html)

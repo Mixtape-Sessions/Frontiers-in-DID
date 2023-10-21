@@ -1,0 +1,512 @@
+filter(!is.na(black_base)) %>%
+filter(!is.na(raceothr_base)) %>%
+filter(!is.na(hispanic_base)) %>%
+filter(!is.na(mothed_base)) %>%
+filter(!is.na(fathed_base)) %>%
+filter(!is.na(r0000100)) %>%
+filter(!is.na(numjobs)) %>%
+filter(!is.na(exper))
+total_years <- n_distinct(df$year)
+# Creating occ score from occ1990 variable
+# This variation allows changes per year AND
+#          occupation score becomes a 1-4 scale
+occscore_dt <- df %>%
+group_by(occ1990, year) %>%
+mutate(
+occ_score = median(wagesalary / 100, na.rm = TRUE)
+) %>%
+ungroup() %>%
+filter(occ_score != 0 & !is.na(occ_score)) %>%
+group_by(year) %>%
+mutate(
+occ_score = case_when(
+occ_score < quantile(occ_score, 0.25) ~ 1,
+occ_score < quantile(occ_score, 0.5) &
+occ_score >= quantile(occ_score, 0.25) ~ 2,
+occ_score < quantile(occ_score, 0.75) &
+occ_score >= quantile(occ_score, 0.5) ~ 3,
+occ_score >= quantile(occ_score, 0.75) ~ 4
+)
+) %>%
+select(occ1990, occ_score, year) %>%
+distinct()
+# merging the datasets
+df <- df %>%
+left_join(occscore_dt, by = c("occ1990", "year")) %>%
+distinct()
+# Back to the main dataset. First we filter individuals reporting all years
+df <- df %>%
+group_by(id) %>%
+mutate(
+year_sep = ifelse(sep1 == 1, year, 0),
+year_sep = max(year_sep)
+) %>%
+# We arrange by year for the occupation change check
+arrange(year) %>%
+# Checking if they ever changed occupation
+mutate(
+treated     = ifelse(year >= year_sep & year_sep > 0, 1, 0),
+changed_occ = ifelse(occ_score != lead(occ_score), 1, 0)
+) %>%
+filter(occ_score != 0 & !is.na(occ_score)) %>%
+filter(n_distinct(year) == total_years) %>%
+ungroup() %>%
+mutate(lag_occscore = lag(occ_score))
+df <- df %>%
+select(occ_score, year_sep, year, id, age_base, female_base, white_base,
+mothed_base, fathed_base, r0000100, numjobs, exper,
+tenure, wagesalary, treated)
+df <- df[complete.cases(df),]
+df <- BMisc::makeBalancedPanel(df, "id", "year")
+df$income <- df$wagesalary
+df$group <- df$year_sep
+df$female <- df$female_base
+df$white <- df$white
+data <- select(df, id, year, group, income, female, white, occ_score)
+job_displacement_data <- data
+nrow(job_displacement_data)
+haven::write_dta(job_displacement_data, path="job_displacement_data.dta")
+setwd("~/Dropbox/Frontiers-in-DID/Slides")
+# staggered ife
+load("data3.RData")
+load(url("https://github.com/bcallaway11/did_chapter/raw/master/mw_data_ch2.RData"))
+# drops NE region and a couple of small groups
+mw_data_ch2 <- subset(mw_data_ch2, (G %in% c(2004,2006,2007,0)) & (region != "1"))
+head(mw_data_ch2[,c("id","year","G","lemp","lpop","lavg_pay","region")])
+# drop 2007 as these are right before fed. minimum wage change
+data2 <- subset(mw_data_ch2, G!=2007 & year >= 2003)
+# keep 2007 => larger sample size
+data3 <- subset(mw_data_ch2, year >= 2003)
+save(data3, "data3.RData")
+save(data3, file="data3.RData")
+haven::write_dta(data3, path="data3.dta")
+sife_res$att_gt
+library(ife)
+# staggered ife
+load("data3.RData")
+data4 <- subset(data3, G %in% c(2007,2006,0))
+sife_res <- ife::staggered_ife2(yname="lemp",
+gname="G",
+tname="year",
+idname="id",
+data=data4,
+nife=1)
+library(BMisc)
+did::ggdid(sife_res$att_gt)
+sife_res <- ife::staggered_ife2(yname="lemp",
+gname="G",
+tname="year",
+idname="id",
+data=data4,
+nife=1)
+did::ggdid(sife_res$att_gt)
+sife_res$att_gt
+sife_res <- ife::staggered_ife2(yname="lemp",
+gname="G",
+tname="year",
+idname="id",
+data=data4,
+nife=0)
+sife_res
+sife_res$att_gt
+did::att_gt(yname="lemp", gname="G", tname="year", idname="id", data=data4)
+did::att_gt(yname="lemp", gname="G", tname="year", idname="id", data=data4, control_group="notyettreated")
+sife_res$att_gt
+sife_res <- ife::staggered_ife2(yname="lemp",
+gname="G",
+tname="year",
+idname="id",
+data=data4,
+nife=1)
+did::ggdid(sife_res$att_gt)
+load("data2.RData")
+did::ggdid(sife_res$att_gt)
+head(data2)
+treated_state_list <- unique(subset(data2, G != 0)$state_name)
+treated_state_list
+unique(data2$state_name)
+library(dplyr)
+unique(select(data2, state_name, state_mw, year))
+unique(select(subset(data2, G != 0), state_name, state_mw, year))
+library(ggplot2)
+plot_df <- unique(select(subset(data2, G != 0), state_name, state_mw, year))
+ggplot(plot_df, aes(x=year, y=state_mw, color=state_name)) +
+geom_line() +
+theme_bw()
+state
+unique(data2$year)
+?DRDID::drdid_panel
+state <- "Florida"
+g <- unique(subset(data2, state_name==state)$G)
+g
+base_period <- g-1
+base_period
+period <- 2006
+Y1_treated <- subset(data2, state_name==state & year==period)$lemp
+Y1_treated
+Y1_treated <- subset(data2, state_name==state & year==period)$lemp
+Y1_untreated <- subset(data2, G==0 & year==period)$lemp
+Y0_treated <- subset(data2, state_name==state & year==base_period)$lemp
+Y0_untreated <- subset(data2, G==0 & year==base_period)$lemp
+Y1 <- c(Y1_treated, Y1_untreated)
+Y0 <- c(Y0_treated, Y0_untreated)
+D <- c(rep(1, length(Y1_treated)), rep(0, length(Y1_untreated)))
+D
+attst <- DRDID::drdid_panel(Y1, Y0, D)
+attst <- DRDID::drdid_panel(Y1, Y0, D, covariates=NULL)
+attst
+res <- list()
+unique(data2$fed_mw)
+res <- list()
+counter <- 1
+for (state %in% treated_state_list) {
+for ( state %in% treated_state_list) {
+for ( state in treated_state_list) {
+}
+for ( state in treated_state_list) {
+1+1
+}
+for ( state %in% treated_state_list) {
+lapply(treated_state_list, function(state) {
+lapply(treated_state_list, function(state) {
+))
+lapply(treated_state_list, function(state) {
+1+1})
+lapply(treated_state_list, function(state) {
+g <- unique(subset(data2, state_name==state)$G)
+base_period <- g-1
+for (period in 2004:2007) {
+Y1_treated <- subset(data2, state_name==state & year==period)$lemp
+Y1_untreated <- subset(data2, G==0 & year==period)$lemp
+Y0_treated <- subset(data2, state_name==state & year==base_period)$lemp
+Y0_untreated <- subset(data2, G==0 & year==base_period)$lemp
+Y1 <- c(Y1_treated, Y1_untreated)
+Y0 <- c(Y0_treated, Y0_untreated)
+D <- c(rep(1, length(Y1_treated)), rep(0, length(Y1_untreated)))
+attst <- DRDID::drdid_panel(Y1, Y0, D, covariates=NULL)
+state_mw <- unique(subset(data2, state_name==state & year==period)$state_mw)
+treat_amount <- state_mw - 5.15
+res[[counter]] <- data.frame(state=state, year=period, attst=attst$ATT, attst.se=attst$se,
+treat_amount=treat_amount, attst.per=attst$ATT/treat_amount,
+attst.per.se=attst$se/treat_amount)
+counter <- counter+1
+}
+})
+for (state %in% treated_state_list) {
+res <- list()
+counter <- 1
+for (i in 1:length(treated_state_list)) {
+state <- treated_state_list[i]
+g <- unique(subset(data2, state_name==state)$G)
+base_period <- g-1
+for (period in 2004:2007) {
+Y1_treated <- subset(data2, state_name==state & year==period)$lemp
+Y1_untreated <- subset(data2, G==0 & year==period)$lemp
+Y0_treated <- subset(data2, state_name==state & year==base_period)$lemp
+Y0_untreated <- subset(data2, G==0 & year==base_period)$lemp
+Y1 <- c(Y1_treated, Y1_untreated)
+Y0 <- c(Y0_treated, Y0_untreated)
+D <- c(rep(1, length(Y1_treated)), rep(0, length(Y1_untreated)))
+attst <- DRDID::drdid_panel(Y1, Y0, D, covariates=NULL)
+state_mw <- unique(subset(data2, state_name==state & year==period)$state_mw)
+treat_amount <- state_mw - 5.15
+res[[counter]] <- data.frame(state=state, year=period, attst=attst$ATT, attst.se=attst$se,
+treat_amount=treat_amount, attst.per=attst$ATT/treat_amount,
+attst.per.se=attst$se/treat_amount)
+counter <- counter+1
+}
+}
+res
+do.call(cbind.data.frame, res)
+do.call(rbind.data.frame, res)
+result_df <- do.call(rbind.data.frame, res)
+res <- list()
+counter <- 1
+for (i in 1:length(treated_state_list)) {
+state <- treated_state_list[i]
+g <- unique(subset(data2, state_name==state)$G)
+base_period <- g-1
+for (period in 2004:2007) {
+Y1_treated <- subset(data2, state_name==state & year==period)$lemp
+Y1_untreated <- subset(data2, G==0 & year==period)$lemp
+Y0_treated <- subset(data2, state_name==state & year==base_period)$lemp
+Y0_untreated <- subset(data2, G==0 & year==base_period)$lemp
+Y1 <- c(Y1_treated, Y1_untreated)
+Y0 <- c(Y0_treated, Y0_untreated)
+D <- c(rep(1, length(Y1_treated)), rep(0, length(Y1_untreated)))
+attst <- DRDID::drdid_panel(Y1, Y0, D, covariates=NULL)
+state_mw <- unique(subset(data2, state_name==state & year==period)$state_mw)
+treat_amount <- state_mw - 5.15
+res[[counter]] <- data.frame(state=state, year=period, attst=attst$ATT, attst.se=attst$se,
+treat_amount=treat_amount, attst.per=attst$ATT/treat_amount,
+attst.per.se=attst$se/treat_amount, g=g)
+counter <- counter+1
+}
+}
+result_df <- do.call(rbind.data.frame, res)
+result_df
+post_res <- subset(result_df, year >= g)
+post_res
+res <- list()
+counter <- 1
+for (i in 1:length(treated_state_list)) {
+state <- treated_state_list[i]
+g <- unique(subset(data2, state_name==state)$G)
+base_period <- g-1
+for (period in 2004:2007) {
+Y1_treated <- subset(data2, state_name==state & year==period)$lemp
+Y1_untreated <- subset(data2, G==0 & year==period)$lemp
+Y0_treated <- subset(data2, state_name==state & year==base_period)$lemp
+Y0_untreated <- subset(data2, G==0 & year==base_period)$lemp
+Y1 <- c(Y1_treated, Y1_untreated)
+Y0 <- c(Y0_treated, Y0_untreated)
+D <- c(rep(1, length(Y1_treated)), rep(0, length(Y1_untreated)))
+attst <- DRDID::drdid_panel(Y1, Y0, D, covariates=NULL)
+state_mw <- unique(subset(data2, state_name==state & year==period)$state_mw)
+treat_amount <- state_mw - 5.15
+res[[counter]] <- data.frame(state=state, year=period, attst=attst$ATT, attst.se=attst$se,
+treat_amount=treat_amount, attst.per=attst$ATT/treat_amount,
+attst.per.se=attst$se/treat_amount, g=g, state_size=sum(D))
+counter <- counter+1
+}
+}
+result_df <- do.call(rbind.data.frame, res)
+post_res <- subset(result_df, year >= g)
+post_res
+post_res$e <- post_res$year - post_res$g
+post_res
+e=1
+this_res <- subset(post_res, e==e)
+this_re
+this_res
+post_res$event_time <- post_res$year - post_res$g
+e
+this_res <- subset(post_res, event_time==e)
+this_res
+res <- list()
+counter <- 1
+for (i in 1:length(treated_state_list)) {
+state <- treated_state_list[i]
+g <- unique(subset(data2, state_name==state)$G)
+base_period <- g-1
+for (period in 2004:2007) {
+Y1_treated <- subset(data2, state_name==state & year==period)$lemp
+Y1_untreated <- subset(data2, G==0 & year==period)$lemp
+Y0_treated <- subset(data2, state_name==state & year==base_period)$lemp
+Y0_untreated <- subset(data2, G==0 & year==base_period)$lemp
+Y1 <- c(Y1_treated, Y1_untreated)
+Y0 <- c(Y0_treated, Y0_untreated)
+D <- c(rep(1, length(Y1_treated)), rep(0, length(Y1_untreated)))
+attst <- DRDID::drdid_panel(Y1, Y0, D, covariates=NULL)
+state_mw <- unique(subset(data2, state_name==state & year==period)$state_mw)
+treat_amount <- state_mw - 5.15
+res[[counter]] <- data.frame(state=state, year=period, attst=attst$ATT, attst.se=attst$se,
+treat_amount=treat_amount, attst.per=attst$ATT/treat_amount,
+attst.per.se=attst$se/treat_amount, g=g, state_size=sum(D))
+counter <- counter+1
+}
+}
+result_df <- do.call(rbind.data.frame, res)
+post_res <- subset(result_df, year >= g)
+post_res$event_time <- post_res$year - post_res$g
+post_res
+this_res <- subset(post_res, event_time==e)
+this_res
+es_att[e] <- weighted.mean(this_res$attst.per, this_res$state_size)
+# make an event study
+es_att <- c()
+es_se <- c()
+es_att[e] <- weighted.mean(this_res$attst.per, this_res$state_size)
+es_att
+# make an event study
+es_att <- c()
+es_se <- c()
+for (e in 0:3) {
+this_res <- subset(post_res, event_time==e)
+es_att[e] <- weighted.mean(this_res$attst.per, this_res$state_size)
+es_se[e] <- weighted.mean(this_res$attst.per.se, this_res$state_size)
+}
+es_att
+es_se
+ggplot(data.frame(es_att=es_att, es_se=es_se, e=e),
+aes(x=e, y=es_att)) +
+geom_line() +
+geom_line(aes(y=es_att+1.96*es_se), linetype="dashed") +
+geom_line(aes(y=es_att-1.96*es_se), linetype="dashed") +
+theme_bw()
+e
+ggplot(data.frame(es_att=es_att, es_se=es_se, e=0:3),
+aes(x=e, y=es_att)) +
+geom_line() +
+geom_line(aes(y=es_att+1.96*es_se), linetype="dashed") +
+geom_line(aes(y=es_att-1.96*es_se), linetype="dashed") +
+theme_bw()
+es_att
+# make an event study
+es_att <- c()
+es_se <- c()
+for (e in 0:3) {
+this_res <- subset(post_res, event_time==e)
+es_att[e] <- weighted.mean(this_res$attst.per, this_res$state_size)
+es_se[e] <- weighted.mean(this_res$attst.per.se, this_res$state_size)
+}
+# make an event study
+es_att <- c()
+es_se <- c()
+for (e in 0:3) {
+this_res <- subset(post_res, event_time==e)
+es_att[e+1] <- weighted.mean(this_res$attst.per, this_res$state_size)
+es_se[e+1] <- weighted.mean(this_res$attst.per.se, this_res$state_size)
+}
+ggplot(data.frame(es_att=es_att, es_se=es_se, e=0:3),
+aes(x=e, y=es_att)) +
+geom_line() +
+geom_line(aes(y=es_att+1.96*es_se), linetype="dashed") +
+geom_line(aes(y=es_att-1.96*es_se), linetype="dashed") +
+theme_bw()
+ggplot(data.frame(es_att=es_att, es_se=es_se, e=0:3),
+aes(x=e, y=es_att)) +
+geom_line() +
+geom_point(size=1.2) +
+geom_line(aes(y=es_att+1.96*es_se), linetype="dashed") +
+geom_line(aes(y=es_att-1.96*es_se), linetype="dashed") +
+theme_bw()
+ggplot(data.frame(es_att=es_att, es_se=es_se, e=0:3),
+aes(x=e, y=es_att)) +
+geom_line(color="steelblue") +
+geom_point(size=1.2, color="steelblue") +
+geom_line(aes(y=es_att+1.96*es_se), linetype="dashed") +
+geom_line(aes(y=es_att-1.96*es_se), linetype="dashed") +
+ylim(c(-.2, .05)) +
+theme_bw()
+ggplot(data.frame(es_att=es_att, es_se=es_se, e=0:3),
+aes(x=e, y=es_att)) +
+geom_line(color="steelblue", size=1.2) +
+geom_point(size=1.5, color="steelblue") +
+geom_line(aes(y=es_att+1.96*es_se), linetype="dashed") +
+geom_line(aes(y=es_att-1.96*es_se), linetype="dashed") +
+ylim(c(-.2, .05)) +
+theme_bw()
+ggplot(data.frame(es_att=es_att, es_se=es_se, e=0:3),
+aes(x=e, y=es_att)) +
+geom_line(color="steelblue", linewidth=1.2) +
+geom_point(size=1.5, color="steelblue") +
+geom_line(aes(y=es_att+1.96*es_se), linetype="dashed") +
+geom_line(aes(y=es_att-1.96*es_se), linetype="dashed") +
+ylim(c(-.2, .05)) +
+theme_bw()
+ggplot(post_res, aes(x=year, y=att.st)) +
+geom_line()
+ggplot(post_res, aes(x=year, y=attst)) +
+geom_line()
+ggplot(post_res, aes(x=year, y=attst, color=state)) +
+geom_line()
+ggplot(post_res, aes(x=year, y=attst, color=state)) +
+geom_line(linewidth=1.2) +
+theme_bw()
+ggplot(post_res, aes(x=year, y=attst, color=state)) +
+geom_line(linewidth=1.2) +
+geom_point(size=1.5) +
+theme_bw()
+ggplot(post_res, aes(x=year, y=attst.per, color=state)) +
+geom_line(linewidth=1.2) +
+geom_point(size=1.5) +
+theme_bw()
+ggplot(post_res, aes(x=year, y=attst, color=state)) +
+geom_line(linewidth=1.2) +
+geom_point(size=1.5) +
+theme_bw()
+ggplot(post_res, aes(x=year, y=attst.per, color=state)) +
+geom_line(linewidth=1.2) +
+geom_point(size=1.5) +
+theme_bw()
+ggplot(post_res, aes(x=year, y=attst, color=state)) +
+geom_line(linewidth=1.2) +
+geom_point(size=1.5) +
+ylim(c(-.2,.05)) +
+theme_bw()
+ggplot(post_res, aes(x=year, y=attst.per, color=state)) +
+geom_line(linewidth=1.2) +
+geom_point(size=1.5) +
+ylim(c(-.2,.05)) +
+theme_bw()
+ggplot(post_res, aes(x=year, y=attst, color=state)) +
+geom_line(linewidth=1.2) +
+geom_point(size=1.5) +
+ylim(c(-.2,.05)) +
+theme_bw()
+ggplot(post_res, aes(x=year, y=attst.per, color=state)) +
+geom_line(linewidth=1.2) +
+geom_point(size=1.5) +
+ylim(c(-.2,.05)) +
+theme_bw()
+treated_state_list <- unique(subset(data2, G != 0)$state_name)
+plot_df <- unique(select(subset(data2, G != 0), state_name, state_mw, year))
+ggplot(plot_df, aes(x=year, y=state_mw, color=state_name)) +
+geom_line() +
+theme_bw()
+plot_df <- unique(select(subset(data2, G != 0), state_name, state_mw, year))
+treated_state_list <- unique(subset(data2, G != 0)$state_name)
+plot_df <- unique(select(subset(data2, G != 0), state_name, state_mw, year))
+ggplot(plot_df, aes(x=year, y=state_mw, color=state_name)) +
+geom_line(linewidth=1.2) +
+geom_point(size=1.5) +
+theme_bw()
+ggplot(post_res, aes(x=year, y=attst, color=state)) +
+geom_line(linewidth=1.2) +
+geom_point(size=1.5) +
+ylim(c(-.2,.05)) +
+theme_bw()
+ggplot(post_res, aes(x=year, y=attst.per, color=state)) +
+geom_line(linewidth=1.2) +
+geom_point(size=1.5) +
+ylim(c(-.2,.05)) +
+theme_bw()
+save(post_res, file="post_res.RData")
+this_res$attst.per
+post_res
+state_res <- lapply(treated_state_list, function(this_state) {
+this_state_att.per <- mean(this_res$attst.per)
+this_state_att.per.se <- mean(this_res$att.per.se)
+data.frame(state=this_state, att.per=this_state_att.per,
+att.per.se=this_state_att.per.se,
+state_size=unique(this_res$state_size))
+}
+state_res <- lapply(treated_state_list, function(this_state) {
+state_res <- lapply(treated_state_list, function(this_state) {
+this_res <- subset(post_res, state==this_state)
+this_state_att.per <- mean(this_res$attst.per)
+this_state_att.per.se <- mean(this_res$att.per.se)
+data.frame(state=this_state, att.per=this_state_att.per,
+att.per.se=this_state_att.per.se,
+state_size=unique(this_res$state_size))
+})
+this_state= "Florida"
+this_res <- subset(post_res, state==this_state)
+this_res
+this_state_att.per <- mean(this_res$attst.per)
+this_state_att.per
+this_state_att.per.se <- mean(this_res$att.per.se)
+this_state_att.per.se <- mean(this_res$attst.per.se)
+data.frame(state=this_state, att.per=this_state_att.per,
+att.per.se=this_state_att.per.se,
+state_size=unique(this_res$state_size))
+state_res <- lapply(treated_state_list, function(this_state) {
+this_res <- subset(post_res, state==this_state)
+this_state_att.per <- mean(this_res$attst.per)
+this_state_att.per.se <- mean(this_res$attst.per.se)
+data.frame(state=this_state, att.per=this_state_att.per,
+att.per.se=this_state_att.per.se,
+state_size=unique(this_res$state_size))
+})
+state_res
+state_df <- do.call(rbind.data.frame, state_res)
+state_df
+att.per0.se <- weighted.mean(state_df$att.per.se, state_df$state_size)
+att.perO
+state_df <- do.call(rbind.data.frame, state_res)
+att.perO <- weighted.mean(state_df$att.per, state_df$state_size)
+att.per0.se <- weighted.mean(state_df$att.per.se, state_df$state_size)
+att.perO
+att.per0.se
+install.packages("Ecdat")
