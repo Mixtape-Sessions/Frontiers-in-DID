@@ -1,5 +1,5 @@
-<img src="img/banner.png" alt="Mixtape Sessions Banner" width="100%"> 
-<br/>
+<img src="https://raw.githubusercontent.com/Mixtape-Sessions/Frontiers-in-DID/main/img/banner.png" alt="Mixtape Sessions Banner" width="100%"> 
+
 
 ## About
 
@@ -7,18 +7,16 @@ This course provides an in-depth introduction to panel data approaches to causal
 
 This is one of our advanced courses. These courses are designed <strong>assuming a solid foundation in the basics of the difference-in-differences methodology</strong> and will cover the frontiers of the topic. A good review is: https://github.com/Mixtape-Sessions/Causal-Inference-2.
 
-<br/>
-
 
 ## Schedule
 
-<details open><summary><b>Introduction</b></summary><br/>
+### Introduction
 
-<b>About</b>
+#### About
 
 High-level discussion about using panel data for causal inference and an introduction/review of DID approaches
 
-<b>Slides</b>
+#### Slides
 
 [Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/)
 
@@ -28,13 +26,13 @@ High-level discussion about using panel data for causal inference and an introdu
 
 [[R Code used in slides](https://mixtape-sessions.github.io/Frontiers-in-DID/DID-Introduction.R)]
 
-<details open><summary><b>Relaxing Parallel Trends (& Covariates Good and Bad)</b></summary><br/>
+### Relaxing Parallel Trends (& Covariates Good and Bad)
 
-<b>About</b>
+#### About
 
 Relaxing the parallel trends assumption by conditioning on covariates and dealing with covariates that could have been affected by the treatment
 
-<b>Slides</b>
+#### Slides
 
 [Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/Relaxing-Parallel-Trends.html)
 
@@ -42,7 +40,7 @@ Relaxing the parallel trends assumption by conditioning on covariates and dealin
 
 [[R Code used in slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Relaxing-Parallel-Trends.R)]
 
-<b>Coding Exercises</b>
+#### Coding Exercises
 
 [Exercise 1](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/exercise1.html)
 
@@ -50,20 +48,20 @@ Relaxing the parallel trends assumption by conditioning on covariates and dealin
 
 [Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/exercise1_sol.html)
 
-</details><br />
 
 
-<details open><summary><b>More Complicated Treatment Regimes (or, I have a complicated treatment, what now?)</b></summary><br/>
 
-<b>About</b>
+### More Complicated Treatment Regimes (or, I have a complicated treatment, what now?)
+
+#### About
 
 Continuous treatment and a treatment that can turn on and off plus a high-level discussion of how to adapt "heterogeneity robust" strategies to new empirical settings
 
-<b>Slides</b>
+#### Slides
 
 [Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/More-Complicated-Treatment-Regimes.html)
 
-<b>Coding Exercises</b>
+#### Coding Exercises
 
 [Exercise 2a](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2a.html)
 
@@ -71,20 +69,20 @@ Continuous treatment and a treatment that can turn on and off plus a high-level 
 
 [Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2a_sol.html)
 
-</details><br />
 
 
-<details open><summary><b>Alternative Identification Strategies</b></summary><br/>
 
-<b>About</b>
+### Alternative Identification Strategies
+
+#### About
 
 Many recent developments in panel data approaches to causal inference have come in the context of difference-in-differences, but many of these insights extend (in a straighforward way) to other using other identification strategies as well.  This part will consider changes-in-changes, interactive fixed effects models, and conditioning on lagged outcomes as alternative under-the-hood identification strategies.
 
-<b>Slides</b>
+#### Slides
 
 [Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/Alternative-Identification-Strategies.html)
 
-<b>Coding Exercises</b>
+#### Coding Exercises
 
 
 [Exercise 2b](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2b.html)
@@ -93,5 +91,5 @@ Data Same as Exercise 1
 
 [Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2b_sol.html)
 
-</details><br />
+
 
