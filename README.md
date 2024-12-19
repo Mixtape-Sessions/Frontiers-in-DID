@@ -12,86 +12,67 @@ This is one of our advanced courses. These courses are designed <strong>assuming
 
 ### Introduction
 
-#### About
-
 High-level discussion about using panel data for causal inference and an introduction/review of DID approaches
-
-#### Slides
 
 [Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/)
 
-[[R Data full](https://mixtape-sessions.github.io/Frontiers-in-DID/mw_data_ch2.RData)] [[Stata dta full](https://mixtape-sessions.github.io/Frontiers-in-DID/mw_data_ch2.dta)]
+- Full data: [`.RData`](https://mixtape-sessions.github.io/Frontiers-in-DID/mw_data_ch2.RData), [`.dta`](https://mixtape-sessions.github.io/Frontiers-in-DID/mw_data_ch2.dta)
 
-[[R Data subset used in slides](https://mixtape-sessions.github.io/Frontiers-in-DID/data2.RData)] [[Stata dta subset used in slides](https://mixtape-sessions.github.io/Frontiers-in-DID/data2.dta)]
+- Subset used in slides: [`.RData`](https://mixtape-sessions.github.io/Frontiers-in-DID/data2.RData) [`.dta`](https://mixtape-sessions.github.io/Frontiers-in-DID/data2.dta)
 
-[[R Code used in slides](https://mixtape-sessions.github.io/Frontiers-in-DID/DID-Introduction.R)]
+- R Code used in slides: [`DID-Introduction.R`](https://mixtape-sessions.github.io/Frontiers-in-DID/DID-Introduction.R)
 
 ### Relaxing Parallel Trends (& Covariates Good and Bad)
 
-#### About
-
 Relaxing the parallel trends assumption by conditioning on covariates and dealing with covariates that could have been affected by the treatment
-
-#### Slides
 
 [Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/Relaxing-Parallel-Trends.html)
 
-[Data] - same as in first session
-
-[[R Code used in slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Relaxing-Parallel-Trends.R)]
+- R Code used in slides: [`Relaxing-Parallel-Trends.R`](https://mixtape-sessions.github.io/Frontiers-in-DID/Relaxing-Parallel-Trends.R)
 
 #### Coding Exercises
 
 [Exercise 1](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/exercise1.html)
 
-[[R data](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/job_displacement_data.RData)] [[Stata dta](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/job_displacement_data.dta)]
+- Data: [`.RData`](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/job_displacement_data.RData), [`.dta`](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/job_displacement_data.dta)
 
-[Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/exercise1_sol.html)
+- [Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-1/exercise1_sol.html)
 
 
 
 
 ### More Complicated Treatment Regimes (or, I have a complicated treatment, what now?)
 
-#### About
-
 Continuous treatment and a treatment that can turn on and off plus a high-level discussion of how to adapt "heterogeneity robust" strategies to new empirical settings
-
-#### Slides
 
 [Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/More-Complicated-Treatment-Regimes.html)
 
-[Min. Wage Example Replication Code](https://mixtape-sessions.github.io/Frontiers-in-DID/mw_wage_application_example.R)
+- Min. Wage Example Replication Code : [`mw_wage_application_example.R`](https://mixtape-sessions.github.io/Frontiers-in-DID/mw_wage_application_example.R)
 
 #### Coding Exercises
 
 [Exercise 2a](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2a.html)
 
-[Data](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/medicare1.RData)
+- Data: [`.RData`](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/medicare1.RData)
 
-[Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2a_sol.html)
+- [Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2a_sol.html)
 
 
 
 
 ### Alternative Identification Strategies
 
-#### About
-
 Many recent developments in panel data approaches to causal inference have come in the context of difference-in-differences, but many of these insights extend (in a straighforward way) to other using other identification strategies as well.  This part will consider changes-in-changes, interactive fixed effects models, and conditioning on lagged outcomes as alternative under-the-hood identification strategies.
-
-#### Slides
 
 [Slides](https://mixtape-sessions.github.io/Frontiers-in-DID/Slides/Alternative-Identification-Strategies.html)
 
 #### Coding Exercises
 
-
 [Exercise 2b](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2b.html)
 
-Data Same as Exercise 1
+- Data: [`.RData`](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/medicare1.RData)
 
-[Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2b_sol.html)
+- [Solutions](https://mixtape-sessions.github.io/Frontiers-in-DID/Exercises/Exercise-2/exercise2b_sol.html)
 
 
 
